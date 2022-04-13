@@ -26,6 +26,7 @@ export function Login() {
     if (state.password.length > 4 && state.username.length > 4) {
       dispatch(loginAsync(state));
       setState(initialState);
+      // setTimeout(() => window.location.reload(), 500); // reload to trigger a websocket connection
     }
   }
   return (
