@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs';
 import { findBy, add, UserType } from '../users/users-model';
 import { Router } from 'express';
+import {v4} from 'uuid';
+
+const map = new Map();
 
 const router = Router();
 
@@ -25,19 +28,30 @@ router.post('/register', (req, res) => {
     }
 });
 
-router.post('/login', (req:any, res) => {
+router.post('/login', (req, res) => {
     req.body.password &&
     req.body.username &&
     req.body.username.length > 0 &&
     findBy({ username: req.body.username })
     .first()
     .then((user:UserType) => {
+        const id = v4(); // create new unique session-id
         if (bcrypt.compareSync(req.body.password, user.password)) {
-            req.session.user = user.username;
+            req.session.userId = id;
+            req.session.username = user.username;
             req.session.loggedIn = true;
             req.session.save();
             res.status(200).json({ message: 'welcome', username: user.username })
         }
+    })
+});
+
+router.delete('/logout', (req, res) => {
+    const ws = map.get(req.session.userId);
+    console.log(`${req.session.username} logged out.`);
+    req.session.destroy(function() {
+        if (ws) ws.close();
+        res.send({result: 'OK', message: 'Logged out'});
     })
 })
 
