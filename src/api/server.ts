@@ -57,27 +57,9 @@ app.use(hostValidation({
 .use('/api', authMiddleware)
 .use('/api/users', usersRouter)
 // HTML renders SPA from here, (app-wide cache settings)
-// .use(['/',], express.static(path.join(__dirname, "../app/build")));
-// .use((req, res, next) => {
-//     res.set({
-//       "Access-Control-Allow-Origin": "*",
-//       "Access-Control-Allow-Headers":
-//         "Origin, X-Requested-With, Content-Type, Accept",
-//       "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
-//       "Content-Security-Policy":
-//         "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google.com",
-//       "X-Content-Security-Policy": "default-src *",
-//       "X-WebKit-CSP": "default-src *",
-//     });
-//     next();
-// })
-// .use(function (req, res) {
-//     res.sendFile(path.join(__dirname, "../app/build", "index.html"));
-// });
 .use('/', express.static(path.join(__dirname, "../app/build")));
 app.get("*", (req, res) => {
-    // * catch-all
-    // reformat the path as search params & redirect to SPA
+    // * catch-all, reformat as search-params & redirect to SPA
     res.redirect(`/?${req.path}`);
-  });
+});
 export default app;
