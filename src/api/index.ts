@@ -3,6 +3,7 @@ import path from 'path';
 import express from 'express';
 
 // Middleware
+import session from 'express-session';
 import cors from 'cors';
 import helmet from 'helmet';
 import hostValidation from 'host-validation';
@@ -15,13 +16,17 @@ import hpp from 'hpp';
 // import webRoutes from './routes/web';
 import usersRouter from '../users/users-router';
 
+
 // authorized sessions
-import { session, sessionConfig, authRouter, authMiddleware } from '../auth-session'
+import { sessionConfig, authRouter, authMiddleware } from '../auth-session'
 const MAX_CONTENT_LENGTH_ACCEPTED = 9999; 
 const corsConfig = {
     origin: true,
     credentials: true,
 };
+
+export const sessionParser = session(sessionConfig);
+
 const corsMiddleware = cors(corsConfig);
 // (init)
 const app = express();
@@ -37,6 +42,8 @@ app.use(hostValidation({
         'localhost:3000',
         'localhost:3001',
         '127.0.0.1:3001',
+        'localhost:8080',
+        '127.0.0.1:8080',
     ]
 }))
 // 1. parse body (sort)
@@ -48,7 +55,7 @@ app.use(hostValidation({
 // 4. Enable All CORS Requests
 // 4.2 authorized session (optional)
 .use(express.json())
-.use(session(sessionConfig))
+.use(sessionParser)
 // // 5. Security with HTTP headers
 .use(helmet())
 // 6. Routes
