@@ -7,7 +7,7 @@
     "start": "npx ts-node index.ts",
     "start:dev": "npx nodemon index.ts",
     "create:db": "npx knex migrate:latest && npx knex seed:run",
-    "build:client": "cd src/app;npm run build",
+    "build:client": "cd src/app;npm i && npm run build",
     "build": "npm run build:client && npm run create:db",
     "develop": "npm run build && npm run start:dev",
     "test": "echo \"Error: no test specified\" && exit 1"
