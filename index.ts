@@ -42,7 +42,7 @@ server.on('upgrade', function (request: any, socket, head) {
             socket.destroy();
             return;
         }
-        console.log('session is parsed');
+        console.log(`${request.session.username} => upgrade`);
         wss.handleUpgrade(request, socket, head, function (ws) {
             wss.emit('connection', ws, request);
         });
@@ -59,12 +59,8 @@ wss.on('connection', function (ws, request: any) {
         //
         let text = message.toString();
         switch (text) {
-            case "MainPage":
-                console.log(`${request.session.username} reached the main page`);
-                request.session.save();
-                break;
-
             default:
+                console.log(`${request.session.username} -> ${text}`);
                 break;
         }
     });
