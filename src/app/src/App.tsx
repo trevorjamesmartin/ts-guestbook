@@ -65,7 +65,6 @@ function App() {
     <div className="App-navigation">
       {loggedIn ? (
         <nav style={navStyle}>
-          <Link className='App-link' to='/app'>Home</Link>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
         </nav>
