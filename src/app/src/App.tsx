@@ -4,11 +4,14 @@ import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
 import MainPage from './features/pages/Main';
 import { UserList } from './features/users/UserList';
-import { useAppSelector } from './memory/hooks';
-import { selectors } from './features/auth/authSlice'
+import { useAppSelector, useAppDispatch } from './memory/hooks';
+import { selectors as authSelectors} from './features/auth/authSlice'
+import { selectors as webSocketSelectors, actions as webSocketActions } from './features/pages/wsSlice';
 import './App.css';
 
-const { selectLoggedIn } = selectors;
+const { selectLoggedIn } = authSelectors;
+const { selectSentStatus } = webSocketSelectors;
+const { setStatusConnected } = webSocketActions;
 
 const navStyle={
   borderBottom: 'solid 1px',
@@ -16,10 +19,12 @@ const navStyle={
 }
 
 function App() {
+  const dispatch = useAppDispatch();
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const loggedIn = useAppSelector(selectLoggedIn);
   const [ws, setWs] = useState<WebSocket|undefined>(undefined);
+  const wsStatus = useAppSelector<string>(selectSentStatus);
   
   const catchAll = () => {
     // * catch-all (from api)
@@ -39,11 +44,13 @@ function App() {
     console.log('-> ws')
     let _ws = new WebSocket('ws://' + host);
     _ws.onerror = function() {
-      console.log('Websocket error');
+      // console.log('Websocket error');
       navigate('/login')
     }
     _ws.onopen = function() {
       console.log('Websocket connection established');
+      setWs(_ws);
+      dispatch(setStatusConnected());
       if (window.location.pathname === '/login') navigate('/app');
     }
     _ws.onclose = function() {
@@ -55,13 +62,13 @@ function App() {
       // console.log(ev.data)
       setMessage(ev.data);
     }
-    setWs(_ws);
   }, []);
 
   return (<>
   <div className='App'>
     <div className='App-Header'>
     <h1>App</h1>
+    <span>{wsStatus}</span>
     <div className="App-navigation">
       {loggedIn ? (
         <nav style={navStyle}>
