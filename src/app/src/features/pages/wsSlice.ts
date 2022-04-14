@@ -41,6 +41,9 @@ export const wsSlice = createSlice({
     initialState: persistedStore?.socket || initialMessage,
     reducers: {
         //
+        setStatusConnected: (state) => {
+            state.status = 'idle';
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(sendMessage.pending, (state:wsMessage) => {
@@ -57,7 +60,7 @@ export const wsSlice = createSlice({
         })
     }
 });
-
+const {setStatusConnected} = wsSlice.actions;
 const selectSentMessage = (state:RootState) => <string|undefined>state.socket.message;
 const selectSentStatus = (state:RootState) => <string>state.socket.status;
 
@@ -65,6 +68,10 @@ const selectSentStatus = (state:RootState) => <string>state.socket.status;
 export const selectors = {
     selectSentMessage,
     selectSentStatus
+}
+
+export const actions = {
+    setStatusConnected
 }
 
 export default wsSlice.reducer;
