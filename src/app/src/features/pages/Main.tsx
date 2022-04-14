@@ -12,7 +12,6 @@ function MainPage({ ws, ...props }:propsWithWebSocket) {
     const dispatch = useAppDispatch();
     useEffect(() => {
         console.log({ message, status });
-        if(!ws) window.location.reload();
         if (ws && !messageSent) {
             setMessageSent(true);
             console.log('sending message back to host...', Date.now());
