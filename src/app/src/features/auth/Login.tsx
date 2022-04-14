@@ -1,4 +1,5 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
+import { Link } from "react-router-dom";
 import React, { useState } from "react";
 
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
@@ -31,7 +32,10 @@ export function Login() {
   }
   return (
     <div>
-      {loggedIn ? <p className="message-success">{message}</p>
+      {loggedIn ? (<>
+      <p className="message-success">{message}</p>
+      <Link className='App-link' to='/app'>continue</Link>
+      </>)
       : <form onSubmit={handleSubmitForm}>
         <input name="username" value={state.username} onChange={handleChange}></input>
         <input type="password" name="password" value={state.password} onChange={handleChange}></input>
