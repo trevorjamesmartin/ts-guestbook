@@ -2,7 +2,7 @@ import authRouter from './auth-router';
 import authMiddleware from './restricted-middleware';
 import session from 'express-session';
 import KnexSession from 'connect-session-knex';
-import knex from '../data/dbConfig';
+import knex from '../../data/dbConfig';
 
 const KnexStore = KnexSession(session);
 

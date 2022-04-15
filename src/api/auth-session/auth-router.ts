@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { findBy, add, UserType } from '../users/users-model';
+import Users, {UserType} from '../users/users-model';
 import { Router } from 'express';
 import {v4} from 'uuid';
 
@@ -18,7 +18,7 @@ router.post('/register', (req, res) => {
     const username:string|undefined = req.body.username ? req.body.username : undefined;
     const formError = [username, password].includes(undefined);
     if (!formError) {
-        add({ username, password })
+        Users.add({ username, password })
             .then((saved:any) => {
                 res.status(201).json(saved);
             })
@@ -32,7 +32,7 @@ router.post('/login', (req, res) => {
     req.body.password &&
     req.body.username &&
     req.body.username.length > 0 &&
-    findBy({ username: req.body.username })
+    Users.findBy({ username: req.body.username })
     .first()
     .then((user:UserType) => {
         const id = v4(); // create new unique session-id

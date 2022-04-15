@@ -13,12 +13,10 @@ import hpp from 'hpp';
 // import enforcesSSL from 'express-enforces-ssl';
 
 // Local Routes
-// import webRoutes from './routes/web';
-import usersRouter from '../users/users-router';
-
+import { usersRouter, profileRouter } from './users'
 
 // authorized sessions
-import { sessionConfig, authRouter, authMiddleware } from '../auth-session'
+import { sessionConfig, authRouter, authMiddleware } from './auth-session'
 const MAX_CONTENT_LENGTH_ACCEPTED = 9999; 
 const corsConfig = {
     origin: true,
@@ -63,6 +61,7 @@ app.use(hostValidation({
 .use('/auth', authRouter)
 .use('/api', authMiddleware)
 .use('/api/users', usersRouter)
+.use('/api/profile', profileRouter)
 // HTML renders SPA from here, (app-wide cache settings)
 .use('/', express.static(path.join(__dirname, "../app/build")));
 app.get("*", (req, res) => {

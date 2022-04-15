@@ -1,5 +1,5 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import React, { useState } from "react";
 
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
@@ -27,14 +27,14 @@ export function Login() {
     if (state.password.length > 4 && state.username.length > 4) {
       dispatch(loginAsync(state));
       setState(initialState);
-      // setTimeout(() => window.location.reload(), 500); // reload to trigger a websocket connection
+      setTimeout(() => window.location.reload(), 1700); // reload to trigger a websocket connection
     }
   }
   return (
     <div>
       {loggedIn ? (<>
       <p className="message-success">{message}</p>
-      <Link className='App-link' to='/app'>continue</Link>
+      {/* <button onClick={() => setTimeout(() => window.location.reload(), 500)}>continue</button> */}
       </>)
       : <form onSubmit={handleSubmitForm}>
         <input name="username" value={state.username} onChange={handleChange}></input>
