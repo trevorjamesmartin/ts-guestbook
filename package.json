@@ -13,7 +13,7 @@
     "prepackage": "mkdir -p dist/src/app/build && cp -rp src/app/build dist/src/app && cp package*.json dist",
     "package": "tar cvf dist.tar dist && gzip dist.tar",
     "release": "npm run compile && npm run package",
-    "develop": "npm run build:client && npm run create:db && npm run start:dev",
+    "develop": "rm ./dev.sqlite3 && npm run build:client && npm run create:db && npm run start:dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
