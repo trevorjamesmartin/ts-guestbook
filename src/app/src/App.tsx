@@ -2,13 +2,17 @@ import React, {useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
+import { Register } from './features/auth/Register';
 import MainPage from './features/pages/Main';
 import { UserList } from './features/users/UserList';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as authSelectors} from './features/auth/authSlice'
 import { selectors as webSocketSelectors, actions as webSocketActions } from './features/pages/wsSlice';
+import { selectors as profileSelectors } from './features/profile/profileSlice';
+
 import './App.css';
 
+const { selectProfile } = profileSelectors;
 const { selectLoggedIn } = authSelectors;
 const { selectSentStatus } = webSocketSelectors;
 const { setStatusConnected } = webSocketActions;
@@ -23,6 +27,7 @@ function App() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const loggedIn = useAppSelector(selectLoggedIn);
+  const profile = useAppSelector(selectProfile);
   const [ws, setWs] = useState<WebSocket|undefined>(undefined);
   const wsStatus = useAppSelector<string>(selectSentStatus);
   
@@ -42,7 +47,7 @@ function App() {
     }
     let host = window.location.host;
     console.log('-> ws')
-    let _ws = new WebSocket('ws://' + host);
+    let _ws = new WebSocket('ws://' + host + '/');
     _ws.onerror = function() {
       // console.log('Websocket error');
       navigate('/login')
@@ -74,6 +79,7 @@ function App() {
         <nav style={navStyle}>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
+          <Link className='App-link' to='/app'><img src={profile.avatar ? profile.avatar : '/user.png'} width='42px'/></Link>
         </nav>
       ) :
         <nav style={navStyle}>
@@ -88,7 +94,7 @@ function App() {
       <Route path="/app/users" element={<UserList />} />
       <Route path="/login" element={<Login />} />
       <Route path="/app/logout" element={<Logout />} />
-      <Route path="/register" element="[registration form]" />
+      <Route path="/register" element={<Register />} />
     </Routes>
     </div>
   </div>
