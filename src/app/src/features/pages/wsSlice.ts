@@ -5,7 +5,7 @@ import { persistedStore } from '../../memory/persist';
 
 interface wsMessage {
     message: string | undefined;
-    status: 'idle' | 'loading' | 'failed' | 'success';
+    status: 'idle' | 'loading' | 'failed' | 'success' | '';
     [key:string]:any;
 }
 
@@ -43,6 +43,9 @@ export const wsSlice = createSlice({
         //
         setStatusConnected: (state) => {
             state.status = 'idle';
+        },
+        setStatusDisconnected: (state) => {
+            state.status = '';
         }
     },
     extraReducers: (builder) => {
@@ -60,7 +63,7 @@ export const wsSlice = createSlice({
         })
     }
 });
-const {setStatusConnected} = wsSlice.actions;
+const {setStatusConnected, setStatusDisconnected} = wsSlice.actions;
 const selectSentMessage = (state:RootState) => <string|undefined>state.socket.message;
 const selectSentStatus = (state:RootState) => <string>state.socket.status;
 
@@ -71,7 +74,8 @@ export const selectors = {
 }
 
 export const actions = {
-    setStatusConnected
+    setStatusConnected,
+    setStatusDisconnected
 }
 
 export default wsSlice.reducer;

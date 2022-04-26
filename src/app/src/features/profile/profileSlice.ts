@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
 import {RootState} from '../../memory/store'
 
@@ -12,8 +12,10 @@ export const getProfileAsync = createAsyncThunk(
 
 export const setProfileAsync = createAsyncThunk(
     'profile/set',
-    async (data) => {
-      const response = await api.put('/api/profile', data); // pending
+    async (data:any) => {
+      console.log({data});
+      const {status, ...profileData } = data; // separate status from profile data;
+      const response = await api.put('/api/profile', profileData); // pending
       return response.data; // fulfilled
     }
 );
@@ -24,13 +26,37 @@ const initialState = {
     avatar: '',
     email: '',
     dob: undefined,
-    status: 'idle'
+    status: ''
 }
 
-export const userSlice = createSlice({
+export const profileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
+        setField: (state, action:PayloadAction<any>) => {
+            state.status  = 'setField, pending';
+            for (let fieldName of Object.keys(action.payload)) {
+                let value = action.payload[fieldName];
+                switch (fieldName) {
+                    case 'name':
+                        state.name = value;
+                        break;
+                    case 'avatar':
+                        state.avatar = value;
+                        break;
+                    case 'email':
+                        state.email = value;
+                        break;
+                    case 'dob':
+                        state.dob = value;
+                        break;
+                    default:
+                        console.log("no case defined for", { fieldName, value });
+                        break;
+                }
+            }
+            state.status = 'setField, ok';
+        },
         clear: (state) => {
             state = {...initialState };
         }
@@ -40,7 +66,7 @@ export const userSlice = createSlice({
             state.status = 'loading';
         })
         .addCase(getProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state.status = 'idle';
+            state.status = 'get profile, ok';
             state.name = action.payload.name;
             state.avatar = action.payload.avatar;
             state.email = action.payload.email;
@@ -54,7 +80,7 @@ export const userSlice = createSlice({
             state.status = 'loading';
         })
         .addCase(setProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state.status = 'idle';
+            state.status = 'set profile, ok';
             console.log(action.payload);
         })
         .addCase(setProfileAsync.rejected, (state, action:PayloadAction<any>) =>{
@@ -66,14 +92,17 @@ export const userSlice = createSlice({
 
 });
 
-const selectStatus = (state:RootState) => state.users.status;
+const selectProfile = (state:RootState) => state.profile;
+
 export const selectors = {
-    selectStatus 
+    selectProfile
 };
 
-const { clear } = userSlice.actions;
+const { clear, setField } = profileSlice.actions;
 export const actions = { 
-    clear 
+    clear,
+    setField
 };
 
-export default userSlice.reducer;
+
+export default profileSlice.reducer;

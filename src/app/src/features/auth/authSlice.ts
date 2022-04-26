@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
+import bcrypt from 'bcryptjs';
 import api from '../api';
 
 export interface Credentials {
@@ -11,7 +12,7 @@ export interface Credentials {
 interface credStatus {
   message: string | undefined;
   loggedIn: boolean;
-  status: 'idle' | 'loading' | 'failed' | 'registered';
+  status: 'idle' | 'loading' | 'failed' | 'registered' | '';
 }
 
 export const initialCreds: credStatus = {
@@ -97,7 +98,7 @@ export const authSlice = createSlice({
         console.log('[logging out]');
       })
       .addCase(logoutAsync.fulfilled, (state) => {
-        state.status = 'idle';
+        state.status = '';
         state.loggedIn = false;
         state.message = 'Goodbye!';
         console.log('[logged out!');
