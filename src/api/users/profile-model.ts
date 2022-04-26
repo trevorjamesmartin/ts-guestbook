@@ -1,7 +1,7 @@
 import db from '../../data/dbConfig';
 
 export interface ProfileType {
-    id: number|undefined;
+    id: number;
     user_id: number;
     name: string;
     avatar: string;
@@ -14,7 +14,9 @@ export default {
     findBy,
     byId,
     add,
-    update
+    update,
+    findByUsername,
+    addByUsername
 }
 
 function byId(id:number) {
@@ -23,15 +25,31 @@ function byId(id:number) {
     .first();
 }
 
-function findBy(filter:Partial<ProfileType>) {
+async function findBy(filter:Partial<ProfileType>) {
+    return await db("profiles").where(filter);
+}
+
+async function findByUsername(username:string) {
+    return await db("profiles")
+    .join("users", "users.id", "=", "profiles.user_id")
+    .where({ username })
+    .first()
+    .then(({ username, password, ...profile }:any) => profile);
+}
+
+async function addByUsername(username:string) {
+    const user_id = (await db("users").where({ username }).first()).id;
     return db("profiles")
-    .select("name", "avatar", "email", "dob", "config")
-    .where(filter);
+    .insert({ user_id })
+    .then((ids:number[]) => {
+        const [id] = ids;
+        return byId(id);
+    });
 }
 
 function add(profile:Partial<ProfileType>) {
     return db("profiles")
-    .insert(profile, "id")
+    .insert(profile)
     .then((ids:number[]) =>{
         const [id] = ids;
         return byId(id);
@@ -39,13 +57,5 @@ function add(profile:Partial<ProfileType>) {
 }
 
 function update(id:number, data:Partial<ProfileType>) {
-    try {
-        let previous = byId(id);
-        return db("profiles")
-        .update(data)
-        .where({ id: previous.id });
-    } catch (e) {
-        console.log(e);
-        return false;
-    }
+    return db("profiles").where({ id }).update(data);
 }

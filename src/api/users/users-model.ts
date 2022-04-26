@@ -28,15 +28,12 @@ function findById(id:number) {
 
 function add(user:Partial<UserType>) {
     return db("users")
-    .insert(user, "id")
+    .insert(user)
     .then((ids:number[]) => {
         const [id] = ids;
-        db("profiles").insert({ user_id: id })
-        
         return findById(id);
     });
 }
-
 
 function findBy(filter:any) {
     return db("users")
