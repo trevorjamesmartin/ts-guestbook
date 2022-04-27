@@ -32,7 +32,7 @@ export function Register() {
     if (state.password.length > 4 && state.username.length > 4) {
       dispatch(registerAsync({ username: state.username, password: state.password }));
       setState(initialState);
-      setTimeout(() => navigate('/'), 1700); // reload to trigger a websocket connection
+      setTimeout(() => navigate('/login'), 1700); // reload to trigger a websocket connection
     }
   }
   return (
