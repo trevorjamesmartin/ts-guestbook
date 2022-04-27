@@ -1,13 +1,21 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
+import { Register } from './features/auth/Register';
+import MainPage from './features/pages/Main';
 import { UserList } from './features/users/UserList';
-import { useAppSelector } from './memory/hooks';
-import { selectors } from './features/auth/authSlice'
+import { useAppSelector, useAppDispatch } from './memory/hooks';
+import { selectors as authSelectors} from './features/auth/authSlice'
+import { selectors as webSocketSelectors, actions as webSocketActions } from './features/pages/wsSlice';
+import { selectors as profileSelectors } from './features/profile/profileSlice';
+
 import './App.css';
 
-const { selectLoggedIn } = selectors;
+const { selectProfile } = profileSelectors;
+const { selectLoggedIn } = authSelectors;
+const { selectSentStatus } = webSocketSelectors;
+const { setStatusConnected } = webSocketActions;
 
 const navStyle={
   borderBottom: 'solid 1px',
@@ -15,25 +23,69 @@ const navStyle={
 }
 
 function App() {
+  // React
+  const [ws, setWs] = useState<WebSocket|undefined>(undefined);
+  const [message, setMessage] = useState("");
+  // Router
   const navigate = useNavigate();
+  // Redux
+  const dispatch = useAppDispatch();
   const loggedIn = useAppSelector(selectLoggedIn);
-  useEffect(() => {
-    // * catch-all (from api/server)
+  const profile = useAppSelector(selectProfile);
+  const wsStatus = useAppSelector<string>(selectSentStatus);
+  
+  const catchAll = () => {
+    // * catch-all (from api)
     const pathSearch = window.location.search.split('?')[1]||undefined;
     if (pathSearch && pathSearch.startsWith('/')) {
       navigate(pathSearch);
     }
+  }
+
+  const handleWebSocket = () => {
+    if (ws) {
+      ws.onerror = ws.onopen = ws.onclose = null;
+      ws.close();
+    }
+    let host = window.location.host;
+    console.log('-> ws')
+    let _ws = new WebSocket('ws://' + host + '/');
+    _ws.onerror = function() {
+      navigate('/login')
+    }
+    _ws.onopen = function() {
+      console.log('Websocket connection established');
+      setWs(_ws);
+      dispatch(setStatusConnected());
+      if (window.location.pathname === '/login') navigate('/app');
+    }
+    _ws.onclose = function() {
+      console.log('Websocket connection closed');
+      setWs(undefined);
+      if (window.location.pathname === '/logout') navigate('/login');
+    }
+    _ws.onmessage = function(ev) {
+      setMessage(ev.data);
+    }
+  }
+  
+  useEffect(() => {
+    catchAll();
+    console.log(window.location.pathname)
+    handleWebSocket();
   }, []);
+
   return (<>
   <div className='App'>
     <div className='App-Header'>
     <h1>App</h1>
+    <span>{wsStatus}</span>
     <div className="App-navigation">
       {loggedIn ? (
         <nav style={navStyle}>
-          <Link className='App-link' to='/app'>Home</Link>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
+          <Link className='App-link' to='/app'><img src={profile.avatar ? profile.avatar : '/user.png'} width='42px'/></Link>
         </nav>
       ) :
         <nav style={navStyle}>
@@ -42,13 +94,13 @@ function App() {
         </nav>
       }
     </div>
-    
+    <span id="ws-message">{message}</span>
     <Routes>
-      <Route path="/app" element={""} />
+      <Route path="/app" element={<MainPage ws={ws} />} />
       <Route path="/app/users" element={<UserList />} />
       <Route path="/login" element={<Login />} />
       <Route path="/app/logout" element={<Logout />} />
-      <Route path="/register" element="[registration form]" />
+      <Route path="/register" element={<Register />} />
     </Routes>
     </div>
   </div>

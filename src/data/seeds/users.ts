@@ -8,12 +8,13 @@ function genUser (name:string, password:string) {
 export async function seed(knex: Knex): Promise<void> {
     // Deletes ALL existing entries
     await knex("users").del();
-    let pass = process.env.PW_STRING || "password"
+    let pass = process.env.PASSWORD || "password"
     const users = [
-        ["admin", `${pass}`],
-        ["user1", `${pass}1`],
-        ["user2", `${pass}2`]
+        ["admin", `${pass}`]
     ].map(([a, b]) => genUser(a, b))
     // Inserts seed entries
     await knex("users").insert(users);
+    await knex("profiles").insert([
+        {user_id: 1}
+    ]);
 };

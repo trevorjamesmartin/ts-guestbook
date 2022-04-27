@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
+import bcrypt from 'bcryptjs';
 import api from '../api';
 
 export interface Credentials {
@@ -11,7 +12,7 @@ export interface Credentials {
 interface credStatus {
   message: string | undefined;
   loggedIn: boolean;
-  status: 'idle' | 'loading' | 'failed' | 'registered';
+  status: 'idle' | 'loading' | 'failed' | 'registered' | '';
 }
 
 export const initialCreds: credStatus = {
@@ -28,6 +29,14 @@ export const loginAsync = createAsyncThunk(
   }
 );
 
+export const logoutAsync = createAsyncThunk(
+  'auth/logout',
+  async () => {
+    const response = await api.delete('/auth/logout'); // pending
+    return response.data; // fulfilled
+  }
+);
+
 export const registerAsync = createAsyncThunk(
   'auth/register',
   async (data: Credentials) => {
@@ -40,10 +49,10 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState: persistedStore?.auth || initialCreds,
   reducers: {
-    logout: (state) => {
-      state.loggedIn = false;
-      state.message = "Goodbye!";
-    }
+    // logout: (state) => {
+    //   state.loggedIn = false;
+    //   state.message = "Goodbye!";
+    // }
   },
   extraReducers: (builder) => {
     builder
@@ -81,13 +90,32 @@ export const authSlice = createSlice({
         state.loggedIn = false;
         console.log("[register FAIL!]", action);
       })
+    
+    builder
+      .addCase(logoutAsync.pending, (state) => {
+        state.status = 'loading';
+        state.message = 'logging out...';
+        console.log('[logging out]');
+      })
+      .addCase(logoutAsync.fulfilled, (state) => {
+        state.status = '';
+        state.loggedIn = false;
+        state.message = 'Goodbye!';
+        console.log('[logged out!');
+      })
+      .addCase(logoutAsync.rejected, (state) => {
+        state.status = 'failed';
+        state.message = 'error logging out';
+        console.log("[error logging out!]")
+      })
+
   }
 
 });
 
-const { logout } = authSlice.actions;
+// const { logout } = authSlice.actions;
 
-export const actions = { logout }
+// export const actions = { logout }
 
 const selectLoggedIn = (state:RootState) => state.auth.loggedIn;
 const selectStatus = (state:RootState) => state.auth.status;

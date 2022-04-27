@@ -1,0 +1,24 @@
+[User] 
+*id
+username
+password
+
+[Profile]
+*id
+user_id
+dob
+name
+avatar
+email
+config
+
+[Post]
+*id
+author_id
+title
+tags
+content
+
+User 1--* Post
+
+User 1--1 Profile

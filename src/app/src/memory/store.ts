@@ -1,12 +1,16 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/users/userSlice';
+import profileReducer from '../features/profile/profileSlice';
+import socketReducer from '../features/pages/wsSlice';
 import { toStorage, storageKey } from './persist';
 
 export const store = configureStore({  
   reducer: {
     auth: authReducer,
-    users: userReducer
+    users: userReducer,
+    socket: socketReducer,
+    profile: profileReducer,
   },
 });
 
