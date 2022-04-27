@@ -78,8 +78,7 @@ function App() {
   return (<>
   <div className='App'>
     <div className='App-Header'>
-    <h1>App</h1>
-    <span>{wsStatus}</span>
+    <span>{`${wsStatus}`}</span>
     <div className="App-navigation">
       {loggedIn ? (
         <nav style={navStyle}>
