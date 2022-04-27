@@ -37,6 +37,7 @@ export const profileSlice = createSlice({
             state.status  = 'setField, pending';
             for (let fieldName of Object.keys(action.payload)) {
                 let value = action.payload[fieldName];
+                state.status = `set ${fieldName}`;
                 switch (fieldName) {
                     case 'name':
                         state.name = value;
@@ -55,7 +56,7 @@ export const profileSlice = createSlice({
                         break;
                 }
             }
-            state.status = 'setField, ok';
+            
         },
         clear: (state) => {
             state = {...initialState };
@@ -66,7 +67,7 @@ export const profileSlice = createSlice({
             state.status = 'loading';
         })
         .addCase(getProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state.status = 'get profile, ok';
+            state.status = 'ok';
             state.name = action.payload.name;
             state.avatar = action.payload.avatar;
             state.email = action.payload.email;
@@ -80,7 +81,7 @@ export const profileSlice = createSlice({
             state.status = 'loading';
         })
         .addCase(setProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state.status = 'set profile, ok';
+            state.status = 'ok';
             console.log(action.payload);
         })
         .addCase(setProfileAsync.rejected, (state, action:PayloadAction<any>) =>{

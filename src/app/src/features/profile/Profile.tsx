@@ -31,6 +31,7 @@ function Profile() {
             <input name='dob' type='text' placeholder='dob' value={profile.dob} onChange={handleChange} />
             <button>update</button>
         </form>
+        <span>{profile.status}</span>
     </div>)
 }
 

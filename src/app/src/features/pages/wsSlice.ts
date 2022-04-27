@@ -5,7 +5,7 @@ import { persistedStore } from '../../memory/persist';
 
 interface wsMessage {
     message: string | undefined;
-    status: 'idle' | 'loading' | 'failed' | 'success' | '';
+    status: string;
     [key:string]:any;
 }
 
@@ -25,7 +25,7 @@ export const sendMessage = createAsyncThunk(
         const { ws, message } = payload;
         if (ws) {
             // send over websocket
-            console.log('send over websocket')
+            // console.log('send over websocket', message)
             ws.send(message);
             return message
         } else {
@@ -50,10 +50,10 @@ export const wsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(sendMessage.pending, (state:wsMessage) => {
-            state.status = 'loading';
+            state.status = 'sending';
         })
         .addCase(sendMessage.fulfilled, (state:wsMessage, action:PayloadAction<any>) => {
-            state.status = 'success';
+            state.status = '';
             if (action.payload) {
                 state.message = action.payload;
             }
