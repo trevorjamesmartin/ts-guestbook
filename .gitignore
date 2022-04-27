@@ -131,3 +131,6 @@ dist
 
 # database 
 *.sqlite3
+
+# ts -> js
+dist/
