@@ -23,12 +23,15 @@ const navStyle={
 }
 
 function App() {
-  const dispatch = useAppDispatch();
+  // React
+  const [ws, setWs] = useState<WebSocket|undefined>(undefined);
   const [message, setMessage] = useState("");
+  // Router
   const navigate = useNavigate();
+  // Redux
+  const dispatch = useAppDispatch();
   const loggedIn = useAppSelector(selectLoggedIn);
   const profile = useAppSelector(selectProfile);
-  const [ws, setWs] = useState<WebSocket|undefined>(undefined);
   const wsStatus = useAppSelector<string>(selectSentStatus);
   
   const catchAll = () => {
@@ -38,9 +41,8 @@ function App() {
       navigate(pathSearch);
     }
   }
-  
-  useEffect(() => {
-    catchAll();
+
+  const handleWebSocket = () => {
     if (ws) {
       ws.onerror = ws.onopen = ws.onclose = null;
       ws.close();
@@ -49,7 +51,6 @@ function App() {
     console.log('-> ws')
     let _ws = new WebSocket('ws://' + host + '/');
     _ws.onerror = function() {
-      // console.log('Websocket error');
       navigate('/login')
     }
     _ws.onopen = function() {
@@ -64,9 +65,14 @@ function App() {
       if (window.location.pathname === '/logout') navigate('/login');
     }
     _ws.onmessage = function(ev) {
-      // console.log(ev.data)
       setMessage(ev.data);
     }
+  }
+  
+  useEffect(() => {
+    catchAll();
+    console.log(window.location.pathname)
+    handleWebSocket();
   }, []);
 
   return (<>
