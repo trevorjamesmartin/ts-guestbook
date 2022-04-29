@@ -10,10 +10,10 @@
     "build:client": "cd src/app;npm i && npm run build",
     "precompile": "npm run build:client && npm run create:db",
     "compile": "tsc",
-    "prepackage": "mkdir -p dist/src/app/build && cp -rp src/app/build dist/src/app && cp package*.json dist && cp start.sh dist",
+    "prepackage": "mkdir -p dist/src/app/build && cp -rp src/app/build dist/src/app && npx ts-node release-package.ts",
     "package": "tar cvf dist.tar dist && gzip dist.tar",
     "release": "npm run compile && npm run package",
-    "develop": "rm ./dev.sqlite3 && npm run build:client && npm run create:db && npm run start:dev",
+    "develop": "npm run build:client && npm run create:db && npm run start:dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
