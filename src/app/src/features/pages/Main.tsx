@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {propsWithWebSocket} from './common'
 import { sendMessage, selectors as webSocketSelectors } from './wsSlice';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks'
-import Profile from '../profile/Profile';
+// import Profile from '../profile/Profile';
 const {selectSentMessage, selectSentStatus} = webSocketSelectors;
 
 function MainPage({ ws, ...props }:propsWithWebSocket) {

@@ -4,8 +4,10 @@ import {RootState} from '../../memory/store'
 
 export const usersAsync = createAsyncThunk(
     'users/list',
-    async () => {
-      const response = await api.get('/api/users/with-profiles'); // pending
+    async (_, thunkAPI) => {
+      const state:any = thunkAPI.getState();
+      const token = state?.auth?.token || undefined;
+      const response = await api(token).get('/api/users/with-profiles'); // pending
       return response.data; // fulfilled
     }
 );
