@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
 import api from '../api';
 
 export interface Credentials {
@@ -12,35 +12,43 @@ export interface Credentials {
 interface credStatus {
   message: string | undefined;
   loggedIn: boolean;
+  token: string | undefined;
   status: 'idle' | 'loading' | 'failed' | 'registered' | '';
 }
 
 export const initialCreds: credStatus = {
   message: "",
   loggedIn: false,
-  status: 'idle'
+  status: 'idle',
+  token: undefined
 }
 
 export const loginAsync = createAsyncThunk(
   'auth/login',
-  async (data: Credentials) => {
-    const response = await api.post('/auth/login', data); // pending
+  async (data: Credentials, thunkAPI) => {
+    const state:any = thunkAPI.getState();
+    const token = state?.auth?.token || undefined;
+    const response = await api(token).post('/auth/login', data); // pending
     return response.data; // fulfilled
   }
 );
 
 export const logoutAsync = createAsyncThunk(
   'auth/logout',
-  async () => {
-    const response = await api.delete('/auth/logout'); // pending
+  async (_, thunkAPI) => {
+    const state:any = thunkAPI.getState();
+    const token = state?.auth?.token || undefined;
+    const response = await api(token).delete('/auth/logout'); // pending
     return response.data; // fulfilled
   }
 );
 
 export const registerAsync = createAsyncThunk(
   'auth/register',
-  async (data: Credentials) => {
-    const response = await api.post('auth/register', data); // pending
+  async (data: Credentials, thunkAPI) => {
+    const state:any = thunkAPI.getState();
+    const token = state?.auth?.token || undefined;
+    const response = await api(token).post('auth/register', data); // pending
     return response.data; // fulfilled
   }
 );
@@ -58,18 +66,18 @@ export const authSlice = createSlice({
     builder
       .addCase(loginAsync.pending, (state) => {
         state.status = 'loading';
-        state.loggedIn = false;
         state.message = '';
       })
       .addCase(loginAsync.fulfilled, (state, action:PayloadAction<any>) => {
         state.status = 'idle';
         state.message = action.payload.message;
-        state.loggedIn = true;
+        state.token = action.payload.token; // set token
       })
       .addCase(loginAsync.rejected, (state, action:PayloadAction<any>) => {
         state.status = 'failed';
         state.message = '';
-        state.loggedIn = false;
+        state.token = undefined;
+        
       })
     
     builder
@@ -99,8 +107,8 @@ export const authSlice = createSlice({
       })
       .addCase(logoutAsync.fulfilled, (state) => {
         state.status = '';
-        state.loggedIn = false;
         state.message = 'Goodbye!';
+        state.token = undefined; // clear token
         console.log('[logged out!');
       })
       .addCase(logoutAsync.rejected, (state) => {
@@ -120,11 +128,13 @@ export const authSlice = createSlice({
 const selectLoggedIn = (state:RootState) => state.auth.loggedIn;
 const selectStatus = (state:RootState) => state.auth.status;
 const selectMessage = (state:RootState) => state.auth.message;
+const selectToken = (state:RootState) => state.auth.token;
 
 export const selectors = {
   selectLoggedIn,
   selectStatus,
-  selectMessage
+  selectMessage,
+  selectToken
 }
 
 const isLoggedIn = ():AppThunk => (

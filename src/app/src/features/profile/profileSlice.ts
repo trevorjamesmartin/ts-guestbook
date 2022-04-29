@@ -5,17 +5,21 @@ import { persistedStore } from '../../memory/persist';
 
 export const getProfileAsync = createAsyncThunk(
     'profile/get',
-    async () => {
-      const response = await api.get('/api/profile'); // pending
+    async (_, thunkAPI) => {
+      const state:any = thunkAPI.getState();
+      const token = state?.auth?.token || undefined;
+      const response = await api(token).get('/api/profile'); // pending
       return response.data; // fulfilled
     }
 );
 
 export const setProfileAsync = createAsyncThunk(
     'profile/set',
-    async (data:any) => {
-      const {status, ...profileData } = data; // separate status from profile data;
-      const response = await api.put('/api/profile', profileData); // pending
+    async (data:any, thunkAPI) => {
+      const {status, ...profileData  } = data; // separate status from profile data;
+      const state:any = thunkAPI.getState();
+      const token = state?.auth?.token || undefined;
+      const response = await api(token).put('/api/profile', profileData); // pending
       return response.data; // fulfilled
     }
 );

@@ -3,6 +3,7 @@ import Users, {UserType} from '../users/users-model';
 import Profiles, {ProfileType} from '../users/profile-model';
 import { Router } from 'express';
 import {v4} from 'uuid';
+import { generateToken } from './restricted-middleware';
 
 const map = new Map();
 
@@ -45,8 +46,12 @@ router.post('/login', async (req, res) => {
         req.session.username = user.username;
         req.session.loggedIn = true;
         req.session.save();
-        return res.status(200).json({ message: 'welcome', username: user.username })
-    } 
+        return res.status(200).json({
+            message: 'welcome',
+            username: user.username,
+            token: generateToken(user)
+        });
+    }
     return res.status(400).json({ message });
 });
 

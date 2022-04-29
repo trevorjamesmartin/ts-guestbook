@@ -1,9 +1,9 @@
-
-import app, { sessionParser } from './src/api';
+import api from './src/api/server';
+import { sessionParser } from './src/api/configure';
 import { WebSocketServer } from 'ws';
 import http from 'http';
 
-const server = http.createServer(app);
+const server = http.createServer(api);
 const map = new Map();
 
 const wss = new WebSocketServer({

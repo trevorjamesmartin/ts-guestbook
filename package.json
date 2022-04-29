@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=17.9.0",
+    "npm": "~8.5.5"
+  },
   "scripts": {
     "start": "node index.js",
     "start:dev": "npx nodemon index.ts",
@@ -32,11 +36,13 @@
     "helmet": "^5.0.2",
     "host-validation": "^2.0.1",
     "hpp": "^0.2.3",
+    "jsonwebtoken": "^8.5.1",
     "knex": "^1.0.5",
     "uuid": "^8.3.2",
     "ws": "^8.5.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
