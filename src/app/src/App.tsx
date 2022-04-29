@@ -5,6 +5,7 @@ import { Logout } from './features/auth/Logout';
 import { Register } from './features/auth/Register';
 import MainPage from './features/pages/Main';
 import { UserList } from './features/users/UserList';
+import Profile from './features/profile/Profile';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as authSelectors} from './features/auth/authSlice'
 import { selectors as webSocketSelectors, actions as webSocketActions } from './features/pages/wsSlice';
@@ -25,7 +26,7 @@ const navStyle={
 function App() {
   // React
   const [ws, setWs] = useState<WebSocket|undefined>(undefined);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("development");
   // Router
   const navigate = useNavigate();
   // Redux
@@ -84,7 +85,17 @@ function App() {
         <nav style={navStyle}>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
-          <Link className='App-link' to='/app'><img src={profile.avatar ? profile.avatar : '/user.png'} width='42px'/></Link>
+          <span className='profile-picture-frame'>
+            <Link className='App-link-profile' to='/app/profile'>
+              <img 
+                src={profile.avatar ? profile.avatar : '/user.png'} 
+                width='42px'
+                alt={profile.name}
+              />
+              {profile?.name?.split(' ').join("_")||""}
+            </Link>
+            <span id="ws-message">{message}</span>
+          </span>
         </nav>
       ) :
         <nav style={navStyle}>
@@ -93,10 +104,10 @@ function App() {
         </nav>
       }
     </div>
-    <span id="ws-message">{message}</span>
     <Routes>
       <Route path="/app" element={<MainPage ws={ws} />} />
       <Route path="/app/users" element={<UserList />} />
+      <Route path="/app/profile" element={<Profile />} />
       <Route path="/login" element={<Login />} />
       <Route path="/app/logout" element={<Logout />} />
       <Route path="/register" element={<Register />} />

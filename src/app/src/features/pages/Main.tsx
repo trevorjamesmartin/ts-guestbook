@@ -21,7 +21,6 @@ function MainPage({ ws, ...props }:propsWithWebSocket) {
     }, []);
     return (<>
     <p>thank you for logging in.</p>
-    <Profile />
     </>
     )
 }

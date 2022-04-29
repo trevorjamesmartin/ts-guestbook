@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 .App {
   text-align: center;
 }
@@ -25,6 +27,12 @@
 .App-link {
   color: rgb(112, 76, 182);
   margin: 5px;
+}
+
+.App-link-profile {
+  color: rgb(112, 76, 182);
+  margin: 5px;
+  max-width: 4rem;  
 }
 
 
@@ -60,4 +68,14 @@ li {
 li:hover {
   border: 1px solid #111111;
 
+}
+
+span#ws-message {
+  font-family: 'Space Mono', monospace;
+  background-color: skyblue;
+  padding: 10px;
+  border-radius: 5px;
+}
+.profile-picture-frame {
+  display: flex;
 }
