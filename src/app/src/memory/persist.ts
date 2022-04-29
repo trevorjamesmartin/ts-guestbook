@@ -1,7 +1,6 @@
-export const toStorage = (state:any, key:any|undefined) => {
+export const toStorage = (state:any, key:string) => {
     try {
-        let localStorageKey = key?.length > 0 ? key : 'state';
-        localStorage.setItem(localStorageKey, JSON.stringify(state));
+        localStorage.setItem(key, JSON.stringify(state));
     } catch (e) {
         console.log(e);
     }
@@ -9,8 +8,7 @@ export const toStorage = (state:any, key:any|undefined) => {
 
 export const fromStorage = (key:any|undefined) => {
     try {
-        let localStorageKey = key?.length > 0 ? key : 'state';
-        const stateStr = localStorage.getItem(localStorageKey);
+        const stateStr = localStorage.getItem(key);
         return stateStr ? JSON.parse(stateStr) : undefined;
     } catch (e) {
         console.error(e);
@@ -18,6 +16,6 @@ export const fromStorage = (key:any|undefined) => {
     }
 }
 
-export const storageKey = undefined;
+export const storageKey = "state";
 
 export const persistedStore = fromStorage(storageKey);
