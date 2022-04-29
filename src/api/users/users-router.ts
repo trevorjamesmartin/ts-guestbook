@@ -9,4 +9,10 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/with-profiles', (req, res) => {
+    Users.withProfiles().then((users => {
+        res.json(users)
+    }));
+});
+
 export default router;

@@ -10,7 +10,8 @@ export default {
     add,
     list,
     findBy,
-    findById
+    findById,
+    withProfiles
 }
 
 function list() {
@@ -39,4 +40,10 @@ function findBy(filter:any) {
     return db("users")
         .select("id", "username", "password")
         .where(filter);
+}
+
+async function withProfiles() {
+    return await db("profiles")
+    .join("users", "users.id", "=", "profiles.user_id")
+    .select("username", "name", "avatar", "email", "dob");
 }
