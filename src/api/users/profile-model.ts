@@ -34,17 +34,22 @@ async function findByUsername(username:string) {
     .join("users", "users.id", "=", "profiles.user_id")
     .where({ username })
     .first()
-    .then(({ username, password, ...profile }:any) => profile);
+    .then((profile:any) => {
+        // remove hashed password
+        if (!profile) return {}
+        let { password, ...rest } = profile;
+        return rest;
+    });
 }
 
 async function addByUsername(username:string) {
-    const user_id = (await db("users").where({ username }).first()).id;
+    const user_id = (await db("users").where({ username })?.first())?.id;
+    if (!user_id) {
+        return false
+    };
     return db("profiles")
     .insert({ user_id })
-    .then((ids:number[]) => {
-        const [id] = ids;
-        return byId(id);
-    });
+    .then(() => findByUsername(username));
 }
 
 function add(profile:Partial<ProfileType>) {

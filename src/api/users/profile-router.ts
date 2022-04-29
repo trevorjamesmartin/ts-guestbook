@@ -8,6 +8,7 @@ router.get('/', async (req, res) => {
         return res.status(404).send('legit session required.')
     }
     const profile = await Profiles.findByUsername(username);
+    // console.log("GET / ", profile)
     return res.status(200).json(profile);
 });
 
@@ -17,6 +18,7 @@ router.put('/', async (req, res) => {
     if (!req.session.username) return res.status(403).json({error: 'user undefined'});
     try {
         profile = await Profiles.findByUsername(req.session.username);
+        // console.log("PUT", profile)
     } catch (e) {
         console.log('error, ', e)
         profile = undefined;
@@ -37,11 +39,12 @@ router.put('/', async (req, res) => {
 router.get('/user/:username', async (req,res) => {
     let username = req.params.username;
     let profile = await Profiles.findByUsername(username);
+    // console.log("GET /user", profile)
     if (req.session.username === username) {
         res.json(profile);
     } else {
-        let {name, avatar, email} = profile;
-        res.json({ username, name, avatar, email });
+        let {id, user_id, config,...rest } = profile;
+        res.json(rest);
     }
 })
 
