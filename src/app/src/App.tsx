@@ -14,7 +14,7 @@ import { selectors as profileSelectors } from './features/profile/profileSlice';
 import './App.css';
 
 const { selectProfile } = profileSelectors;
-const { selectLoggedIn } = authSelectors;
+const { selectToken } = authSelectors;
 const { selectSentStatus } = webSocketSelectors;
 const { setStatusConnected } = webSocketActions;
 
@@ -31,7 +31,7 @@ function App() {
   const navigate = useNavigate();
   // Redux
   const dispatch = useAppDispatch();
-  const loggedIn = useAppSelector(selectLoggedIn);
+  const token = useAppSelector(selectToken);
   const profile = useAppSelector(selectProfile);
   const wsStatus = useAppSelector<string>(selectSentStatus);
   
@@ -76,12 +76,14 @@ function App() {
     handleWebSocket();
   }, []);
 
+  const authorized = token && token.length > 4;
+
   return (<>
   <div className='App'>
     <div className='App-Header'>
     <span>{`${wsStatus}`}</span>
     <div className="App-navigation">
-      {loggedIn ? (
+      {authorized ? (
         <nav style={navStyle}>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
