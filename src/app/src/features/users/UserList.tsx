@@ -22,9 +22,17 @@ export function UserList() {
             dispatch(usersAsync());
         }
     }, [status]);
-    return (
+
+    return (<>
         <ul>
-            {userlist.map(u => <li key={u}>{u}</li>)}
+            {userlist.map((user, i) => {
+                let { username, name, avatar, dob, email } = user;
+                return (
+                <li key={i}>
+                    <img src={avatar || '/user.png'} width='18px' alt={`avatar representing ${username}`}/>
+                    {` - ${username}`}
+                </li>)
+            })}
         </ul>
-    )
+    </>);
 }
