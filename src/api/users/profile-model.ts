@@ -19,17 +19,17 @@ export default {
     addByUsername
 }
 
-function byId(id:number) {
+function byId(id:number):Promise<ProfileType>  {
     return db("profiles")
     .where({ id })
     .first();
 }
 
-async function findBy(filter:Partial<ProfileType>) {
+async function findBy(filter:Partial<ProfileType>):Promise<ProfileType[]> {
     return await db("profiles").where(filter);
 }
 
-async function findByUsername(username:string) {
+async function findByUsername(username:string):Promise<ProfileType> {
     return await db("profiles")
     .join("users", "users.id", "=", "profiles.user_id")
     .where({ username })
@@ -42,17 +42,17 @@ async function findByUsername(username:string) {
     });
 }
 
-async function addByUsername(username:string) {
+async function addByUsername(username:string):Promise<ProfileType|undefined>  {
     const user_id = (await db("users").where({ username })?.first())?.id;
     if (!user_id) {
-        return false
+        return undefined
     };
     return db("profiles")
     .insert({ user_id })
     .then(() => findByUsername(username));
 }
 
-function add(profile:Partial<ProfileType>) {
+function add(profile:Partial<ProfileType>):Promise<ProfileType> {
     return db("profiles")
     .insert(profile)
     .then((ids:number[]) =>{
