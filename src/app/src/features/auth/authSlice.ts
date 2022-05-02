@@ -67,17 +67,19 @@ export const authSlice = createSlice({
       .addCase(loginAsync.pending, (state) => {
         state.status = 'loading';
         state.message = '';
+        state.loggedIn = false;
       })
       .addCase(loginAsync.fulfilled, (state, action:PayloadAction<any>) => {
         state.status = 'idle';
         state.message = action.payload.message;
+        state.loggedIn = true;
         state.token = action.payload.token; // set token
       })
       .addCase(loginAsync.rejected, (state, action:PayloadAction<any>) => {
         state.status = 'failed';
         state.message = '';
         state.token = undefined;
-        
+        state.loggedIn = false;        
       })
     
     builder
@@ -109,11 +111,14 @@ export const authSlice = createSlice({
         state.status = '';
         state.message = 'Goodbye!';
         state.token = undefined; // clear token
+        state.loggedIn = false;
         console.log('[logged out!');
       })
       .addCase(logoutAsync.rejected, (state) => {
         state.status = 'failed';
         state.message = 'error logging out';
+        state.token = undefined; // clear token
+        state.loggedIn = false;
         console.log("[error logging out!]")
       })
 
