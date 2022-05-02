@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import Users, {UserType} from '../users/users-model';
 import Profiles, {ProfileType} from '../users/profile-model';
 import { Router } from 'express';
-import {v4} from 'uuid';
+import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';
 
 const map = new Map();
@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
         return res.status(201).json({...saved, profile });
     } catch (error) {
         return res.status(500).json(error);
-    }    
+    }
 });
 
 router.post('/login', async (req, res) => {
@@ -40,9 +40,8 @@ router.post('/login', async (req, res) => {
     if (!user) {
         return res.status(404).json({ message });
     }
-    const id = v4(); // create new unique session-id
     if (bcrypt.compareSync(req.body.password, user.password)) {
-        req.session.userId = id;
+        req.session.userId = v4(); // create new unique session-id;
         req.session.username = user.username;
         req.session.loggedIn = true;
         req.session.save();
