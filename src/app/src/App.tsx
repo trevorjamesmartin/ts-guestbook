@@ -48,9 +48,12 @@ function App() {
       ws.onerror = ws.onopen = ws.onclose = null;
       ws.close();
     }
-    let host = window.location.host;
+    // let host = window.location.host;
     console.log('-> ws')
-    let _ws = new WebSocket('ws://' + host + '/');
+    let local_url:string = window.location.protocol + "://" + window.location.host
+    let base_url:string = process.env.REACT_APP_BASE_URL || local_url;
+    let ws_url:string = `ws://${base_url.split('://')[1]}/`;
+    let _ws = new WebSocket(ws_url);
     _ws.onerror = function() {
       navigate('/login')
     }
@@ -81,13 +84,14 @@ function App() {
   return (<>
   <div className='App'>
     <div className='App-Header'>
-    <span>{`${wsStatus}`}</span>
+    <span id="ws-message">{wsStatus} [{message}]</span>
     <div className="App-navigation">
+
       {authorized ? (
         <nav style={navStyle}>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
-          <span className='profile-picture-frame'>
+          <div className='profile-picture-frame'>
             <Link className='App-link-profile' to='/app/profile'>
               <img 
                 src={profile.avatar ? profile.avatar : '/user.png'} 
@@ -95,12 +99,11 @@ function App() {
                 alt={profile.name}
               />
               {profile?.name?.split(' ').join("_")||""}
-            </Link>
-            <span id="ws-message">{message}</span>
-          </span>
+             </Link>
+          </div>
         </nav>
       ) :
-        <nav style={navStyle}>
+      <nav style={navStyle}>
             <Link className='App-link' to="/login">Login</Link>
             <Link className='App-link' to="/register">Register</Link>
         </nav>

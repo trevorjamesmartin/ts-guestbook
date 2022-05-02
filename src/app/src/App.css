@@ -72,10 +72,8 @@ li:hover {
 
 span#ws-message {
   font-family: 'Space Mono', monospace;
-  background-color: skyblue;
-  padding: 10px;
-  border-radius: 5px;
 }
+
 .profile-picture-frame {
   display: flex;
 }
