@@ -2,6 +2,11 @@ import api from './src/api/server';
 import { sessionParser } from './src/api/configure';
 import { WebSocketServer } from 'ws';
 import http from 'http';
+try {
+    require('dotenv').config()
+} catch {
+    console.log('production mode detected?')
+}
 
 const server = http.createServer(api);
 const map = new Map();
