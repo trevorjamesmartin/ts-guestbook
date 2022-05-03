@@ -1,14 +1,16 @@
-import api from './src/api/server';
+import apiServer from './src/api/server';
 import { sessionParser } from './src/api/configure';
 import { WebSocketServer } from 'ws';
 import http from 'http';
+
 try {
     require('dotenv').config()
 } catch {
-    console.log('production mode detected?')
+    console.log('[production mode]');
 }
 
-const server = http.createServer(api);
+const server = http.createServer(apiServer);
+
 const map = new Map();
 
 const wss = new WebSocketServer({

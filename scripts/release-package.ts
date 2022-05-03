@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 
-const packageJson = require('./package.json');
+const packageJson = require('../package.json');
 let packageDist = {...packageJson,
     "name" : "vigilant-cloud",
     "scripts": {

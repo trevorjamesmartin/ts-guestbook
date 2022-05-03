@@ -1,5 +1,5 @@
 // Middleware
-import {json, Express} from 'express';
+import { Express, json } from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -50,8 +50,6 @@ export default function(server:Express) {
     .use(sessionParser)
     // // 5. Security with HTTP headers
     .use(helmet())
-
-
     return server
 }
 
