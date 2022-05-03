@@ -89,6 +89,7 @@ function App() {
 
       {authorized ? (
         <nav style={navStyle}>
+          <Link className='App-link' to='/app'>App</Link>
           <Link className='App-link' to='/app/users'>Users</Link>
           <Link className='App-link' to='/app/logout'>Logout</Link>
           <div className='profile-picture-frame'>
@@ -106,7 +107,7 @@ function App() {
       <nav style={navStyle}>
             <Link className='App-link' to="/login">Login</Link>
             <Link className='App-link' to="/register">Register</Link>
-        </nav>
+      </nav>
       }
     </div>
     <Routes>

@@ -3,8 +3,8 @@ import {propsWithWebSocket} from './common'
 import { sendMessage, selectors as webSocketSelectors } from './wsSlice';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks'
 // import Profile from '../profile/Profile';
+import Posts from '../posts/Posts'; 
 const {selectSentMessage, selectSentStatus} = webSocketSelectors;
-
 function MainPage({ ws, ...props }:propsWithWebSocket) {
     const status = useAppSelector(selectSentStatus);
     const message = useAppSelector(selectSentMessage);
@@ -19,10 +19,7 @@ function MainPage({ ws, ...props }:propsWithWebSocket) {
             dispatch(sendMessage({ ws, message: 'MainPage' }));
         };
     }, []);
-    return (<>
-    <p>thank you for logging in.</p>
-    </>
-    )
+    return (<Posts />)
 }
 
 export default MainPage;

@@ -3,6 +3,7 @@ import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/users/userSlice';
 import profileReducer from '../features/profile/profileSlice';
 import socketReducer from '../features/pages/wsSlice';
+import postsReducer from '../features/posts/postsSlice';
 import { toStorage, storageKey } from './persist';
 
 export const store = configureStore({  
@@ -11,6 +12,7 @@ export const store = configureStore({
     users: userReducer,
     socket: socketReducer,
     profile: profileReducer,
+    posts: postsReducer,
   },
 });
 
