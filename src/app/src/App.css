@@ -77,6 +77,8 @@ span#ws-message {
 
 .profile-picture-frame {
   display: flex;
+  max-width: fit-content;
+  
 }
 
 .blog-post {
@@ -85,4 +87,9 @@ span#ws-message {
   flex-flow: column;
   align-items: center;
   padding-top: 1rem;
+}
+
+.app-navigation {
+  border-bottom: 'solid 1px';
+  padding-bottom: '1rem';
 }

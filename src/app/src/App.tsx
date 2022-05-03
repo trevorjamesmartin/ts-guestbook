@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
@@ -7,7 +7,7 @@ import MainPage from './features/pages/Main';
 import { UserList } from './features/users/UserList';
 import Profile from './features/profile/Profile';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
-import { selectors as authSelectors} from './features/auth/authSlice'
+import { selectors as authSelectors } from './features/auth/authSlice'
 import { selectors as webSocketSelectors, actions as webSocketActions } from './features/pages/wsSlice';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
 
@@ -18,15 +18,15 @@ const { selectToken } = authSelectors;
 const { selectSentStatus } = webSocketSelectors;
 const { setStatusConnected } = webSocketActions;
 
-const navStyle={
-  borderBottom: 'solid 1px',
-  paddingBottom: '1rem',
-}
+// const navStyle = {
+//   borderBottom: 'solid 1px',
+//   paddingBottom: '1rem',
+// }
 
 function App() {
   // React
-  const [ws, setWs] = useState<WebSocket|undefined>(undefined);
-  const [message, setMessage] = useState("development");
+  const [ws, setWs] = useState<WebSocket | undefined>(undefined);
+  const [message, setMessage] = useState("");
   // Router
   const navigate = useNavigate();
   // Redux
@@ -34,10 +34,10 @@ function App() {
   const token = useAppSelector(selectToken);
   const profile = useAppSelector(selectProfile);
   const wsStatus = useAppSelector<string>(selectSentStatus);
-  
+
   const catchAll = () => {
     // * catch-all (from api)
-    const pathSearch = window.location.search.split('?')[1]||undefined;
+    const pathSearch = window.location.search.split('?')[1] || undefined;
     if (pathSearch && pathSearch.startsWith('/')) {
       navigate(pathSearch);
     }
@@ -50,29 +50,29 @@ function App() {
     }
     // let host = window.location.host;
     console.log('-> ws')
-    let local_url:string = window.location.protocol + "://" + window.location.host
-    let base_url:string = process.env.REACT_APP_BASE_URL || local_url;
-    let ws_url:string = `ws://${base_url.split('://')[1]}/`;
+    let local_url: string = window.location.protocol + "://" + window.location.host
+    let base_url: string = process.env.REACT_APP_BASE_URL || local_url;
+    let ws_url: string = `ws://${base_url.split('://')[1]}/`;
     let _ws = new WebSocket(ws_url);
-    _ws.onerror = function() {
+    _ws.onerror = function () {
       navigate('/login')
     }
-    _ws.onopen = function() {
+    _ws.onopen = function () {
       console.log('Websocket connection established');
       setWs(_ws);
       dispatch(setStatusConnected());
       if (window.location.pathname === '/login') navigate('/app');
     }
-    _ws.onclose = function() {
+    _ws.onclose = function () {
       console.log('Websocket connection closed');
       setWs(undefined);
       if (window.location.pathname === '/logout') navigate('/login');
     }
-    _ws.onmessage = function(ev) {
+    _ws.onmessage = function (ev) {
       setMessage(ev.data);
     }
   }
-  
+
   useEffect(() => {
     catchAll();
     console.log(window.location.pathname)
@@ -82,44 +82,41 @@ function App() {
   const authorized = token && token.length > 4;
 
   return (<>
-  <div className='App'>
-    <div className='App-Header'>
-    <span id="ws-message">{wsStatus} [{message}]</span>
-    <div className="App-navigation">
+    <div className='App'>
+      <div className='App-Header'>
+        <span id="ws-message">{wsStatus} [{message}]</span>
+        <div className="App-navigation">
 
-      {authorized ? (
-        <nav style={navStyle}>
-          <Link className='App-link' to='/app'>App</Link>
-          <Link className='App-link' to='/app/users'>Users</Link>
-          <Link className='App-link' to='/app/logout'>Logout</Link>
-          <div className='profile-picture-frame'>
-            <Link className='App-link-profile' to='/app/profile'>
-              <img 
-                src={profile.avatar ? profile.avatar : '/user.png'} 
-                width='42px'
-                alt={profile.name}
-              />
-              {profile?.name?.split(' ').join("_")||""}
-             </Link>
-          </div>
-        </nav>
-      ) :
-      <nav style={navStyle}>
-            <Link className='App-link' to="/login">Login</Link>
-            <Link className='App-link' to="/register">Register</Link>
-      </nav>
-      }
+          {authorized ? (
+            <nav className='app-navigation'>
+              <Link className='App-link' to='/app'>App</Link>
+              <Link className='App-link' to='/app/users'>Users</Link>
+              <Link className='App-link' to='/app/logout'>Logout</Link>
+              <Link className='App-link-profile' to='/app/profile'>
+                  <img
+                    src={profile.avatar ? profile.avatar : '/user.png'}
+                    width='42px'
+                    alt={profile.name}
+                  />
+              </Link>
+            </nav>
+          ) :
+            <nav className='app-navigation'>
+              <Link className='App-link' to="/login">Login</Link>
+              <Link className='App-link' to="/register">Register</Link>
+            </nav>
+          }
+        </div>
+        <Routes>
+          <Route path="/app" element={<MainPage ws={ws} />} />
+          <Route path="/app/users" element={<UserList />} />
+          <Route path="/app/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/app/logout" element={<Logout />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
     </div>
-    <Routes>
-      <Route path="/app" element={<MainPage ws={ws} />} />
-      <Route path="/app/users" element={<UserList />} />
-      <Route path="/app/profile" element={<Profile />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/app/logout" element={<Logout />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
-    </div>
-  </div>
   </>)
 }
 
