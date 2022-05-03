@@ -4,7 +4,7 @@ import { WebSocketServer } from 'ws';
 import http from 'http';
 
 try {
-    require('dotenv').config()
+    require('dotenv').config();
 } catch {
     console.log('[production mode]');
 }
@@ -56,18 +56,37 @@ server.on('upgrade', function (request: any, socket, head) {
     });
 });
 
+function broadcastGlobal(ws:any, message:string) {
+    for (let sessionId of map.keys()) {
+        let socket = map.get(sessionId);
+        if (!socket) {
+            return
+        }
+        if (socket !== ws) {
+            socket.send(message);
+        } else {
+            socket.send("ok");
+        }
+    }
+}
+
 wss.on('connection', function (ws, request: any) {
+    // we can now use session parameters
     const userId = request.session.userId;
+    const username = request.session.username;
+
     map.set(userId, ws);
 
     ws.on('message', function (message) {
-        //
-        // Here we can now use session parameters.
-        //
         let text = message.toString();
         switch (text) {
+            case "MainPage":
+                console.log(`${username} -> /app `);
+                // ws.send(`hello ${username}`);
+                broadcastGlobal(ws, `welcome ${username}`)
+                break;
             default:
-                console.log(`${request.session.username} -> ${text}`);
+                console.log(`${username} -> ${text}`);
                 break;
         }
     });
@@ -76,8 +95,7 @@ wss.on('connection', function (ws, request: any) {
         map.delete(userId);
     });
 
-    ws.send(request.session.username);
-})
+});
 
 server.listen(8080, function () {
     console.log('listening @ http://127.0.0.1:8080')
