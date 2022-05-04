@@ -9,11 +9,14 @@ export async function up(knex: Knex): Promise<void> {
             .unsigned()
             .references('users.id');
         posts
-            .string('title');
+            .string('title')
+            .defaultTo(null);
         posts
-            .string('tags');
+            .string('tags')
+            .defaultTo(null);
         posts
-            .json('content');
+            .json('content')
+            .notNullable();
     })
 }
 
