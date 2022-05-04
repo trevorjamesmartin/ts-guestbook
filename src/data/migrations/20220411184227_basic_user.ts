@@ -12,6 +12,9 @@ export async function up(knex: Knex): Promise<void> {
         users
             .string('password', 128)
             .notNullable();
+        users
+            .timestamp('created_at')
+            .defaultTo(knex.fn.now());
     });
 }
 

@@ -17,6 +17,10 @@ export async function up(knex: Knex): Promise<void> {
             .date('dob');
         profiles
             .json('config');
+        profiles
+            .timestamp('updated_at')
+            .defaultTo(knex.fn.now());
+
     })
 }
 

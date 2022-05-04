@@ -6,6 +6,7 @@ export interface PostType {
     title: string;
     tags: string;
     content: JSON;
+    posted_at: any;
 }
 
 export default {
@@ -51,5 +52,7 @@ async function findByUsername(username:string):Promise<PostType> {
 }
 
 function update(id:number, data:Partial<PostType>) {
-    return db("posts").where({ id }).update(data);
+    let [d, t] = (new Date()).toISOString().split('T')
+    let posted_at = `${d} ${t.split('.')[0]}`;
+    return db("posts").where({ id }).update({...data, posted_at });
 }

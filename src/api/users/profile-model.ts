@@ -8,6 +8,7 @@ export interface ProfileType {
     email: string;
     dob: Date;
     config: JSON;
+    updated_at: any;
 }
 
 export default {
@@ -62,5 +63,7 @@ function add(profile:Partial<ProfileType>):Promise<ProfileType> {
 }
 
 function update(id:number, data:Partial<ProfileType>) {
-    return db("profiles").where({ id }).update(data);
+    let [d, t] = (new Date()).toISOString().split('T')
+    let updated_at = `${d} ${t.split('.')[0]}`;
+    return db("profiles").where({ id }).update({...data, updated_at });
 }

@@ -4,6 +4,7 @@ export interface UserType {
     id: number|undefined;
     username: string;
     password: string;
+    created_at: any;
 }
 
 export default {
@@ -45,5 +46,5 @@ function findBy(filter:any) {
 async function withProfiles() {
     return await db("profiles")
     .join("users", "users.id", "=", "profiles.user_id")
-    .select("username", "name", "avatar", "email", "dob");
+    .select("username", "name", "avatar", "email", "dob", "created_at", "updated_at");
 }

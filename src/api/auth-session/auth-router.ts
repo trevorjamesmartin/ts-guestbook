@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import Users, {UserType} from '../users/users-model';
-import Profiles, {ProfileType} from '../users/profile-model';
+import Profiles from '../users/profile-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';

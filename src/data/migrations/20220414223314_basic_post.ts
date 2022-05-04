@@ -17,6 +17,9 @@ export async function up(knex: Knex): Promise<void> {
         posts
             .json('content')
             .notNullable();
+        posts
+            .timestamp('posted_at')
+            .defaultTo(knex.fn.now())
     })
 }
 
