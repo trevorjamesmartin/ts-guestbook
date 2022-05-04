@@ -1,7 +1,7 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
 // import { Link } from "react-router-dom";
 import React, { useState } from "react";
-
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { loginAsync, selectors, Credentials } from './authSlice';
 
@@ -15,12 +15,12 @@ const initialState: Credentials = {
 export function Login() {
   const loggedIn = useAppSelector(selectLoggedIn);
   const status = useAppSelector(selectStatus);
-  const message:string = useAppSelector(selectMessage) || ""
-  const dispatch:ThunkDispatch<any, Credentials, any> = useAppDispatch();
+  const message: string = useAppSelector(selectMessage) || ""
+  const dispatch: ThunkDispatch<any, Credentials, any> = useAppDispatch();
   const [state, setState] = useState<Credentials>(initialState);
   const handleChange = (e: { preventDefault: () => void; currentTarget: { name: string; }; target: { value: string; }; }) => {
     e.preventDefault();
-    setState({...state, [e.currentTarget.name]: e.target.value });
+    setState({ ...state, [e.currentTarget.name]: e.target.value });
   }
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -34,13 +34,19 @@ export function Login() {
     <div>
       <h2>Login</h2>
       {loggedIn ? (<>
-      <h4 className="message-success">{message}</h4>
+        <h4 className="message-success">{message}</h4>
       </>)
-      : <form onSubmit={handleSubmitForm}>
-        <input name="username" value={state.username} onChange={handleChange}></input>
-        <input type="password" name="password" value={state.password} onChange={handleChange}></input>
-        <button>Submit</button>
-      </form>
+        : <Form onSubmit={handleSubmitForm}>
+          <FormGroup>
+            <Label for="username">Username</Label>
+            <Input name="username" placeholder="alienmask" value={state.username} onChange={handleChange}></Input>
+          </FormGroup>
+          <FormGroup>
+            <Label for="password">Password</Label>
+            <Input type="password" placeholder="***************" name="password" value={state.password} onChange={handleChange}></Input>
+          </FormGroup>
+          <Button>Submit</Button>
+        </Form>
       }
     </div>
   )

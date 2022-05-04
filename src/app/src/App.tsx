@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as authSelectors } from './features/auth/authSlice'
 import { selectors as webSocketSelectors, actions as webSocketActions } from './features/pages/wsSlice';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
-
+import { Container, Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, NavbarText, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import './App.css';
 
 const { selectProfile } = profileSelectors;
@@ -18,15 +18,11 @@ const { selectToken } = authSelectors;
 const { selectSentStatus } = webSocketSelectors;
 const { setStatusConnected } = webSocketActions;
 
-// const navStyle = {
-//   borderBottom: 'solid 1px',
-//   paddingBottom: '1rem',
-// }
-
 function App() {
   // React
   const [ws, setWs] = useState<WebSocket | undefined>(undefined);
   const [message, setMessage] = useState("");
+
   // Router
   const navigate = useNavigate();
   // Redux
@@ -83,30 +79,87 @@ function App() {
 
   return (<>
     <div className='App'>
-      <div className='App-Header'>
-        <span id="ws-message">{wsStatus} [{message}]</span>
-        <div className="App-navigation">
-
-          {authorized ? (
-            <nav className='app-navigation'>
-              <Link className='App-link' to='/app'>App</Link>
-              <Link className='App-link' to='/app/users'>Users</Link>
-              <Link className='App-link' to='/app/logout'>Logout</Link>
-              <Link className='App-link-profile' to='/app/profile'>
-                  <img
-                    src={profile.avatar ? profile.avatar : '/user.png'}
-                    width='42px'
-                    alt={profile.name}
-                  />
-              </Link>
-            </nav>
-          ) :
-            <nav className='app-navigation'>
-              <Link className='App-link' to="/login">Login</Link>
-              <Link className='App-link' to="/register">Register</Link>
-            </nav>
-          }
-        </div>
+      <div className="App-navigation">
+        <Navbar
+          color="light"
+          expand="md"
+          light
+        >
+          <NavbarBrand>
+            <Link className='nav-link' to={authorized ? '/app' : '/'}>App</Link>
+          </NavbarBrand>
+          <NavbarToggler onClick={function noRefCheck() {
+            
+          }} />
+          <Collapse navbar>
+            {authorized ? (
+              <Nav
+                className="me-auto"
+                navbar
+              >
+                <NavItem active={window.location.pathname === '/app/users'}>
+                  <Link className='nav-link' to='/app/users'>Users</Link>
+                </NavItem>
+                <NavItem>
+                  <NavLink target="_blank" href="https://github.com/trevorjamesmartin/vigilant-cloud">
+                    GitHub
+                  </NavLink>
+                </NavItem>
+                <UncontrolledDropdown
+                  inNavbar
+                  nav
+                >
+                  <DropdownToggle
+                    caret
+                    nav
+                  >
+                    Options
+                  </DropdownToggle>
+                  <DropdownMenu right>
+                    <DropdownItem>
+                      Option 1
+                    </DropdownItem>
+                    <DropdownItem>
+                      Option 2
+                    </DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem>
+                      <NavItem active={window.location.pathname === '/app/logout'}>
+                        <Link className='nav-link' to='/app/logout'>Logout</Link>
+                      </NavItem>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </Nav>
+            ) : (
+              <Nav
+                className="me-auto"
+                navbar>
+                <NavItem>
+                  <Link className='nav-link' to="/login">
+                    Login
+                  </Link>
+                </NavItem>
+                <NavItem>
+                  <Link className='nav-link' to="/register">
+                    Register
+                  </Link>
+                </NavItem>
+              </Nav>
+            )}
+            <Link to={authorized ? '/app/profile' : '/login'}>
+              <img
+                src={profile.avatar ? profile.avatar : '/user.png'}
+                width='42px'
+                alt={profile.name}
+              />
+            </Link>
+          </Collapse>
+          
+        </Navbar>
+      </div>
+    </div>
+      <Container>
         <Routes>
           <Route path="/app" element={<MainPage ws={ws} />} />
           <Route path="/app/users" element={<UserList />} />
@@ -115,8 +168,10 @@ function App() {
           <Route path="/app/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
         </Routes>
-      </div>
-    </div>
+      </Container>
+      
+      {/* <span id="ws-message">{wsStatus} [{message}]</span> */}
+
   </>)
 }
 

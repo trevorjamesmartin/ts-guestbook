@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 
 import { BlogPost, selectors as postsSelectors, getPostsAsync, submitPostAsync, actions as postsActions } from './postsSlice';
 
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 const { selectPosts, selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
 
@@ -11,7 +12,7 @@ const Post = (props: BlogPost) => {
         <div className="blog-post">
             <span className="title">{props.title}</span>
             <p className="content">{props.content}</p>
-            <span className="tags">tags: {props.tags}</span>
+            <span className="tags">{props.tags}</span>
         </div>
     </li>)
 }
@@ -34,12 +35,12 @@ function Posts() {
         dispatch(setCurrent({ [name]: value }));
     }
     return (<div className="Posts">
-        <form onSubmit={handleSubmitForm} className="blog-post">
-            <input value={currentPost.title} onChange={handleChange} name="title" type="text" placeholder="title: subject" />
-            <input value={currentPost.tags} onChange={handleChange} name="tags" type="text" placeholder="tags: general,random,blog" />
-            <textarea value={currentPost.content} onChange={handleChange} name="content" placeholder="content: hello world!" />
-            <button>post</button>
-        </form>
+        <Form onSubmit={handleSubmitForm} className="blog-post">
+            <Input value={currentPost.title} onChange={handleChange} name="title" type="text" placeholder="title: subject" />
+            <Input value={currentPost.tags} onChange={handleChange} name="tags" type="text" placeholder="tags: general,random,blog" />
+            <Input placeholder="What's happening?" type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
+            <Button>post</Button>
+        </Form>
         <ul>
             {currentList?.map(Post)}
         </ul>

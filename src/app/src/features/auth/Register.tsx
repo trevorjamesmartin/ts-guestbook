@@ -1,6 +1,7 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { registerAsync, selectors, Credentials } from './authSlice';
@@ -41,12 +42,21 @@ export function Register() {
       {loggedIn ? (<>
       <h4 className="message-success">{message}</h4>
       </>)
-      : <form onSubmit={handleSubmitForm}>
-        <input name="username" value={state.username} onChange={handleChange}></input>
-        <input type="password" name="password" value={state.password} onChange={handleChange}></input>
-        <input type="password" name="password1" value={state.password1} onChange={handleChange}></input>
-        <button>Submit</button>
-      </form>
+      : <Form onSubmit={handleSubmitForm}>
+        <FormGroup>
+          <Label for="username">Username</Label>
+          <Input name="username" placeholder={`alienmask${(10**5 * Math.random()).toString().split('.')[0]}`} value={state.username} onChange={handleChange}></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label for="password">Password</Label>
+          <Input type="password" placeholder="***************" name="password" value={state.password} onChange={handleChange}></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label for="password1">Password (confirm)</Label>
+          <Input type="password" placeholder="***************" name="password1" value={state.password1} onChange={handleChange}></Input>
+        </FormGroup>
+        <Button>Submit</Button>
+      </Form>
       }
     </div>
   )
