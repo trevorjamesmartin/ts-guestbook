@@ -21,8 +21,10 @@ router.post('/', async (req:any, res) => {
         return;
     }
     let { tags, title, content } = req.body;
-    if (!tags || !title || !content) {
-        console.log('ERROR: missing required data', {tags, title, content});
+    if (!content) {
+        let errorMessage = "ERROR: missing content."
+        console.log(errorMessage);
+        return res.status(400).send(errorMessage);
     }
     try {        
         let post = await Posts.add({
