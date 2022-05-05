@@ -1,5 +1,5 @@
 import db from '../../data/dbConfig';
-
+import { timestamp } from '../../util';
 export interface ProfileType {
     id: number;
     user_id: number;
@@ -78,7 +78,5 @@ function add(profile:Partial<ProfileType>):Promise<ProfileType> {
 }
 
 function update(id:number, data:Partial<ProfileType>) {
-    let [d, t] = (new Date()).toISOString().split('T')
-    let updated_at = `${d} ${t.split('.')[0]}`;
-    return db("profiles").where({ id }).update({...data, updated_at });
+    return db("profiles").where({ id }).update({...data, updated_at: timestamp() });
 }
