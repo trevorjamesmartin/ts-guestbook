@@ -6,7 +6,9 @@ export async function up(knex: Knex): Promise<void> {
         profiles
             .integer('user_id')
             .unsigned()
-            .references('users.id');
+            .references('users.id')
+            .onDelete('SET NULL')
+            .onUpdate('CASCADE');
         profiles
             .string('name');
         profiles

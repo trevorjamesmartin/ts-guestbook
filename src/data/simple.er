@@ -19,6 +19,22 @@ title
 tags
 content
 
+[Connect]
+*id
+from_id
+to_id
+accepted
+
+[Friend]
+*id
+connect_from
+connect_to
+active
+
+Friend *--* Connect
+
+User 1--* Connect
+
 User 1--* Post
 
 User 1--1 Profile

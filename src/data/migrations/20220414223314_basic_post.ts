@@ -7,7 +7,9 @@ export async function up(knex: Knex): Promise<void> {
         posts
             .integer('author_id')
             .unsigned()
-            .references('users.id');
+            .references('users.id')
+            .onDelete('SET NULL')
+            .onUpdate('CASCADE');
         posts
             .string('title')
             .defaultTo(null);

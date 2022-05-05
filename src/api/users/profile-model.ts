@@ -17,6 +17,7 @@ export default {
     add,
     update,
     findByUsername,
+    findByUserId,
     addByUsername
 }
 
@@ -42,6 +43,20 @@ async function findByUsername(username:string):Promise<ProfileType> {
         return rest;
     });
 }
+
+async function findByUserId(user_id: number): Promise<any> {
+    return await db("profiles")
+        .join("users", "users.id", "=", "profiles.user_id")
+        .where({ user_id })
+        .first()
+        .then((profile: any) => {
+            // remove hashed password
+            if (!profile) return {}
+            let { password, ...rest } = profile;
+            return rest;
+        });
+}
+
 
 async function addByUsername(username:string):Promise<ProfileType|undefined>  {
     const user_id = (await db("users").where({ username })?.first())?.id;
