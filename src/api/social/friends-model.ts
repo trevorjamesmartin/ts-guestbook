@@ -6,7 +6,7 @@ export interface Friend {
     req_to: number;
     created_at: any;
     updated_at: any;
-    active: boolean;
+    weight: number;
 }
 
 export default {
@@ -53,14 +53,14 @@ function requestsTo(user_id: number) {
             "profiles.user_id", "=", "request-connect.from_id"
         ).join("users",
             "users.id", "=", "profiles.user_id"
-        ).where({ active: true })
+        )
         .select(
             "username",
             "name",
             "avatar",
             "email",
             "dob",
-            "active"
+            "weight"
         );
 }
 function requestsFrom(user_id: number) {
@@ -73,13 +73,13 @@ function requestsFrom(user_id: number) {
             "profiles.user_id", "=", "request-connect.to_id"
         ).join("users",
             "users.id", "=", "profiles.user_id"
-        ).where({ active: true })
+        )
         .select(
             "username",
             "name",
             "avatar",
             "email",
             "dob",
-            "active"
+            "weight"
         );
 }
