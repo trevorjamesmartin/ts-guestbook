@@ -1,7 +1,5 @@
 import { Knex } from "knex";
 
-// 
-
 export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable('friends', (table) => {
         table.increments();
@@ -25,8 +23,8 @@ export async function up(knex: Knex): Promise<void> {
             .defaultTo(knex.fn.now());
         
         table
-            .boolean('active')
-            .defaultTo(true);
+            .integer('weight')
+            .defaultTo(0);
 
         table.unique(['req_from', 'req_to']);
 
