@@ -1,6 +1,8 @@
 import db from '../../data/dbConfig';
 import profileModel from '../users/profile-model';
 import friendsModel from './friends-model';
+import { timestamp } from '../../util';
+
 export interface RequestConnect {
     id: number;
     from_id: number;
@@ -14,7 +16,6 @@ export default {
     byId,
     findBy,
     acceptRequest,
-    cancelRequest,
     createRequest,
     rejectRequest,
     connectedTo
@@ -30,30 +31,34 @@ async function findBy(filter: Partial<RequestConnect>): Promise<RequestConnect[]
     return await db("request-connect").where(filter);
 }
 
-async function acceptRequest(request_id: number, to_id: number) {
-    const cr = await db("request-connect").where({ id: request_id, to_id }).first();
-    const [accept_id] = await createRequest(to_id, cr.from_id, true); // acknowlege acceptance
+async function existingRecord(request_id1:number, request_id2:number) {
     // check for existing record (from)
     let [friend,] = await friendsModel.findBy({
-        req_from: request_id,
-        req_to: accept_id,
+        req_from: request_id1,
+        req_to: request_id2,
     });
     if (!friend) {
         // check for existing record (to)
         [friend,] = await friendsModel.findBy({
-            req_from: accept_id,
-            req_to: request_id,
+            req_from: request_id2,
+            req_to: request_id1,
         });
     }
+    return friend;
+}
+
+async function acceptRequest(request_id: number, to_id: number) {
+    const cr = await db("request-connect").where({ id: request_id, to_id }).first();
+    const [accept_id] = await createRequest(to_id, cr.from_id, true); // acknowlege acceptance
+    const friend = await existingRecord(request_id, accept_id);
     if (friend) {
         return [friend.id]
     }
-    // create friend record
+    // CREATE friend record
     if (cr.accepted) {
         return await friendsModel.add({
             req_from: request_id,
             req_to: accept_id,
-            active: true
         });
     }
     return []
@@ -62,50 +67,23 @@ async function acceptRequest(request_id: number, to_id: number) {
 async function rejectRequest(request_id: number, to_id: number) {
     const cr = await db("request-connect").where({ id: request_id, to_id }).first();
     const [reject_id] = await createRequest(to_id, cr.from_id, false); // acknowledge rejection
-    // check for a friend record
-    let [friend] = await friendsModel.findBy({
-        req_from: request_id,
-        req_to: reject_id,
-    });
-    if (!friend) {
-        // check for existing record (disconnecting from a previous request)
-        [friend] = await friendsModel.findBy({
-            req_to: request_id,
-            req_from: reject_id,
-        });
-    }
+    const friend = await existingRecord(request_id, reject_id);
     if (friend) {
-        // delete record.
+        // DELETE friend record.
         await friendsModel.remove(friend.id);
         return [friend.id]
     }
     return [];
 }
 
-function cancelRequest(request_id: number, from_id: number) {
-    let [d, t] = (new Date()).toISOString().split('T')
-    let updated_at = `${d} ${t.split('.')[0]}`;
-    return db("request-connect")
-        .where({
-            id: request_id,
-            from_id,
-        })
-        .update({
-            accepted: false,
-            updated_at
-        });
-}
-
 async function createRequest(from_id: number, to_id: number, accepted: boolean) {
     const cr = await db("request-connect").where({ from_id, to_id }).first();
     if (cr) {
         let { id } = cr;
-        let [d, t] = (new Date()).toISOString().split('T');
-        let updated_at = `${d} ${t.split('.')[0]}`;
         await db("request-connect")
             .where({ id })
             .update({
-                updated_at,
+                updated_at: timestamp(),
                 accepted
             });
         return [id]
@@ -133,7 +111,6 @@ const withProfiles = async (rcList: RequestConnect[]) => {
     }
     return friends;
 }
-
 
 async function connectedTo(target_id: number): Promise<any> {
     const toTarget = await db("request-connect").where({ to_id: target_id });
