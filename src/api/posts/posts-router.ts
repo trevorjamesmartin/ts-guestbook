@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import Posts, {PostType} from './posts-model';
+import Posts, {PostType, PostedMessage} from './posts-model';
 const router = Router();
 
 router.get('/', async (req:any, res) => {
@@ -20,17 +20,17 @@ router.post('/', async (req:any, res) => {
         console.log("ERROR", {username, subject})
         return;
     }
-    let { tags, title, content } = req.body;
+    let { tags, title, content }:Partial<PostType> = req.body;
     if (!content) {
         let errorMessage = "ERROR: missing content."
         console.log(errorMessage);
         return res.status(400).send(errorMessage);
     }
-    try {        
+    try {
         let post = await Posts.add({
             author_id: subject,
             tags, title, content
-        });
+        }, 0, 0);
         return res.status(200).json(post);
     } catch(error) {
         console.log(error);
@@ -38,7 +38,7 @@ router.post('/', async (req:any, res) => {
     }
 });
 
-router.put('/:id', async (req:any, res) => {
+router.put('/id/:id', async (req:any, res) => {
     let str_id = req.params.id;
     let {decodedToken} = req;
     const my_id = decodedToken?.subject;
@@ -58,6 +58,25 @@ router.put('/:id', async (req:any, res) => {
     delete data["id"];
     let result = await Posts.update(id, data);
     return res.status(200).json(result);
+});
+
+router.post('/reply/:id', async(req:any, res) => {
+    let id = req.params.id;
+    let {decodedToken} = req;
+    const { username, subject } = decodedToken;
+    
+    if (!username || !subject) {
+        console.log("ERROR", {username, subject})
+        return;
+    }
+    let { tags, title, content } = req.body;
+    if (!content) {
+        let errorMessage = "ERROR: missing content."
+        console.log(errorMessage);
+        return res.status(400).send(errorMessage);
+    }
+    let result:PostedMessage = await Posts.replyTo(id, { tags, title, content });
+    return res.status(201).json(result);
 });
 
 
