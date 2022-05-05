@@ -46,5 +46,5 @@ function findBy(filter:any) {
 async function withProfiles() {
     return await db("profiles")
     .join("users", "users.id", "=", "profiles.user_id")
-    .select("username", "name", "avatar", "email", "dob", "created_at", "updated_at");
+    .select("username", "name", "avatar", "email", "dob", "created_at");
 }
