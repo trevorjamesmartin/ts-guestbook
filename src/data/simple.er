@@ -29,12 +29,23 @@ accepted
 *id
 connect_from
 connect_to
-active
+weight
 
-Friend *--* Connect
+[Pointer]
+*id
+thread_id
+parent_id
+owner_id
+
+
+Friend 1--* Connect
 
 User 1--* Connect
 
 User 1--* Post
 
 User 1--1 Profile
+
+Post *--1 Pointer
+
+Pointer 1--* Post
