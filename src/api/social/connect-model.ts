@@ -32,67 +32,54 @@ async function findBy(filter: Partial<RequestConnect>): Promise<RequestConnect[]
 
 async function acceptRequest(request_id: number, to_id: number) {
     const cr = await db("request-connect").where({ id: request_id, to_id }).first();
-    const [accept_id] = await createRequest(to_id, cr.from_id, true);
-    // check for existing record
-    let [friend] = await friendsModel.findBy({
+    const [accept_id] = await createRequest(to_id, cr.from_id, true); // acknowlege acceptance
+    // check for existing record (from)
+    let [friend,] = await friendsModel.findBy({
         req_from: request_id,
         req_to: accept_id,
     });
-    let swap = false;
     if (!friend) {
-        // swap places
-        [friend] = await friendsModel.findBy({
-            req_to: request_id,
+        // check for existing record (to)
+        [friend,] = await friendsModel.findBy({
             req_from: accept_id,
+            req_to: request_id,
         });
-        swap = true;
     }
-    if (friend && friend.active) {
-        console.log(`active friends  sw:${swap}`);
-        console.log(friend)
-        return [friend.id]
-    }
-    if (friend && !friend.active && friend.req_from === request_id) {
-        console.log('scenario A')
-        // await friendsModel.update(friend.id, { active: true });
-        return [friend.id]
-    }
-    if (friend && !friend.active && friend.req_to === request_id) {
-        console.log('scenario B')
+    if (friend) {
         return [friend.id]
     }
     // create friend record
-    console.log('create new friendship')
-    return await friendsModel.add({
-        req_from: request_id,
-        req_to: accept_id,
-        active: true
-    });
+    if (cr.accepted) {
+        return await friendsModel.add({
+            req_from: request_id,
+            req_to: accept_id,
+            active: true
+        });
+    }
+    return []
 }
 
 async function rejectRequest(request_id: number, to_id: number) {
     const cr = await db("request-connect").where({ id: request_id, to_id }).first();
-    const [reject_id] = await createRequest(to_id, cr.from_id, false);
+    const [reject_id] = await createRequest(to_id, cr.from_id, false); // acknowledge rejection
     // check for a friend record
-    const [friend] = await friendsModel.findBy({
+    let [friend] = await friendsModel.findBy({
         req_from: request_id,
         req_to: reject_id,
     });
-    console.log(friend);
-    if (friend && friend.active) {
-        // set active = false ?
-        await friendsModel.update(friend.id, { active: false });
+    if (!friend) {
+        // check for existing record (disconnecting from a previous request)
+        [friend] = await friendsModel.findBy({
+            req_to: request_id,
+            req_from: reject_id,
+        });
+    }
+    if (friend) {
+        // delete record.
+        await friendsModel.remove(friend.id);
         return [friend.id]
     }
-    if (friend && !friend.active) {
-        return [friend.id]
-    }
-    // create friend record
-    return await friendsModel.add({
-        req_from: request_id,
-        req_to: reject_id,
-        active: false
-    });
+    return [];
 }
 
 function cancelRequest(request_id: number, from_id: number) {

@@ -15,7 +15,14 @@ export default {
     add,
     update,
     requestsTo,
-    requestsFrom
+    requestsFrom,
+    remove
+}
+
+async function remove(id: number): Promise<any> {
+    const record = await db("friends").where({ id }).first();
+    await db("friends").where({ id }).delete();
+    return record;
 }
 
 function add(friend: Partial<Friend>) {
