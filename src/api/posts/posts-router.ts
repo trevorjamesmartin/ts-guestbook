@@ -75,7 +75,7 @@ router.post('/reply/:id', async(req:any, res) => {
         console.log(errorMessage);
         return res.status(400).send(errorMessage);
     }
-    let result:PostedMessage = await Posts.replyTo(id, { tags, title, content });
+    let result:PostedMessage = await Posts.replyTo(id, req.body, subject);
     return res.status(201).json(result);
 });
 
