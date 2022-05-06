@@ -83,7 +83,7 @@ async function findBy(filter:Partial<PostType>):Promise<PostType[]> {
     });
 }
 
-async function findByUsername(username:string):Promise<PostType> {
+async function findByUsername(username:string):Promise<PostedMessage[]> {
     return await db({
         user: 'users',
         post: 'posts',

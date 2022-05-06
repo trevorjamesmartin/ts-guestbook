@@ -14,14 +14,12 @@ export async function up(knex: Knex): Promise<void> {
 
         ptr.integer('thread_id')
             .unsigned()
-            .defaultTo(0)
             .references('post.id')
             .onDelete('SET NULL')
             .onUpdate('CASCADE');
 
         ptr.integer('parent_id')
             .unsigned()
-            .defaultTo(0)
             .references('post.id')
             .onDelete('SET NULL')
             .onUpdate('CASCADE');
