@@ -11,7 +11,6 @@ const { selectSentMessage, selectSentStatus } = webSocketSelectors;
 function MainPage({ ws, ...props }:propsWithWebSocket) {
     const status = useAppSelector(selectSentStatus);
     const message = useAppSelector(selectSentMessage);
-    // const profile = useAppSelector(selectProfile);
     const [messageSent, setMessageSent] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
