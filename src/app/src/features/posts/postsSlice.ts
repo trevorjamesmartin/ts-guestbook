@@ -8,7 +8,7 @@ export const getPostsAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response = await api(token).get('/api/posts');
+        const response = await api(token).get('/api/feed');
         return response.data;
     }
 );
@@ -19,6 +19,17 @@ export const submitPostAsync = createAsyncThunk(
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         const response = await api(token).post('/api/posts', state.posts.current);
+        return response.data;
+    }
+);
+
+// todo
+export const replyPostAsync = createAsyncThunk(
+    'posts/reply',
+    async (id:number, thunkAPI) => {
+        const state: any = thunkAPI.getState();
+        const token = state?.auth?.token || undefined;
+        const response = await api(token).post(`/api/posts/reply/${id}`, state.posts.current);
         return response.data;
     }
 );
