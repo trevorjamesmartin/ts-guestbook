@@ -23,11 +23,14 @@ type PointerIds = Pick<MessagePointer, "parent_id" | "thread_id" | "created_at">
 
 export type PostedMessage = Required<PostType & PointerIds>
 
-async function replyTo(parent_id:number, post:Partial<PostType>):Promise<PostedMessage> {
-    const op = await byId(parent_id);
+async function replyTo(parent_id:number, post:Partial<PostType>, author_id:number):Promise<PostedMessage> {
+    const op = await byId(Number(parent_id));
     let thread_id = op.thread_id ? op.thread_id: parent_id;
-    const reply = add(post, thread_id, parent_id);
-    return reply;
+    let message = {
+        ...post,
+        author_id
+    }
+    return add(message, thread_id, parent_id);
 }
 
 function byId(id:number):Promise<PostedMessage> {
