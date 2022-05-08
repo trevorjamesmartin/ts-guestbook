@@ -42,11 +42,11 @@ export function Login() {
         : <Form onSubmit={handleSubmitForm}>
           <FormGroup>
             <Label for="username">Username</Label>
-            <Input name="username" placeholder="alienmask" value={state.username} onChange={handleChange}></Input>
+            <Input name="username" value={state.username} onChange={handleChange}></Input>
           </FormGroup>
           <FormGroup>
             <Label for="password">Password</Label>
-            <Input type="password" placeholder="***************" name="password" value={state.password} onChange={handleChange}></Input>
+            <Input type="password" name="password" value={state.password} onChange={handleChange}></Input>
           </FormGroup>
           <Button>Submit</Button>
         </Form>

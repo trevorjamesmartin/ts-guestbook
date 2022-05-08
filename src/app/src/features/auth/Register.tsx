@@ -45,15 +45,15 @@ export function Register() {
       : <Form onSubmit={handleSubmitForm}>
         <FormGroup>
           <Label for="username">Username</Label>
-          <Input name="username" placeholder={`alienmask${(10**5 * Math.random()).toString().split('.')[0]}`} value={state.username} onChange={handleChange}></Input>
+          <Input name="username" value={state.username} onChange={handleChange}></Input>
         </FormGroup>
         <FormGroup>
           <Label for="password">Password</Label>
-          <Input type="password" placeholder="***************" name="password" value={state.password} onChange={handleChange}></Input>
+          <Input type="password" name="password" value={state.password} onChange={handleChange}></Input>
         </FormGroup>
         <FormGroup>
           <Label for="password1">Password (confirm)</Label>
-          <Input type="password" placeholder="***************" name="password1" value={state.password1} onChange={handleChange}></Input>
+          <Input type="password" name="password1" value={state.password1} onChange={handleChange}></Input>
         </FormGroup>
         <Button>Submit</Button>
       </Form>
