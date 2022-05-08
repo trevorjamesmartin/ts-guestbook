@@ -6,6 +6,7 @@ import { persistedStore } from '../../memory/persist';
 export const getProfileAsync = createAsyncThunk(
     'profile/get',
     async (_, thunkAPI) => {
+        console.log('GET PROFILE')
       const state:any = thunkAPI.getState();
       const token = state?.auth?.token || undefined;
       const response = await api(token).get('/api/profile'); // pending
@@ -25,6 +26,8 @@ export const setProfileAsync = createAsyncThunk(
 );
 
 export interface profileStore {
+    username: string;
+    user_id: number;
     name: string|undefined;
     avatar: string|undefined;
     email: string|undefined;
@@ -33,10 +36,12 @@ export interface profileStore {
 }
 
 const initialState = persistedStore?.profile || {
+    username: '',
+    user_id: 0,
     name: '',
     avatar: '',
     email: '',
-    dob: undefined,
+    dob: '',
     status: ''
 }
 
@@ -70,7 +75,14 @@ export const profileSlice = createSlice({
             
         },
         clear: (state) => {
-            state = {...initialState };
+            console.log('CLEAR PROFILE')
+            state.status = ''
+            state.name = ''
+            state.avatar = ''
+            state.email = ''
+            state.dob = ''
+            state.username = ''
+            state.user_id = 0
         }
     },
     extraReducers: (builder) => {
@@ -79,6 +91,8 @@ export const profileSlice = createSlice({
         })
         .addCase(getProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
             state.status = 'ok';
+            state.username = action.payload.username;
+            state.user_id = action.payload.user_id;
             state.name = action.payload.name;
             state.avatar = action.payload.avatar;
             state.email = action.payload.email;

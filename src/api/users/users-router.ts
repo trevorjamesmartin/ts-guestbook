@@ -9,10 +9,8 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/with-profiles', (req, res) => {
-    Users.withProfiles().then((users => {
-        res.json(users)
-    }));
+router.get('/with-profiles', async (req, res) => {
+    res.status(200).json((await Users.withProfiles()));
 });
 
 export default router;

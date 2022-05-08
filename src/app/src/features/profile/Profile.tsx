@@ -28,20 +28,20 @@ function Profile() {
         <Form onSubmit={handleUpdateProfile}>
             <FormGroup>
                 <Label for="name">Name</Label>
-                <Input name='name' type='text' placeholder='name' value={profile.name} onChange={handleChange} />
+                <Input name='name' type='text' placeholder='name' value={profile.name || ""} onChange={handleChange} />
             </FormGroup>
             <FormGroup>
                 <Label for="avatar">Avatar</Label>
-                <Input name='avatar' type='text' placeholder='avatar' value={profile.avatar} onChange={handleChange} />
+                <Input name='avatar' type='text' placeholder='avatar' value={profile.avatar || ""} onChange={handleChange} />
             </FormGroup>
             <FormGroup>
                 <Label for="email">Email</Label>
-                <Input name='email' type='text' placeholder='email' value={profile.email} onChange={handleChange} />
+                <Input name='email' type='text' placeholder='email' value={profile.email || ""} onChange={handleChange} />
             </FormGroup>
             <FormGroup>
                 <Label for="dob">Date Of Birth</Label>
             </FormGroup>
-            <Input name='dob' type='text' placeholder='dob' value={profile.dob} onChange={handleChange} />
+            <Input name='dob' type='text' placeholder='dob' value={profile.dob || ""} onChange={handleChange} />
             <Button>update</Button>
         </Form>
         <span>{profile.status}</span>

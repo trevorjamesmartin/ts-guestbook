@@ -8,7 +8,7 @@ export const getPostsAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response = await api(token).get('/api/feed');
+        const response = await api(token).get('/api/posts');
         return response.data;
     }
 );

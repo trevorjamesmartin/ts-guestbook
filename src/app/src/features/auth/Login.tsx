@@ -1,7 +1,6 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
-// import { Link } from "react-router-dom";
 import React, { useState } from "react";
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Container, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { loginAsync, selectors, Credentials } from './authSlice';
 
@@ -24,7 +23,8 @@ export function Login() {
   }
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    if (state.password.length > 4 && state.username.length > 4) {
+    console.log(state)
+    if (state.password.length > 4 && state.username.length > 0) {
       dispatch(loginAsync(state));
       setState(initialState);
       setTimeout(() => window.location.reload(), 1700); // reload to trigger a websocket connection
@@ -35,6 +35,9 @@ export function Login() {
       <h2>Login</h2>
       {loggedIn ? (<>
         <h4 className="message-success">{message}</h4>
+        <div className="spinner-wrap">
+            {<Spinner center />}
+        </div>
       </>)
         : <Form onSubmit={handleSubmitForm}>
           <FormGroup>

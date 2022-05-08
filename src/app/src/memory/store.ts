@@ -4,6 +4,9 @@ import userReducer from '../features/users/userSlice';
 import profileReducer from '../features/profile/profileSlice';
 import socketReducer from '../features/pages/wsSlice';
 import postsReducer from '../features/posts/postsSlice';
+import feedReducer from '../features/feed/feedSlice';
+import friendReducer from '../features/social/friendSlice';
+
 import { toStorage, storageKey } from './persist';
 
 export const store = configureStore({  
@@ -13,6 +16,8 @@ export const store = configureStore({
     socket: socketReducer,
     profile: profileReducer,
     posts: postsReducer,
+    feed: feedReducer,
+    friends: friendReducer,
   },
 });
 
