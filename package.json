@@ -23,7 +23,8 @@
     "clean": "rm -rf dist/* >> /dev/null 2>&1;rm dist.tar.gz >> /dev/null 2>&1;rm release/* >> /dev/null 2>&1",
     "release": "npm run compile && npm run package",
     "contain": "cd release;docker build . -t vigilant-cloud",
-    "start:container": "docker run -p 8080:8080 -d vigilant-cloud"
+    "start:container": "docker run -v $(pwd)/db:/opt/app/db -p 8080:8080 -d vigilant-cloud",
+    "stop:container": "docker ps|grep vigilant-cloud|awk '{print $1}' | xargs docker stop"
   },
   "keywords": [],
   "author": "",
