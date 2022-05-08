@@ -38,7 +38,7 @@ export interface BlogPost {
     id: number;
     title: string;
     tags: string;
-    content: JSON;
+    content: any;
 }
 
 type ListedPosts = BlogPost[];
@@ -50,7 +50,7 @@ export interface postsStore {
     status: string;
 }
 
-const clearState = {
+const clearState:postsStore = {
     current: {
         id: 0,
         title: '',
@@ -62,7 +62,7 @@ const clearState = {
     status: ''
 };
 
-const initialState = persistedStore?.posts || clearState
+const initialState:postsStore = persistedStore?.posts || clearState
 
 export const postsSlice = createSlice({
     name: 'posts',

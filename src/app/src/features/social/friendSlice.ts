@@ -46,7 +46,12 @@ export const acceptFriendRequestAsync = createAsyncThunk(
     const response = await api(token).post('/api/connect/accept', {
       connect_id
     }); // pending
-    return response.data; // fulfilled
+    const result:any = {
+      connect_id,
+      data: response.data // fulfilled 
+    }
+
+    return result; // fulfilled
   }
 );
 
@@ -73,7 +78,8 @@ export interface friendRequest {
 
 interface requestPayload {
   request_to: Partial<friendRequest>,
-  data: any
+  data: any,
+  [key:string]:any,
 }
 
 interface initialType {
@@ -157,6 +163,9 @@ export const userSlice = createSlice({
     })
       .addCase(acceptFriendRequestAsync.fulfilled, (state, action: PayloadAction<any>) => {
         state.status = 'idle';
+        const { connect_id, data } = action.payload;
+        console.log(data);
+        state.incoming = state.incoming.filter(req => req.connect_id !== connect_id);
         console.log(action.payload)
       })
       .addCase(acceptFriendRequestAsync.rejected, (state, action: PayloadAction<any>) => {
