@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 import hpp from 'hpp';
 // import enforcesSSL from 'express-enforces-ssl';
 // authorized sessions
-import { sessionConfig, authRouter, authMiddleware } from './auth-session'
+import { sessionConfig } from './auth-session'
 const MAX_CONTENT_LENGTH_ACCEPTED = 9999; 
 const corsConfig = {
     origin: true,
