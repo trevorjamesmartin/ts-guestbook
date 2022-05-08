@@ -68,7 +68,7 @@ function App() {
     _ws.onclose = function () {
       console.log('Websocket connection closed');
       setWs(undefined);
-      if (window.location.pathname === '/logout') navigate('/login');
+      navigate('/login');
     }
     _ws.onmessage = function (ev) {
       setMessage(ev.data);

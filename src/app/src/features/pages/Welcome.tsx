@@ -7,11 +7,7 @@ function Welcome({ ws, ...props }: propsWithWebSocket) {
     const navigate = useNavigate();
     useEffect(() => {
         setTimeout(() => {
-            if (ws) {
                 navigate('/app')
-            } else {
-                navigate('/logout')
-            }
         }, 500);
     }, [ws])
     return (<Container>

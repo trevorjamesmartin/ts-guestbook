@@ -13,10 +13,10 @@ export function Logout() {
         dispatch(clearProfile()) &&
         dispatch(logoutAsync()) && // logout (serverside)
         dispatch(setStatusDisconnected()) // logout (client side)
-        setTimeout(() => window.location.reload(), 1700); // reload to trigger a websocket connection
-        // setTimeout(() => {
-        //     navigate('/');
-        // }, 500); // reload to trigger a websocket connection
+        setTimeout(() => {
+            navigate('/');
+            setTimeout(() => (window.location.pathname = "/"), 1700)
+        }, 500); // reload to trigger a websocket connection
     }, []);
     return (<h4>GoodBye</h4>)
 }
