@@ -26,11 +26,10 @@ router.put('/', async (req:any, res) => {
         profile = undefined;
         return res.status(404).json({error: e});
     }
-    let data = req.body;
+    let { name, avatar, email, dob } = req.body;
     let id:number = profile?.id||0;
     if (id > 0){
-        delete data["id"]; // no sneaky updates
-        let result = await Profiles.update(id, data);
+        let result = await Profiles.update(id, { name, avatar, email, dob });
         res.status(200).json(result);
     } else {
         console.log('error', profile)
