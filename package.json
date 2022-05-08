@@ -24,7 +24,9 @@
     "release": "npm run compile && npm run package",
     "contain": "cd release;docker build . -t vigilant-cloud",
     "start:container": "docker run -v $(pwd)/db:/opt/app/db -p 8080:8080 -d vigilant-cloud",
-    "stop:container": "docker ps|grep vigilant-cloud|awk '{print $1}' | xargs docker stop"
+    "stop:container": "docker ps|grep vigilant-cloud|awk '{print $1}' | xargs docker stop",
+    "build:container": "npm run clean && npm run release && npm run contain",
+    "ark": "npm run build:container && npm run start:container"
   },
   "keywords": [],
   "author": "",
