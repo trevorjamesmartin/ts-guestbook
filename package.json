@@ -5,23 +5,25 @@
   "main": "index.js",
   "engines": {
     "node": ">=17.9.0",
-    "npm": "~8.5.5"
+    "npm": ">=8.5.5"
   },
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "start:dev": "npx nodemon index.ts",
     "create:db": "npx knex migrate:latest && npx knex seed:run",
     "build:client": "cd src/app;npm i && npm run build",
     "build": "npm run build:client",
+    "develop": "npm run build && npm run start:dev",
     "precompile": "npm run build",
     "compile": "tsc",
     "release:scripts": "npx ts-node scripts/release-package.ts && cp scripts/release-install.sh dist/install && cp scripts/release-start.sh dist/start",
     "prepackage": "mkdir -p dist/src/app/build && cp -rp src/app/build dist/src/app && npm run release:scripts",
-    "package": "rm -rf dist/scripts && tar cvf dist.tar dist && gzip dist.tar",
+    "package": "rm -rf dist/scripts && tar cvf dist.tar dist && gzip dist.tar && mkdir -p release && mv dist.tar.gz release",
+    "clean": "rm -rf dist/* >> /dev/null 2>&1;rm dist.tar.gz >> /dev/null 2>&1;rm release/* >> /dev/null 2>&1",
     "release": "npm run compile && npm run package",
-    "develop": "npm run build && npm run start:dev",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf dist/* >> /dev/null 2>&1;rm dist.tar.gz >> /dev/null 2>&1"
+    "contain": "cd release;docker build . -t vigilant-cloud",
+    "start:container": "docker run -p 8080:8080 -d vigilant-cloud"
   },
   "keywords": [],
   "author": "",
