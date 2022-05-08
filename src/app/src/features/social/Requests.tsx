@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
-import { selectors as socialSelectors, acceptFriendRequestAsync, rejectFriendRequestAsync } from '../social/friendSlice';
+import { selectors as socialSelectors, acceptFriendRequestAsync, rejectFriendRequestAsync, friendListAsync } from '../social/friendSlice';
 import { Button, Card, CardBody, CardHeader, CardImg } from 'reactstrap';
 const { selectRequestsRecieved } = socialSelectors;
 
@@ -10,6 +10,16 @@ const SocialRequest = (props: Partial<any>) => {
   const handleAcceptConnect = (e:any) => {
     e.preventDefault();
     dispatch(acceptFriendRequestAsync(connect_id));
+    setTimeout(() => {
+      dispatch(friendListAsync());
+    }, 500);
+  }
+  const handleRejectConnect = (e:any) => {
+    e.preventDefault();
+    dispatch(rejectFriendRequestAsync(connect_id));
+    setTimeout(() => {
+      dispatch(friendListAsync());
+    }, 500);
   }
   return (
     <Card key={username} className="card card-product-grid card-sm">
@@ -23,7 +33,9 @@ const SocialRequest = (props: Partial<any>) => {
       </CardBody>
       <div className="bottom-wrap"> 
         <Button color="primary" onClick={handleAcceptConnect}>Accept</Button>
-        <div className="price-wrap"> <Button color="danger">Reject</Button> </div>
+        <div className="price-wrap"> 
+        <Button color="danger" onClick={handleRejectConnect}>Reject</Button> 
+        </div>
       </div>
     </Card>
     
