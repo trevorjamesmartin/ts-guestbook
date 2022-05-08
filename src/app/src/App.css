@@ -44,10 +44,6 @@
   margin-top: 1rem;
 }
 
-.blog-post {
-  margin-top: 0.4rem;
-}
-
 .spinner-wrap {
   display: flex;
   margin-top: 4rem;
@@ -78,7 +74,7 @@ a {
 }
 
 .card {
-  width: 500px;
+  max-width: 500px;
   position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -122,14 +118,14 @@ a {
   padding: 16px
 }
 
-[class*='card-product'] .img-wrap img {
+/* [class*='card-product'] .img-wrap img {
   height: 100%;
   max-width: 100%;
   width: auto;
   display: inline-block;
   -o-object-fit: cover;
   object-fit: cover
-}
+} */
 
 .img-wrap {
   text-align: center;
@@ -139,37 +135,6 @@ a {
 .card-product-grid .info-wrap {
   overflow: hidden;
   padding: 18px 20px
-}
-
-[class*='card-product'] a.title {
-  color: #212529;
-  display: block
-}
-
-.rating-stars {
-  display: inline-block;
-  vertical-align: middle;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  white-space: nowrap;
-  clear: both
-}
-
-.rating-stars li.stars-active {
-  z-index: 2;
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden
-}
-
-.rating-stars li {
-  display: block;
-  text-overflow: clip;
-  white-space: nowrap;
-  z-index: 1
 }
 
 .card-product-grid .bottom-wrap {
@@ -213,4 +178,50 @@ a {
 
 .fa {
   color: #FF5722
+}
+
+.shout.form-control {
+  min-height: 125px;
+  font-family: 'Space Mono';
+  font-size: medium;
+}
+
+.shout-out-avatar {
+  height:3rem;
+  width: 4.2rem;
+  margin-left: 1rem;
+  margin-right: 1rem
+}
+.shouter-name {
+  margin-left: 1rem;
+  font-weight: 400;
+  font-style: normal;
+  font-size: small;
+  color: darkslateblue;
+}
+.shouter-username {
+  margin-top: 1rem;
+  font-weight: 400;
+  font-style: normal;
+  font-size: small;
+  color:darkslategray
+}
+.shouter-timestamp {
+  margin-top: 1rem;
+  font-weight: 400;
+  font-style: normal;
+  font-size: x-small;
+  color: darkgreen;
+}
+.blog-post {
+  font-family: 'Space Mono';
+  font-size: medium;
+  padding-bottom: 0.5rem;
+}
+
+.shout-out {
+  padding: 2rem;
+  font-size: large;
+  border: 1px solid lightgrey;
+  border-radius: 1rem;
 }
