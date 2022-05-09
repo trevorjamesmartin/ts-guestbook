@@ -74,7 +74,7 @@ a {
 }
 
 .card {
-  max-width: 500px;
+  max-width: 685px;
   position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -117,15 +117,6 @@ a {
   height: 275px;
   padding: 16px
 }
-
-/* [class*='card-product'] .img-wrap img {
-  height: 100%;
-  max-width: 100%;
-  width: auto;
-  display: inline-block;
-  -o-object-fit: cover;
-  object-fit: cover
-} */
 
 .img-wrap {
   text-align: center;

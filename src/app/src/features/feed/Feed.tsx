@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
-
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { postsStore, BlogPost, selectors as postsSelectors, getPostsAsync, submitPostAsync, actions as postsActions } from '../posts/postsSlice';
 import { getFeedAsync, selectors as feedSelectors, actions as feedActions, Food } from './feedSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
@@ -13,6 +16,11 @@ import {
   Form, FormGroup, Label, Input, Button,
   Card, CardBody, CardHeader, CardImg, CardText, Container, Row
 } from 'reactstrap';
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(relativeTime)
+
 const { selectProfile } = profileSelectors;
 const { selectFeed } = feedSelectors;
 const { selectList } = userSelectors;
@@ -30,6 +38,7 @@ const LiteralFood = (props: Partial<Food>) => {
     }
     return profile.avatar || "/user.png";
   }
+  const posted_at = dayjs.utc(props.posted_at).local().fromNow()
   return (
     // <Card key={props.id} className="card card-product-grid card-sm">
     <Card key={props.id} className="blog-post card-sm card-product-grid">
@@ -37,7 +46,7 @@ const LiteralFood = (props: Partial<Food>) => {
         <Row xs="3" >
           <CardImg src={findAvatar()} className="shout-out-avatar" />
           <CardText className="shouter-username">@{props.username || "You"}</CardText>
-          <CardText className="shouter-timestamp">{props.posted_at}</CardText>
+          <CardText className="shouter-timestamp">{posted_at}</CardText>
         </Row>
         <Row xs="1">
           <CardText className="shouter-name">{props.name}</CardText>
