@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 import dayjs from 'dayjs';
@@ -14,7 +14,7 @@ import { selectors as userSelectors } from '../users/userSlice';
 
 import {
   Form, FormGroup, Label, Input, Button,
-  Card, CardBody, CardImg, CardText, Container, Row
+  Card, CardBody, CardImg, CardText, Container, Row, Spinner
 } from 'reactstrap';
 
 dayjs.extend(utc)
@@ -30,7 +30,7 @@ const { clear: clearFeed } = feedActions;
 const { selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
 
-const LiteralFood = (props:any) => {
+const LiteralFood = (props: any) => {
   const profile = props.profile;
   const findAvatar = () => {
     if (props.avatar) {
@@ -67,17 +67,20 @@ function Feed() {
   const shoutOut: any = useRef();
   const dispatch = useAppDispatch();
   const currentPost: BlogPost = useAppSelector(selectCurrent);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (authorized) {
       dispatch(getFeedAsync());
+      setTimeout(() => setLoading(false), 500);
     } else {
       dispatch(clearFeed());
       navigate('/login')
     }
   }, []);
+
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
-    if(socialFeed.status !== "pending") {
+    if (socialFeed.status !== "pending") {
       dispatch(submitPostAsync());
       setTimeout(() => {
         dispatch(getFeedAsync());
@@ -89,19 +92,27 @@ function Feed() {
     let value: any = e.target.value;
     dispatch(setCurrent({ [name]: value }));
   }
+
   return (<div className="Posts">
     {authorized ?
       <>
         <Form onSubmit={handleSubmitForm}>
           <FormGroup>
-          <Label for="shout-out">What's happening?</Label>
-          <Input id="shout-out" ref={shoutOut} className="shout" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
-          <Button className="shout-out btn-primary">shout</Button>
+            <Label for="shout-out">What's happening?</Label>
+            <Input id="shout-out" ref={shoutOut} className="shout" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
+            <Button className="shout-out btn-primary">shout</Button>
           </FormGroup>
         </Form>
-        <ul>
-          {socialFeed?.food?.map((f: any) => LiteralFood({...f, profile})) || []}
-        </ul>
+        {
+          loading ?
+            <Container className="centered-spinner-container">
+              <Spinner />
+            </Container>
+            :
+            <ul>
+              {socialFeed?.food?.map((f: any) => LiteralFood({ ...f, profile })) || []}
+            </ul>
+        }
       </> :
       <><Label>ok then</Label></>
     }

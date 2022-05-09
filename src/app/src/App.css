@@ -256,3 +256,10 @@ a {
   margin-top: 1rem;
   min-height: 200px;
 }
+
+.centered-spinner-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 7rem;
+}
