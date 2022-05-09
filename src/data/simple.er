@@ -46,6 +46,6 @@ User 1--* Post
 
 User 1--1 Profile
 
-Post *--1 Pointer
+Pointer *--* Post
 
-Pointer 1--* Post
+
