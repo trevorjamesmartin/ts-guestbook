@@ -10,7 +10,7 @@ import hpp from 'hpp';
 // import enforcesSSL from 'express-enforces-ssl';
 // authorized sessions
 import { sessionConfig } from './auth-session'
-const MAX_CONTENT_LENGTH_ACCEPTED = 9999; 
+const MAX_CONTENT_LENGTH_ACCEPTED = 8**8; 
 const corsConfig = {
     origin: true,
     credentials: true,
