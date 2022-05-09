@@ -20,7 +20,7 @@ take full advantage of hot reloading while building out the graphical user inter
 
 
 
-## Docker containers
+## Docker
 
 these scripts were written for convenience
 

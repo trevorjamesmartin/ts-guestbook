@@ -31,14 +31,14 @@ WORKDIR ${WORKDIR}
 COPY ${RELEASE_FILE} .
 ENV PASSWORD=${ENV_PASSWORD}
 
-RUN tar zxvf ${RELEASE_FILE} \
-    && ${REMOVE_CONTENT} \
+RUN tar zxvf ${RELEASE_FILE} \\
+    && ${REMOVE_CONTENT} \\
     && rm ${RELEASE_FILE}    
 
-RUN apk add --no-cache --virtual .gyp python3 make g++ \
-    && npm install \
-    && mkdir ${WORKDIR}/db \
-    && npm run create:db \
+RUN apk add --no-cache --virtual .gyp python3 make g++ \\
+    && npm install \\
+    && mkdir ${WORKDIR}/db \\
+    && npm run create:db \\
     && apk del .gyp
 
 EXPOSE ${PORT}
