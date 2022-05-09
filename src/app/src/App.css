@@ -69,12 +69,12 @@ a {
 }
 
 .card-product-list,
-.card-product-grid {
+.blog-post {
   margin-bottom: 0
 }
 
 .card {
-  max-width: 685px;
+  max-width: 64rem;
   position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -89,17 +89,18 @@ a {
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 23px;
-  margin-top: 50px
+  /* margin-top: 1rem; */
+  margin: .1rem;
 }
 
-.card-product-grid:hover {
-  -webkit-box-shadow: 0 4px 15px rgba(153, 153, 153, 0.3);
-  box-shadow: 0 4px 15px rgba(153, 153, 153, 0.3);
+.blog-post:hover {
+  -webkit-box-shadow: 0 4px 15px rgba(64, 64, 64, 0.3);
+  box-shadow: 0 4px 15px rgba(64, 64, 64, 0.3);
   -webkit-transition: .3s;
   transition: .3s
 }
 
-.card-product-grid .img-wrap {
+.blog-post .img-wrap {
   border-radius: 0.2rem 0.2rem 0 0;
   height: 220px
 }
@@ -112,7 +113,7 @@ a {
   height: 280px
 }
 
-.card-product-grid .img-wrap {
+.blog-post .img-wrap {
   border-radius: 0.2rem 0.2rem 0 0;
   height: 275px;
   padding: 16px
@@ -123,12 +124,12 @@ a {
   display: block
 }
 
-.card-product-grid .info-wrap {
+.blog-post .info-wrap {
   overflow: hidden;
   padding: 18px 20px
 }
 
-.card-product-grid .bottom-wrap {
+.blog-post .bottom-wrap {
   padding: 18px;
   border-top: 1px solid #e4e4e4
 }
@@ -176,14 +177,24 @@ a {
   font-family: 'Space Mono';
   font-size: medium;
 }
-
-.shout-out-avatar {
-  height:3rem;
-  width: 4.2rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  border-radius: 1rem;
+.navatar {
+  border-radius: 90%;
 }
+.avatar-thumb {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 90%;
+}
+.shout-out-avatar {
+  height:3.4rem;
+  width: 5rem;
+
+  /* margin: 0.4rem; */
+  margin-left: 1rem;
+  /* margin-right: 1rem; */
+  border-radius: 100%;
+}
+
 .shouter-name {
   margin-left: 1rem;
   font-weight: 400;
@@ -222,4 +233,26 @@ a {
   max-width: 20rem;
   border-radius: 1rem;
   margin: 1rem;
+}
+
+.userlist-container {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.userlist-card {
+  display: flex;
+  /* justify-content: center; */
+  width: 12rem;
+}
+.userlist-card:hover {
+  -webkit-box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
+  box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
+  -webkit-transition: .5s;
+  transition: .5s
+}
+
+.blog-post.card {
+  margin-top: 1rem;
+  min-height: 200px;
 }

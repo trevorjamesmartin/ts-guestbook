@@ -99,6 +99,7 @@ function Navigation() {
           )}
           <Link to={authorized ? '/app/profile' : '/login'}>
             <img
+              className="navatar"
               src={profile.avatar || '/user.png'}
               width='42px'
               alt={profile.name}

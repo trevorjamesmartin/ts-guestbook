@@ -30,7 +30,7 @@ export function Register() {
       console.log('passwords dont match!');
       return
     }
-    if (state.password.length > 4 && state.username.length > 4) {
+    if (state.password.length > 4 && state.username.length > 3) {
       dispatch(registerAsync({ username: state.username, password: state.password }));
       setState(initialState);
       setTimeout(() => navigate('/login'), 1700); // reload to trigger a websocket connection

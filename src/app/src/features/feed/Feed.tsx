@@ -40,7 +40,7 @@ const LiteralFood = (props:any) => {
   }
   const posted_at = dayjs.utc(props.posted_at).local().fromNow()
   return (
-    <Card key={props.id} className="blog-post card-sm card-product-grid">
+    <Card key={props.id} className="blog-post">
       <Container>
         <Row xs="3" >
           <CardImg src={findAvatar()} className="shout-out-avatar" />

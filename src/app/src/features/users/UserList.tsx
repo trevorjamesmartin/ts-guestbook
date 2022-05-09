@@ -1,19 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
+// import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import { usersAsync, selectors } from './userSlice';
 import { selectors as friendSelectors, friendRequestAsync } from '../social/friendSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
-import { Button } from 'reactstrap';
+import { Card, CardImg, CardTitle, CardLink, Row, Col, Button, Container, CardBody, CardText } from 'reactstrap';
 const selectList = selectors.selectList;
-const selectStatus = selectors.selectStatus;
+// const selectStatus = selectors.selectStatus;
 const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectProfile } = profileSelectors;
 // const LIMIT_RELOAD_USERS = 1000 * 15;
 
+const UserCard = (props: any) => {
+  const { data, dispatcher, isFriend, requestedConnect } = props;
+  return <Card key={data.username} className="userlist-card">
+    <Container className='userlist-body-wrap'>
+      <CardBody className='userlist-card-body'>
+        <CardImg className='avatar-thumb' src={data.avatar || '/user.png'} alt={`${data.username}'s avatar`} />
+        <CardTitle>@{data.username}</CardTitle>
+        {!isFriend && !requestedConnect && <Button onClick={() => {
+          dispatcher(friendRequestAsync(data));
+        }}>add friend*</Button>}
+        {isFriend && (<CardText>friend</CardText>)}
+        {requestedConnect && (<CardText>requested</CardText>)}
+      </CardBody>
+    </Container>
+  </Card>
+}
+
 export function UserList() {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const userlist = useAppSelector(selectList);
   // const status = useAppSelector(selectStatus);
@@ -21,42 +36,29 @@ export function UserList() {
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const profile = useAppSelector(selectProfile);
   const [state, setState] = useState({ lastLoaded: 0 });
-  const delta = (Date.now() - state.lastLoaded);
   useEffect(() => {
-    // if (status === 'failed') {
-    //   return navigate('/app/logout');
-    // }
+    const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
-
-      console.log('userlist', userlist, {delta})
       setState({ lastLoaded: Date.now() });
       dispatch(usersAsync());
     }
   }, []);
-  const handleAddFriend = (user: any) => {
-    console.log(`send friend request to ${user.username}`)
-    dispatch(friendRequestAsync(user));
-  }
   return (<>
-    <ul>
-      {userlist.map((user, i) => {
-        let { username, name, avatar, dob, email } = user;
-        if (profile.username === username) {
+    <Container className='userlist-container'>
+      {userlist.map((user: any, i) => {
+        if (profile.username === user.username) {
           return null
         };
-        let isFriend = friendList.find((friend: any) => friend.username === username);
-        let requested = friendRequests.find((req:any)=> req.username === username);
-        // console.log({
-        //   friendList,
-        //   isFriend
-        // })
-        return (
-          <li key={i}>
-            <img src={avatar || '/user.png'} width='18px' alt={`${username}'s avatar`} />
-            {` - ${username}`}
-            {!isFriend && !requested && <Button onClick={() => handleAddFriend(user)}>add friend</Button>}
-          </li>)
+        const isFriend = friendList.find((friend: any) => friend.username === user.username);
+        const requestedConnect = friendRequests.find((req: any) => req.username === user.username);
+        return <UserCard
+          dispatcher={dispatch}
+          requestedConnect={requestedConnect}
+          isFriend={isFriend}
+          data={user}
+          key={i}
+        />
       })}
-    </ul>
+    </Container>
   </>);
 }
