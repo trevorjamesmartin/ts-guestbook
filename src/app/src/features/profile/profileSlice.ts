@@ -18,10 +18,12 @@ export const setProfileAsync = createAsyncThunk(
     'profile/set',
     async (data:any, thunkAPI) => {
       const {status, ...profileData  } = data; // separate status from profile data;
+      const {name, email, dob, avatar, id } = data
+      const payload = { name, avatar, email, dob };
       const state:any = thunkAPI.getState();
       const token = state?.auth?.token || undefined;
-      const response = await api(token).put('/api/profile', profileData); // pending
-      return response.data; // fulfilled
+      await api(token).put('/api/profile', payload); // pending
+      return payload; // fulfilled
     }
 );
 
@@ -106,7 +108,7 @@ export const profileSlice = createSlice({
             state.status = 'loading';
         })
         .addCase(setProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state.status = 'ok';
+            state = {... initialState, status: "ok" };
             // console.log(action.payload);
         })
         .addCase(setProfileAsync.rejected, (state, action:PayloadAction<any>) =>{
