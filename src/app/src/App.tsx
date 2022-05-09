@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
-
+import ErrorBoundary from './ErrorBoundary';
 import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
 import { Register } from './features/auth/Register';
@@ -82,7 +82,7 @@ function App() {
   }, []);
 
 
-  return (<>
+  return (<ErrorBoundary>
     <div className='App'>
       <Navigation />
     </div>
@@ -101,7 +101,7 @@ function App() {
       
       {/* <span id="ws-message">{wsStatus} [{message}]</span> */}
 
-  </>)
+  </ErrorBoundary>)
 }
 
 export default App;

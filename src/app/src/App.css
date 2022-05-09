@@ -181,7 +181,8 @@ a {
   height:3rem;
   width: 4.2rem;
   margin-left: 1rem;
-  margin-right: 1rem
+  margin-right: 1rem;
+  border-radius: 1rem;
 }
 .shouter-name {
   margin-left: 1rem;
@@ -215,4 +216,10 @@ a {
   font-size: large;
   border: 1px solid lightgrey;
   border-radius: 1rem;
+}
+
+.preview-image {
+  max-width: 20rem;
+  border-radius: 1rem;
+  margin: 1rem;
 }

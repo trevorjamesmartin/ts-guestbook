@@ -5,16 +5,16 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { postsStore, BlogPost, selectors as postsSelectors, getPostsAsync, submitPostAsync, actions as postsActions } from '../posts/postsSlice';
-import { getFeedAsync, selectors as feedSelectors, actions as feedActions, Food } from './feedSlice';
+import { BlogPost, selectors as postsSelectors, submitPostAsync, actions as postsActions } from '../posts/postsSlice';
+import { getFeedAsync, selectors as feedSelectors, actions as feedActions } from './feedSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
 import { selectors as authSelectors } from '../auth/authSlice'
 
-import { usersAsync, selectors as userSelectors } from '../users/userSlice';
+import { selectors as userSelectors } from '../users/userSlice';
 
 import {
   Form, FormGroup, Label, Input, Button,
-  Card, CardBody, CardHeader, CardImg, CardText, Container, Row
+  Card, CardBody, CardImg, CardText, Container, Row
 } from 'reactstrap';
 
 dayjs.extend(utc)
@@ -26,12 +26,12 @@ const { selectFeed } = feedSelectors;
 const { selectList } = userSelectors;
 const { selectToken } = authSelectors;
 
-const { clear } = feedActions;
+const { clear: clearFeed } = feedActions;
 const { selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
 
-const LiteralFood = (props: Partial<Food>) => {
-  const profile = useAppSelector(selectProfile);
+const LiteralFood = (props:any) => {
+  const profile = props.profile;
   const findAvatar = () => {
     if (props.avatar) {
       return props.avatar;
@@ -40,7 +40,6 @@ const LiteralFood = (props: Partial<Food>) => {
   }
   const posted_at = dayjs.utc(props.posted_at).local().fromNow()
   return (
-    // <Card key={props.id} className="card card-product-grid card-sm">
     <Card key={props.id} className="blog-post card-sm card-product-grid">
       <Container>
         <Row xs="3" >
@@ -52,9 +51,7 @@ const LiteralFood = (props: Partial<Food>) => {
           <CardText className="shouter-name">{props.name}</CardText>
         </Row>
         <CardBody>
-          {/* <span className="title">{props.title}</span> */}
           <CardText className="content">{props.content}</CardText>
-          {/* <span className="tags">{props.tags}</span> */}
         </CardBody>
       </Container>
     </Card>
@@ -63,7 +60,8 @@ const LiteralFood = (props: Partial<Food>) => {
 
 function Feed() {
   const navigate = useNavigate();
-  const { food: socialFood, status } = useAppSelector(selectFeed);
+  const profile = useAppSelector(selectProfile);
+  const socialFeed = useAppSelector(selectFeed);
   const token = useAppSelector(selectToken);
   const authorized = token && token.length > 4;
   const shoutOut: any = useRef();
@@ -73,17 +71,18 @@ function Feed() {
     if (authorized) {
       dispatch(getFeedAsync());
     } else {
+      dispatch(clearFeed());
       navigate('/login')
     }
   }, []);
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
-    console.log(currentPost);
-    dispatch(submitPostAsync());
-    setTimeout(() => {
-      dispatch(getFeedAsync());
-    }, 500);
-    shoutOut.current.focus();
+    if(socialFeed.status !== "pending") {
+      dispatch(submitPostAsync());
+      setTimeout(() => {
+        dispatch(getFeedAsync());
+      }, 500);
+    }
   }
   const handleChange = (e: any) => {
     let name: string = e.currentTarget.name;
@@ -101,7 +100,7 @@ function Feed() {
           </FormGroup>
         </Form>
         <ul>
-          {socialFood.map((f: Partial<Food>) => LiteralFood(f))}
+          {socialFeed?.food?.map((f: any) => LiteralFood({...f, profile})) || []}
         </ul>
       </> :
       <><Label>ok then</Label></>

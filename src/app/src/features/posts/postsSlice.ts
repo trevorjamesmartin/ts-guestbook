@@ -18,7 +18,8 @@ export const submitPostAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response = await api(token).post('/api/posts', state.posts.current);
+        const {content, id, tags, title} = state.posts.current;
+        const response = await api(token).post('/api/posts', {content, id, tags, title});
         return response.data;
     }
 );
@@ -93,7 +94,7 @@ export const postsSlice = createSlice({
         .addCase(submitPostAsync.fulfilled, (state, action:PayloadAction<any>) => {
             console.log(action.payload);
             state.status = 'ok'
-            state.listed = [...state.listed, action.payload];
+            // state.listed = [...state.listed, action.payload];
             state.current = clearState.current;
         })
         .addCase(submitPostAsync.rejected, (state, action:PayloadAction<any>) => {
