@@ -1,23 +1,42 @@
 # vigilant-cloud
 
-develop
+## API
+developing
 
     npm install
     npm run create:db
     npm run develop
 
-build the release
+building a release
 
     npm run clean
     npm run release
 
-## Docker
+## Client
+with the API release running in a separate window,
+take full advantage of hot reloading while building out the graphical user interface.
 
-build the Dockerfile
+    code src/app
 
-    npm run contain
 
-run (with Docker)
+
+## Docker containers
+
+these scripts were written for convenience
+
+build
+
+    npm run build:container
+
+run
 
     npm run start:container
+
+stop
+
+    npm run stop:container
+
+reboot (stop > build > start)
+
+    npm run dockerize
 
