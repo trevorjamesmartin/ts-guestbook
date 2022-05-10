@@ -10,6 +10,7 @@ export interface UserType {
 export default {
     add,
     list,
+    userId,
     findBy,
     findById,
     withProfiles
@@ -41,6 +42,13 @@ function findBy(filter:any) {
     return db("users")
         .select("id", "username", "password")
         .where(filter);
+}
+
+function userId(username:string) {
+    return db("users")
+        .select("id")
+        .where({username})
+        .first();
 }
 
 async function withProfiles() {

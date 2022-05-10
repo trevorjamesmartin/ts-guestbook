@@ -33,6 +33,6 @@ export async function up(knex: Knex): Promise<void> {
 
 
 export async function down(knex: Knex): Promise<void> {
-    return knex.schema.dropTableIfExists('request-connect');
+    return knex.schema.dropTableIfExists('friends');
 }
 

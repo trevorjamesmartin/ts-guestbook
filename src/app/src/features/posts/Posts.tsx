@@ -19,7 +19,7 @@ const PostCard = (props: any) => {
     // const replies = props.replies;
     const findAvatar = () => {
         if (profile.user_id === props.author_id) {
-            return profile.avatar;
+            return profile?.avatar || "/user.png";
         }
         return props.avatar || "/user.png";
     }
@@ -84,11 +84,12 @@ function Thread() {
     const findAvatar = () => {
         if (mainThread) {
             return profile.user_id === mainThread.author_id ?
-                profile.avatar :
+                profile.avatar || "/user.png" :
                 mainThread.avatar || "/user.png";
         }
         return "/user.png";
     }
+
     return (<div className="Posts">
         {mainThread && (
             <Card key={mainThread.id} className="blog-post">

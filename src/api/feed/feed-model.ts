@@ -22,7 +22,6 @@ interface Food {
 
 async function mainFeed(decodedToken: any) {
     let friends = (await connectModel.connectedTo(decodedToken.subject)).friends
-    // console.log("friends: ", friends.map((f:any)=> f.username))
     let myfeed:any[] = (await postsModel.findByUsername(decodedToken.username));
     for (let friend of friends) {
         let { username, avatar, name } = friend;

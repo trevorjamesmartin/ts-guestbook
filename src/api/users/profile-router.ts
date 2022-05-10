@@ -27,9 +27,10 @@ router.put('/', async (req:any, res) => {
         return res.status(404).json({error: e});
     }
     let { name, avatar, email, dob } = req.body;
+    // console.log(req.body)
     let id:number = profile?.id||0;
     if (id > 0){
-        let result = await Profiles.update(id, { name, avatar, email, dob });
+        let result = await Profiles.update(id, { name,/* avatar,*/ email, dob });
         res.status(200).json(result);
     } else {
         console.log('error', profile)

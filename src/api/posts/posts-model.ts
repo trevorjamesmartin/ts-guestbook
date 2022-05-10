@@ -1,6 +1,6 @@
 import db from '../../data/dbConfig';
-import pointerModel, {MessagePointer} from './pointer-model';
 import { timestamp } from '../../util';
+import usersModel from '../users/users-model';
 export interface PostType {
     id: number;
     author_id: number;
@@ -8,7 +8,9 @@ export interface PostType {
     tags: string;
     content: JSON;
     posted_at: any;
-    pointer_id: any;
+    thread_id: number;
+    parent_id: number;
+    created_at: any;
 }
 
 export default {
@@ -21,9 +23,8 @@ export default {
     replyTo
 }
 
-type PointerIds = Pick<MessagePointer, "parent_id" | "thread_id" | "created_at">;
 
-export type PostedMessage = Required<PostType & PointerIds>
+export type PostedMessage = Required<PostType>
 
 async function replyTo(parent_id:number, post:Partial<PostType>, author_id:number):Promise<PostedMessage> {
     const op = await byId(Number(parent_id));
@@ -36,97 +37,41 @@ async function replyTo(parent_id:number, post:Partial<PostType>, author_id:numbe
 }
 
 function byId(id:number):Promise<PostedMessage> {
-    return db({
-        post: 'posts',
-        pointer: 'pointers',
-    })
-    .whereRaw('?? = ??', ['post.id', id])
-    .select({
-        id: 'post.id',
-        author_id: 'post.author_id',
-        title: 'post.title',
-        tags: 'post.tags',
-        content: 'post.content',
-        posted_at: 'post.posted_at',
-        parent_id: 'pointer.parent_id',
-        thread_id: 'pointer.thread_id',
-        created_at: 'pointer.created_at',
-    })
-    .whereRaw('?? = ??', ['post.id', 'pointer.owner_id'])
+    return db('posts')
+    .where({id})
+    .select('id', 'author_id', 'content', 'posted_at', 'created_at', 'parent_id', 'thread_id', 'title', 'tags')
     .first();
 }
 
 function add(post:Partial<PostType>, thread_id:number, parent_id:number):PostedMessage {
     return db("posts")
-    .insert(post)
-    .then(async (ids:number[]) => {
-        const [owner_id] = ids;
-        // create pointer
-        const pointer = await pointerModel.add({
-            owner_id,
-            thread_id,
-            parent_id
-        });
-        await update(owner_id, { pointer_id: pointer.id });
-        return byId(owner_id);
-    })
+    .insert({
+        ...post,
+        thread_id: thread_id > 0 ? thread_id : null,
+        parent_id: parent_id > 0 ? parent_id : null,
+    }).returning('id')
+    // .then(async (p:any) => {
+    //     let rec = await byId(p.id);
+    //     return rec
+    // })
 }
 
 async function findBy(filter:Partial<PostType>):Promise<PostType[]> {
-    return await db("posts").where(filter)
-    .join({ pointer: "pointers" })
-    .whereRaw('?? = ??', ['post.id', 'pointer.owner_id'])
-    .select({
-        id: 'post.id',
-        author_id: 'post.author_id',
-        title: 'post.title',
-        tags: 'post.tags',
-        content: 'post.content',
-        posted_at: 'post.posted_at',
-        parent_id: 'pointer.parent_id',
-        thread_id: 'pointer.thread_id',
-        created_at: 'pointer.created_at',
-    });
+    return await db("posts").where(filter);
 }
 
-async function findByUsername(username:string):Promise<PostedMessage[]> {
-    return await db({
-        user: 'users',
-        post: 'posts',
-    })
-    .where({ username })
-    .whereRaw('?? = ??', ['user.id', 'post.author_id'])
-    .join({ pointer: "pointers" })
-    .whereRaw('?? = ??', ['post.id', 'pointer.owner_id'])
-    .select({
-        id: 'post.id',
-        author_id: 'post.author_id',
-        title: 'post.title',
-        tags: 'post.tags',
-        content: 'post.content',
-        posted_at: 'post.posted_at',
-        parent_id: 'pointer.parent_id',
-        thread_id: 'pointer.thread_id',
-        created_at: 'pointer.created_at',
-    });
+async function findByUsername(username:string):Promise<PostedMessage[]>  {
+    let u = await usersModel.userId(username);
+    if (!u) {
+        console.log('no id found for user', username);
+        return []
+    }
+    return await db("posts").where({ author_id: u.id })
 }
 
 async function findByThread(thread_id:number):Promise<any[]> {
-    return await db({pointer: "pointers"}).where({ thread_id })
-    .join({ post: "posts" })
-    .whereRaw('?? = ??', ['post.pointer_id', 'pointer.id'])
-    // .whereRaw('?? = ??', ['post.id', 'pointer.owner_id'])
-    .select({
-        parent_id: 'pointer.parent_id',
-        content: 'post.content',
-        // title: 'post.title',
-        // tags: 'post.tags',
-        posted_at: 'post.posted_at',
-        author_id: 'post.author_id',
-        post_id: 'post.id',
-        // thread_id: 'pointer.thread_id',
-        // created_at: 'pointer.created_at',
-    });
+    return await db("posts").where({ thread_id })
+
 }
 function update(id:number, data:Partial<PostType>) {
     return db("posts").where({ id }).update({...data, posted_at: timestamp() });

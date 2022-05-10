@@ -1,6 +1,5 @@
 import {Router} from 'express';
 import Posts, {PostType, PostedMessage} from './posts-model';
-import pointerModel from './pointer-model';
 const router = Router();
 
 router.get('/', async (req:any, res) => {
@@ -30,7 +29,8 @@ router.post('/', async (req:any, res) => {
     try {
         let post = await Posts.add({
             author_id: subject,
-            tags, title, content
+            // tags, title, 
+            content
         }, 0, 0);
         return res.status(200).json(post);
     } catch(error) {

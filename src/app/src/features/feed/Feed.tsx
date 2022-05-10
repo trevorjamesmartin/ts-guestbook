@@ -80,7 +80,10 @@ function Feed() {
   useEffect(() => {
     if (authorized) {
       dispatch(getFeedAsync());
-      setTimeout(() => setLoading(false), 500);
+      setTimeout(() => {
+        setLoading(false);
+        console.log(socialFeed)
+      }, 500);
     } else {
       dispatch(clearFeed());
       navigate('/login')
@@ -118,8 +121,10 @@ function Feed() {
               <Spinner />
             </Container>
             :
+            <>
+            <h2>feed</h2>
             <ul>
-              {socialFeed?.food?.filter((f: any) => f.thread_id === 0)
+              {socialFeed?.food?.filter((f: any) => !f.thread_id)
                 .map((mmm: any) => LiteralFood({
                   ...mmm,
                   profile,
@@ -128,6 +133,7 @@ function Feed() {
                   ]
                 })) || []}
             </ul>
+            </>
         }
       </> :
       <><Label>ok then</Label></>

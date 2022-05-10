@@ -3,7 +3,7 @@ import type { Knex } from "knex";
 // Update with your config settings.
 
 const config: { [key: string]: Knex.Config } = {
-  development: {
+  old_development: {
     client: "sqlite3",
     connection: {
       filename: "./db/dev.sqlite3"
@@ -33,19 +33,15 @@ const config: { [key: string]: Knex.Config } = {
     }
   },
 
-  production: {
-    client: "postgresql",
-    connection: {
-      database: "my_db",
-      user: "username",
-      password: "password"
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
+  development: {
+    client: "pg",
+    connection: process.env.DATABASE || "postgresql://vigilant:cloud@127.0.0.1:5432/vigilant-cloud",
     migrations: {
-      tableName: "knex_migrations"
+      directory: "./src/data/migrations",
+      tableName: "migrations"
+    },
+    seeds: {
+      directory: "./src/data/seeds"
     }
   }
 

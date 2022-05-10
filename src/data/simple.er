@@ -18,6 +18,8 @@ author_id
 title
 tags
 content
+thread_id
+parent_id
 
 [Connect]
 *id
@@ -31,11 +33,6 @@ connect_from
 connect_to
 weight
 
-[Pointer]
-*id
-thread_id
-parent_id
-owner_id
 
 
 Friend 1--* Connect
@@ -46,6 +43,6 @@ User 1--* Post
 
 User 1--1 Profile
 
-Pointer *--* Post
+Post *--* Post
 
 

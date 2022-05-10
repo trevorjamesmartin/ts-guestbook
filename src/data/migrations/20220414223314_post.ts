@@ -17,8 +17,26 @@ export async function up(knex: Knex): Promise<void> {
             .string('tags')
             .defaultTo(null);
         posts
-            .json('content')
+            .string('content')
             .notNullable();
+        
+        posts.integer('thread_id')
+            .unsigned()
+            .references('posts.id')
+            .nullable()
+            .onDelete('SET NULL')
+            .onUpdate('CASCADE');
+
+        posts.integer('parent_id')
+            .unsigned()
+            .references('posts.id')
+            .nullable()
+            .onDelete('SET NULL')
+            .onUpdate('CASCADE');
+
+        posts.timestamp('created_at')
+            .defaultTo(knex.fn.now());
+                        
         posts
             .timestamp('posted_at')
             .defaultTo(knex.fn.now())
