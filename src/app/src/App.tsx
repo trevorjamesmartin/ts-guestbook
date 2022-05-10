@@ -21,6 +21,7 @@ import { selectors as webSocketSelectors, actions as webSocketActions } from './
 // import { selectors as profileSelectors } from './features/profile/profileSlice';
 
 import './App.css';
+import Posts from './features/posts/Posts';
 
 // const { selectProfile } = profileSelectors;
 // const { selectToken } = authSelectors;
@@ -95,6 +96,7 @@ function App() {
           <Route path="/app/profile" element={<Profile />} />
           <Route path="/app/logout" element={<Logout />} />
           <Route path="/app/requests" element={<ConnectRequests />} />
+          <Route path="/app/thread/:thread_id" element={<Posts />} />
           <Route path="/" element={<Pages.Welcome ws={ws} />} />
         </Routes>
       </Container>

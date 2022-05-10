@@ -1,5 +1,6 @@
 import {Router} from 'express';
 import Posts, {PostType, PostedMessage} from './posts-model';
+import pointerModel from './pointer-model';
 const router = Router();
 
 router.get('/', async (req:any, res) => {
@@ -79,5 +80,17 @@ router.post('/reply/:id', async(req:any, res) => {
     return res.status(201).json(result);
 });
 
+router.get('/thread/:id', async (req:any, res) => {
+    let id = req.params.id;
+    let thread_id = Number(id);
+    let {decodedToken} = req;
+    const { username, subject } = decodedToken;
+    if (!username || !subject || !thread_id) {
+        console.log("ERROR", {username, subject})
+        return res.status(404).json([]);
+    }
+    let result:any = await Posts.findByThread(thread_id);
+    return res.status(200).json(result);
+})
 
 export default router;

@@ -1,33 +1,79 @@
 import React, { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 
-import { BlogPost, selectors as postsSelectors, getPostsAsync, submitPostAsync, actions as postsActions } from './postsSlice';
-
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { BlogPost, selectors as postsSelectors, getPostsAsync, replyPostAsync, actions as postsActions } from './postsSlice';
+import { getFeedAsync, selectors as feedSelectors, actions as feedActions } from '../feed/feedSlice';
+import { LiteralFood } from '../feed/Feed'
+import { selectors as profileSelectors } from '../profile/profileSlice';
+import { Form, FormGroup, Label, Input, Button, Card, Container, CardBody, CardImg, CardText, Col, Row } from 'reactstrap';
 const { selectPosts, selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
+const { selectFeed } = feedSelectors;
+const { selectProfile } = profileSelectors;
 
-const Post = (props: BlogPost) => {
-    return (<li key={props.id}>
-        <div className="blog-post">
-            <span className="title">{props.title}</span>
-            <p className="content">{props.content}</p>
-            <span className="tags">{props.tags}</span>
-        </div>
-    </li>)
+const PostCard = (props: any) => {
+    const profile = props.profile
+
+    // const replies = props.replies;
+    const findAvatar = () => {
+      if (props.avatar) {
+        return props.avatar;
+      }
+      return profile.avatar || "/user.png";
+    }
+    return (
+        <Card key={props.id} className="blog-post">
+            <Container>
+                <Row xs="3" >
+                    <CardImg src={findAvatar()} className="shout-out-avatar" />
+                    <CardText className="shouter-username">@{props.username || "You"}</CardText>
+                    {/* <CardText className="shouter-timestamp">{posted_at}</CardText> */}
+                </Row>
+                <Row xs="1">
+                    <CardText className="shouter-name">{props.name}</CardText>
+                </Row>
+                <CardBody>
+                    <CardText className="content">{props.content}</CardText>
+                </CardBody>
+                <Row xs="4">
+                    <Col />
+                    <Col />
+                    <Col />
+                    {/* <Link to={`/app/thread/${mainThread.id}`}>{replies.length > 0 && `replies: ${replies.length}` || 'reply'}</Link> */}
+                </Row>
+            </Container>
+        </Card>
+    )
 }
 
-function Posts() {
+function Thread() {
+    let { thread_id } = useParams();
     const dispatch = useAppDispatch();
     const currentList = useAppSelector(selectPosts);
+    const socialFeed = useAppSelector(selectFeed);
+    const profile = useAppSelector(selectProfile);
     const currentPost = useAppSelector(selectCurrent);
+    const mainThread = socialFeed.food.find((value: any) => value.id === Number(thread_id));
+    const replies = socialFeed.food.filter((value: any) => value.thread_id === Number(thread_id));
+
     useEffect(() => {
-        dispatch(getPostsAsync());
+        if (thread_id) {
+            console.log('thread id ', thread_id)
+            console.log({ mainThread })
+            console.log(currentList)
+            console.log(socialFeed)
+        }
+        // dispatch(getPostsAsync());
     }, [])
-    const handleSubmitForm = (e: any) => {
+    const handleSubmitReply = (e: any) => {
         e.preventDefault();
-        console.log(currentPost);
-        dispatch(submitPostAsync());
+        if (mainThread) {
+            dispatch(replyPostAsync(mainThread.id));
+            setTimeout(() => {
+                dispatch(getFeedAsync());
+              }, 500);
+        }
     }
     const handleChange = (e: any) => {
         let name: string = e.currentTarget.name;
@@ -35,15 +81,37 @@ function Posts() {
         dispatch(setCurrent({ [name]: value }));
     }
     return (<div className="Posts">
-        <Form onSubmit={handleSubmitForm} className="blog-post">
-            <Input value={currentPost.title} onChange={handleChange} name="title" type="text" placeholder="title: subject" />
-            <Input value={currentPost.tags} onChange={handleChange} name="tags" type="text" placeholder="tags: general,random,blog" />
-            <Input placeholder="What's happening?" type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
-            <Button>post</Button>
-        </Form>
+        {mainThread && (
+            <Card key={mainThread.id} className="blog-post">
+                <Container>
+                    <Row xs="3" >
+                        <CardImg src={mainThread.avatar || "/user.png"} className="shout-out-avatar" />
+                        <CardText className="shouter-username">@{mainThread.username || "You"}</CardText>
+                        {/* <CardText className="shouter-timestamp">{posted_at}</CardText> */}
+                    </Row>
+                    <Row xs="1">
+                        <CardText className="shouter-name">{mainThread.name}</CardText>
+                    </Row>
+                    <CardBody>
+                        <CardText className="content">{mainThread.content}</CardText>
+                    </CardBody>
+                    <Row xs="4">
+                        <Col />
+                        <Col />
+                        <Col />
+                        {/* <Link to={`/app/thread/${mainThread.id}`}>{replies.length > 0 && `replies: ${replies.length}` || 'reply'}</Link> */}
+                    </Row>
+                </Container>
+            </Card>)}
         <ul>
-            {currentList?.map(Post)}
+            {replies?.sort((a:any, b:any)=> a.id - b.id).map(pc => <PostCard {...pc} profile={profile} />)}
         </ul>
+        <Form onSubmit={handleSubmitReply} >
+            <Input className="reply-textarea" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
+            <Button color="primary">reply</Button>
+        </Form>
     </div>)
 }
-export default Posts;
+export default Thread;
+
+

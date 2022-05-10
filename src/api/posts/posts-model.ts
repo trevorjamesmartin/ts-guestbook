@@ -8,6 +8,7 @@ export interface PostType {
     tags: string;
     content: JSON;
     posted_at: any;
+    pointer_id: any;
 }
 
 export default {
@@ -16,6 +17,7 @@ export default {
     add,
     update,
     findByUsername,
+    findByThread,
     replyTo
 }
 
@@ -60,11 +62,12 @@ function add(post:Partial<PostType>, thread_id:number, parent_id:number):PostedM
     .then(async (ids:number[]) => {
         const [owner_id] = ids;
         // create pointer
-        await pointerModel.add({
+        const pointer = await pointerModel.add({
             owner_id,
             thread_id,
             parent_id
         });
+        await update(owner_id, { pointer_id: pointer.id });
         return byId(owner_id);
     })
 }
@@ -108,6 +111,23 @@ async function findByUsername(username:string):Promise<PostedMessage[]> {
     });
 }
 
+async function findByThread(thread_id:number):Promise<any[]> {
+    return await db({pointer: "pointers"}).where({ thread_id })
+    .join({ post: "posts" })
+    .whereRaw('?? = ??', ['post.pointer_id', 'pointer.id'])
+    // .whereRaw('?? = ??', ['post.id', 'pointer.owner_id'])
+    .select({
+        parent_id: 'pointer.parent_id',
+        content: 'post.content',
+        // title: 'post.title',
+        // tags: 'post.tags',
+        posted_at: 'post.posted_at',
+        author_id: 'post.author_id',
+        post_id: 'post.id',
+        // thread_id: 'pointer.thread_id',
+        // created_at: 'pointer.created_at',
+    });
+}
 function update(id:number, data:Partial<PostType>) {
     return db("posts").where({ id }).update({...data, posted_at: timestamp() });
 }

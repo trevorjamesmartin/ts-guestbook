@@ -18,8 +18,8 @@ export const submitPostAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const {content, id, tags, title} = state.posts.current;
-        const response = await api(token).post('/api/posts', {content, id, tags, title});
+        const { content, id, tags, title } = state.posts.current;
+        const response = await api(token).post('/api/posts', { content, id, tags, title });
         return response.data;
     }
 );
@@ -27,10 +27,13 @@ export const submitPostAsync = createAsyncThunk(
 // todo
 export const replyPostAsync = createAsyncThunk(
     'posts/reply',
-    async (id:number, thunkAPI) => {
+    async (id: number, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response = await api(token).post(`/api/posts/reply/${id}`, state.posts.current);
+        const { content } = state.posts.current;
+        const response = await api(token).post(`/api/posts/reply/${id}`, {
+            content
+        });
         return response.data;
     }
 );
@@ -51,7 +54,7 @@ export interface postsStore {
     status: string;
 }
 
-const clearState:postsStore = {
+const clearState: postsStore = {
     current: {
         id: 0,
         title: '',
@@ -63,7 +66,7 @@ const clearState:postsStore = {
     status: ''
 };
 
-const initialState:postsStore = persistedStore?.posts || clearState
+const initialState: postsStore = persistedStore?.posts || clearState
 
 export const postsSlice = createSlice({
     name: 'posts',
@@ -91,16 +94,29 @@ export const postsSlice = createSlice({
         builder.addCase(submitPostAsync.pending, (state) => {
             state.status = 'pending';
         })
-        .addCase(submitPostAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            console.log(action.payload);
-            state.status = 'ok'
-            // state.listed = [...state.listed, action.payload];
-            state.current = clearState.current;
+            .addCase(submitPostAsync.fulfilled, (state, action: PayloadAction<any>) => {
+                console.log(action.payload);
+                state.status = 'ok'
+                // state.listed = [...state.listed, action.payload];
+                state.current = clearState.current;
+            })
+            .addCase(submitPostAsync.rejected, (state, action: PayloadAction<any>) => {
+                console.log(action.payload);
+                state.status = 'failed';
+            })
+        builder.addCase(replyPostAsync.pending, (state) => {
+            state.status = 'pending';
         })
-        .addCase(submitPostAsync.rejected, (state, action:PayloadAction<any>) => {
-            console.log(action.payload);
-            state.status = 'failed';
-        })
+            .addCase(replyPostAsync.fulfilled, (state, action: PayloadAction<any>) => {
+                console.log(action.payload);
+                state.status = 'ok'
+                // state.listed = [...state.listed, action.payload];
+                state.current = clearState.current;
+            })
+            .addCase(replyPostAsync.rejected, (state, action: PayloadAction<any>) => {
+                console.log(action.payload);
+                state.status = 'failed';
+            })
     }
 });
 

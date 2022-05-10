@@ -14,7 +14,7 @@ import { selectors as userSelectors } from '../users/userSlice';
 
 import {
   Form, FormGroup, Label, Input, Button,
-  Card, CardBody, CardImg, CardText, Container, Row, Spinner
+  Card, CardBody, CardImg, CardText, Container, Row, Spinner, Col
 } from 'reactstrap';
 
 dayjs.extend(utc)
@@ -30,8 +30,9 @@ const { clear: clearFeed } = feedActions;
 const { selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
 
-const LiteralFood = (props: any) => {
+export const LiteralFood = (props: any) => {
   const profile = props.profile;
+  const replies = props.replies;
   const findAvatar = () => {
     if (props.avatar) {
       return props.avatar;
@@ -40,21 +41,29 @@ const LiteralFood = (props: any) => {
   }
   const posted_at = dayjs.utc(props.posted_at).local().fromNow()
   return (
-    <Card key={props.id} className="blog-post">
-      <Container>
-        <Row xs="3" >
-          <CardImg src={findAvatar()} className="shout-out-avatar" />
-          <CardText className="shouter-username">@{props.username || "You"}</CardText>
-          <CardText className="shouter-timestamp">{posted_at}</CardText>
-        </Row>
-        <Row xs="1">
-          <CardText className="shouter-name">{props.name}</CardText>
-        </Row>
-        <CardBody>
-          <CardText className="content">{props.content}</CardText>
-        </CardBody>
-      </Container>
-    </Card>
+    <Link className="clickable-card" to={`/app/thread/${props.id}`}>
+      <Card key={props.id} className="blog-post">
+        <Container>
+          <Row xs="3" >
+            <CardImg src={findAvatar()} className="shout-out-avatar" />
+            <CardText className="shouter-username">@{props.username || "You"}</CardText>
+            <CardText className="shouter-timestamp">{posted_at}</CardText>
+          </Row>
+          <Row xs="1">
+            <CardText className="shouter-name">{props.name}</CardText>
+          </Row>
+          <CardBody>
+            <CardText className="content">{props.content}</CardText>
+          </CardBody>
+          <Row xs="4">
+            <Col />
+            <Col />
+            <Col />
+          </Row>
+        {replies.length > 0 && `replies: ${replies.length}` || 'reply'}
+        </Container>
+      </Card>
+      </Link>
   )
 }
 
@@ -110,7 +119,14 @@ function Feed() {
             </Container>
             :
             <ul>
-              {socialFeed?.food?.map((f: any) => LiteralFood({ ...f, profile })) || []}
+              {socialFeed?.food?.filter((f: any) => f.thread_id === 0)
+                .map((mmm: any) => LiteralFood({
+                  ...mmm,
+                  profile,
+                  replies: [
+                    ...socialFeed?.food?.filter((reply: any) => reply.parent_id === mmm.id)
+                  ]
+                })) || []}
             </ul>
         }
       </> :

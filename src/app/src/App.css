@@ -263,3 +263,7 @@ a {
   justify-content: center;
   margin-top: 7rem;
 }
+a.clickable-card .card {
+  color: darkslategrey;
+  /* border: 19px solid black; */
+}
