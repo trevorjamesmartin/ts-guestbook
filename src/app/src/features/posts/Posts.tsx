@@ -14,13 +14,14 @@ const { selectProfile } = profileSelectors;
 
 const PostCard = (props: any) => {
     const profile = props.profile
-
+    // console.log({ props })
+    // console.log({profile})
     // const replies = props.replies;
     const findAvatar = () => {
-      if (props.avatar) {
-        return props.avatar;
-      }
-      return profile.avatar || "/user.png";
+        if (profile.user_id === props.author_id) {
+            return profile.avatar;
+        }
+        return props.avatar || "/user.png";
     }
     return (
         <Card key={props.id} className="blog-post">
@@ -72,7 +73,7 @@ function Thread() {
             dispatch(replyPostAsync(mainThread.id));
             setTimeout(() => {
                 dispatch(getFeedAsync());
-              }, 500);
+            }, 500);
         }
     }
     const handleChange = (e: any) => {
@@ -80,12 +81,20 @@ function Thread() {
         let value: any = e.target.value;
         dispatch(setCurrent({ [name]: value }));
     }
+    const findAvatar = () => {
+        if (mainThread) {
+            return profile.user_id === mainThread.author_id ?
+                profile.avatar :
+                mainThread.avatar || "/user.png";
+        }
+        return "/user.png";
+    }
     return (<div className="Posts">
         {mainThread && (
             <Card key={mainThread.id} className="blog-post">
                 <Container>
                     <Row xs="3" >
-                        <CardImg src={mainThread.avatar || "/user.png"} className="shout-out-avatar" />
+                        <CardImg src={findAvatar()} className="shout-out-avatar" />
                         <CardText className="shouter-username">@{mainThread.username || "You"}</CardText>
                         {/* <CardText className="shouter-timestamp">{posted_at}</CardText> */}
                     </Row>
@@ -104,7 +113,7 @@ function Thread() {
                 </Container>
             </Card>)}
         <ul>
-            {replies?.sort((a:any, b:any)=> a.id - b.id).map(pc => <PostCard {...pc} profile={profile} />)}
+            {replies?.sort((a: any, b: any) => a.id - b.id).map(pc => <PostCard {...pc} profile={profile} />)}
         </ul>
         <Form onSubmit={handleSubmitReply} >
             <Input className="reply-textarea" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
