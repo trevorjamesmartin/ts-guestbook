@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import Users, {UserType} from '../users/users-model';
-import Profiles from '../users/profile-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';
@@ -24,8 +23,7 @@ router.post('/register', async (req, res) => {
     }
     try {
         let saved = await Users.add({username, password});
-        let profile = await Profiles.addByUsername(username);
-        return res.status(201).json({...saved, profile });
+        return res.status(201).json(saved);
     } catch (error) {
         return res.status(500).json(error);
     }
