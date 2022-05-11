@@ -97,6 +97,7 @@ wss.on('connection', function (ws, request: any) {
 
 });
 
-server.listen(8080, function () {
-    console.log('listening @ http://127.0.0.1:8080')
+const PORT = process.env.PORT || 8080
+server.listen(process.env.PORT, function () {
+    console.log(`-- listening on ${PORT}`);
 });
