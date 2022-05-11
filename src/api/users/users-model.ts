@@ -29,13 +29,10 @@ function findById(id:number) {
 }
 
 
-function add(user:Partial<UserType>) {
-    return db("users")
-    .insert(user)
-    .then((ids:number[]) => {
-        const [id] = ids;
-        return findById(id);
-    });
+async function add(user:Partial<UserType>) {
+    const { id: user_id, username } = (await db("users").insert(user).returning(["id", "username"]))[0];
+    const profile = (await db("profiles").insert({ user_id }).returning("*"))[0];
+    return {...profile, username };
 }
 
 function findBy(filter:any) {

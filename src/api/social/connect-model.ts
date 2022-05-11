@@ -33,41 +33,55 @@ async function findBy(filter: Partial<RequestConnect>): Promise<RequestConnect[]
 
 async function existingRecord(request_id1:number, request_id2:number) {
     // check for existing record (from)
-    let [friend,] = await friendsModel.findBy({
+    let from_to = await friendsModel.findBy({
         req_from: request_id1,
         req_to: request_id2,
     });
-    if (!friend) {
+    if (!(Array.isArray(from_to) && Array.length > 0)) {
         // check for existing record (to)
-        [friend,] = await friendsModel.findBy({
+        let to_from = await friendsModel.findBy({
             req_from: request_id2,
             req_to: request_id1,
         });
+        return to_from[0]
     }
-    return friend;
+    return from_to[0];
 }
 
 async function acceptRequest(request_id: number, to_id: number) {
-    const cr = await db("request-connect").where({ id: request_id, to_id }).first();
-    const [accept_id] = await createRequest(to_id, cr.from_id, true); // acknowlege acceptance
-    const friend = await existingRecord(request_id, accept_id);
+    const n_from = Number(request_id);
+    const n_to = Number(to_id);
+    const cr = await db("request-connect").where({ id: n_from, to_id: n_to }).first();
+    const acknowleged = await createRequest(n_to, cr.from_id, true); // acknowlege acceptance
+    if (!acknowleged) {
+        return []
+    }
+    const [accepted] = acknowleged;
+    let friend = await existingRecord(n_from, accepted.id);
     if (friend) {
         return [friend.id]
     }
     // CREATE friend record
     if (cr.accepted) {
-        return await friendsModel.add({
-            req_from: request_id,
-            req_to: accept_id,
-        });
+        let [friend] = await friendsModel.add({
+            req_from: n_from,
+            req_to: accepted.id,
+        }).returning('id');
+        return [friend.id]
     }
     return []
 }
 
 async function rejectRequest(request_id: number, to_id: number) {
     const cr = await db("request-connect").where({ id: request_id, to_id }).first();
-    const [reject_id] = await createRequest(to_id, cr.from_id, false); // acknowledge rejection
-    const friend = await existingRecord(request_id, reject_id);
+    // const [reject_id] = await createRequest(to_id, cr.from_id, false); // acknowledge rejection
+    const acknowleged = await createRequest(to_id, cr.from_id, false); // acknowlege rejection
+    if (!acknowleged) {
+        console.log('createRequest returned', acknowleged)
+        return []
+    }
+    const [rejected] = acknowleged
+    const friend = await existingRecord(request_id, rejected.id);
     if (friend) {
         // DELETE friend record.
         await friendsModel.remove(friend.id);
@@ -77,23 +91,28 @@ async function rejectRequest(request_id: number, to_id: number) {
 }
 
 async function createRequest(from_id: number, to_id: number, accepted: boolean) {
-    const cr = await db("request-connect").where({ from_id, to_id }).first();
-    if (cr) {
-        let { id } = cr;
-        await db("request-connect")
+    const existingRequest = await db("request-connect").where({ from_id, to_id }).first();
+    // console.log(existingRequest)
+    if (existingRequest) {
+        let { id } = existingRequest;
+        let updated = await db("request-connect")
             .where({ id })
             .update({
                 updated_at: timestamp(),
                 accepted
             });
-        return [id]
+        // console.log('updated', id, updated);
+        if (updated) {
+            return [{id}]
+        }
+        return []
     }
-    return db("request-connect")
+    return await db("request-connect")
         .insert({
             from_id,
             to_id,
             accepted,
-        });
+        }).returning("*")
 }
 
 const withProfiles = async (rcList: RequestConnect[]) => {
