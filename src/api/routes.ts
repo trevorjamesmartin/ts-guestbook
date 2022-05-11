@@ -5,6 +5,7 @@ import { usersRouter, profileRouter } from './users'
 import { postsRouter } from './posts';
 import { connectRouter, friendsRouter } from './social';
 import { feedRouter } from './feed';
+import awsRouter from './aws/router';
 
 export default function(server:express.Express) {
     server.use('/auth', authRouter);
@@ -15,7 +16,8 @@ export default function(server:express.Express) {
     server.use('/api/connect', connectRouter);
     server.use('/api/friends', friendsRouter);
     server.use('/api/feed', feedRouter);
-    // HTML renders SPA from here, (app-wide cache settings)
+    server.use('/api/aws', awsRouter);
+    // // HTML renders SPA from here, (app-wide cache settings)
     server.use('/', express.static(path.join(__dirname, "../app/build")));
     server.get("*", (req, res) => {
         // * catch-all, reformat as search-params & redirect to SPA
