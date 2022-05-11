@@ -164,9 +164,7 @@ export const userSlice = createSlice({
       .addCase(acceptFriendRequestAsync.fulfilled, (state, action: PayloadAction<any>) => {
         state.status = 'idle';
         const { connect_id, data } = action.payload;
-        console.log(data);
         state.incoming = state.incoming.filter(req => req.connect_id !== connect_id);
-        console.log(action.payload)
       })
       .addCase(acceptFriendRequestAsync.rejected, (state, action: PayloadAction<any>) => {
         state.status = 'failed';
