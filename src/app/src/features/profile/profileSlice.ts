@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
+import axios from 'axios';
 import {RootState} from '../../memory/store'
 import { persistedStore } from '../../memory/persist';
 
@@ -19,10 +20,20 @@ export const setProfileAsync = createAsyncThunk(
     async (data:any, thunkAPI) => {
       const {status, ...profileData  } = data; // separate status from profile data;
       const {name, email, dob, avatar, id } = data
-      const payload = { name, avatar, email, dob };
       const state:any = thunkAPI.getState();
       const token = state?.auth?.token || undefined;
-      await api(token).put('/api/profile', payload); // pending
+      // upload to s3 
+      const cloud = api(token);
+      console.log('requesting s3 signature')
+      const {data: signature} = await cloud.get(`/api/aws/sign-s3?file-name=${profileData.username}-avatar.jpeg&file-type=image/jpeg`);
+      let {signedRequest, url} = signature;
+      console.log({signature})
+      console.log('uploading avatar to s3 bucket...')
+      let bucketed = await axios.put(signedRequest, avatar);
+      console.log({response: bucketed.data});
+      // update profile with s3 URL
+      const payload = { name, avatar: url, email, dob };
+      await cloud.put('/api/profile', payload); // pending
       return payload; // fulfilled
     }
 );
