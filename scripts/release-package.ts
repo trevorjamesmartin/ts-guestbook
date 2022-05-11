@@ -6,9 +6,10 @@ const packageJson = require('../package.json');
 let packageDist = {...packageJson,
     "name" : "vigilant-cloud",
     "scripts": {
-        "pre:start": "npm install",
         "start": "node index.js",
-        "create:db": "npx knex migrate:latest && npx knex seed:run"
+        "build": "npm install"
+        // "create:db": "npx knex migrate:latest && npx knex seed:run",
+        // "heroku-postbuild": "npm run create:db" // this will be run on Heroku
     }
 }
 delete packageDist["devDependencies"];
