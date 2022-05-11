@@ -30,12 +30,15 @@ export default function(server:Express) {
     // 0. allow origins
     server.use(hostValidation({
         hosts: [
+            'vigilant-cloud.herokuapp.com',
             '127.0.0.1:3000',
             'localhost:3000',
             'localhost:3001',
             '127.0.0.1:3001',
             'localhost:8080',
             '127.0.0.1:8080',
+            'localhost:5000',
+            '127.0.0.1:5000',
         ]
     }));
     // 1. parse body (sort)
