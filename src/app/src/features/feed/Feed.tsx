@@ -102,15 +102,7 @@ function Feed() {
   const handleChange = (e: any) => {
     let name: string = e.currentTarget.name;
     let value: any = e.target.value;
-    switch (name) {
-      case 'content':
-        dispatch(setCurrent({ [name]: value.slice(0, 254) }));
-        break;
-    
-      default:
-        dispatch(setCurrent({ [name]: value }));
-        break;
-    }
+    dispatch(setCurrent({ [name]: value }));
   }
 
   return (<div className="Posts">

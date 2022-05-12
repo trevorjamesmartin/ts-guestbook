@@ -76,6 +76,15 @@ export const postsSlice = createSlice({
             state = { ...clearState }
         },
         setCurrent: (state, action: PayloadAction<Partial<BlogPost>>) => {
+            for (let name of Object.keys(action.payload)) {
+                switch (name) {
+                    case 'content':
+                      state.current.content = action.payload.content.slice(0, 254);
+                      break;
+                    default:
+                      break;
+                  }
+            }
             state.current = { ...state.current, ...action.payload };
         }
     },

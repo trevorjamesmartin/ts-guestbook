@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import feedModel from "./feed-model";
 const router = Router();
 
