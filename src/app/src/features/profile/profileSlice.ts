@@ -1,50 +1,89 @@
 import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
-import axios from 'axios';
-import {RootState} from '../../memory/store'
+// import axios from 'axios';
+import { RootState } from '../../memory/store'
 import { persistedStore } from '../../memory/persist';
+import { fileLoader } from 'ejs';
 
 export const getProfileAsync = createAsyncThunk(
     'profile/get',
     async (_, thunkAPI) => {
         console.log('GET PROFILE')
-      const state:any = thunkAPI.getState();
-      const token = state?.auth?.token || undefined;
-      const response = await api(token).get('/api/profile'); // pending
-      return response.data; // fulfilled
+        const state: any = thunkAPI.getState();
+        const token = state?.auth?.token || undefined;
+        const response = await api(token).get('/api/profile'); // pending
+        return response.data; // fulfilled
     }
 );
 
+
+
+export async function uploadToS3(file: string, signedRequest: string) {
+    let headers = { 'Content-Type': "x-www-form-urlencoded" }; //"multipart/form-data" };
+    let method = "PUT";
+    let match = /^data:(.*);base64,(.*)$/.exec(file);
+    if (match == null) {
+        // not base64 encoded ?
+        throw 'Could not parse result'; // should not happen
+    }
+    // Split into two parts
+    const parts = file.split(';base64,');
+    // Hold the content type
+    const imageType = parts[0].split(':')[1];
+    // Decode Base64 string
+    const decodedData = atob(parts[1]);
+    // Create UNIT8ARRAY of size same as row data length
+    const uInt8Array = new Uint8Array(decodedData.length);
+    // Insert all character code into uInt8Array
+    for (let i = 0; i < decodedData.length; ++i) {
+      uInt8Array[i] = decodedData.charCodeAt(i);
+    }
+    // Return BLOB image after conversion
+    let image = new Blob([uInt8Array], { type: imageType });    
+    let body = image;
+    // UPLOAD
+    return await fetch(signedRequest, { method, body, headers });
+}
+
 export const setProfileAsync = createAsyncThunk(
     'profile/set',
-    async (data:any, thunkAPI) => {
-      const {status, ...profileData  } = data; // separate status from profile data;
-      const {name, email, dob, avatar, id } = data
-      const state:any = thunkAPI.getState();
-      const token = state?.auth?.token || undefined;
-      // upload to s3 
-      const cloud = api(token);
-      console.log('requesting s3 signature')
-      const {data: signature} = await cloud.get(`/api/aws/sign-s3?file-name=${profileData.username}-avatar.jpeg&file-type=image/jpeg`);
-      let {signedRequest, url} = signature;
-      console.log({signature})
-      console.log('uploading avatar to s3 bucket...')
-      let bucketed = await axios.put(signedRequest, avatar);
-      console.log({response: bucketed.data});
-      // update profile with s3 URL
-      const payload = { name, avatar: url, email, dob };
-      await cloud.put('/api/profile', payload); // pending
-      return payload; // fulfilled
+    async (profileUpdate: any, thunkAPI) => {
+        const { status, ...profileData } = profileUpdate; // separate status from profile data;
+        const { name, email, dob, avatar, id } = profileUpdate
+        const state: any = thunkAPI.getState();
+        const token = state?.auth?.token || undefined;
+        // upload to s3 
+        const cloud = api(token);
+        console.log('requesting s3 signature')
+        let fileType='image/jpeg';
+        const getSigned = await cloud.get(`/api/aws/sign-s3?file-name=${profileData.username}-avatar.jpeg&file-type=${fileType}`);
+        const { signedURL } = getSigned.data;
+        console.log("UPLOAD URL", signedURL);
+        console.log('uploading avatar to s3 bucket...');
+        const imageUpload = await uploadToS3(avatar, signedURL);
+        console.log(imageUpload.status);
+        const imageURL = signedURL.split('?')[0];
+        console.log("IMAGE URL", imageURL);
+        // update profile with s3 URL
+        const updatedProfile = {
+            name, 
+            avatar: imageURL, 
+            email, 
+            dob
+        };
+        console.log({updatedProfile})
+        await cloud.put('/api/profile', updatedProfile); // pending
+        return updatedProfile; // fulfilled
     }
 );
 
 export interface profileStore {
     username: string;
     user_id: number;
-    name: string|undefined;
-    avatar: string|undefined;
-    email: string|undefined;
-    dob: string|Date|undefined;
+    name: string | undefined;
+    avatar: string | undefined;
+    email: string | undefined;
+    dob: string | Date | undefined;
     status: string;
 }
 
@@ -62,8 +101,8 @@ export const profileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
-        setField: (state, action:PayloadAction<any>) => {
-            state.status  = 'setField, pending';
+        setField: (state, action: PayloadAction<any>) => {
+            state.status = 'setField, pending';
             for (let fieldName of Object.keys(action.payload)) {
                 let value = action.payload[fieldName];
                 state.status = `set ${fieldName}`;
@@ -85,7 +124,7 @@ export const profileSlice = createSlice({
                         break;
                 }
             }
-            
+
         },
         clear: (state) => {
             console.log('CLEAR PROFILE')
@@ -102,43 +141,46 @@ export const profileSlice = createSlice({
         builder.addCase(getProfileAsync.pending, (state) => {
             state.status = 'loading';
         })
-        .addCase(getProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state.status = 'ok';
-            state.username = action.payload.username;
-            state.user_id = action.payload.user_id;
-            state.name = action.payload.name;
-            state.avatar = action.payload.avatar;
-            state.email = action.payload.email;
-            state.dob = action.payload.dob;
-        })
-        .addCase(getProfileAsync.rejected, (state, action:PayloadAction<any>) =>{
-            state = {... initialState, status: "failed" };
-        })
+            .addCase(getProfileAsync.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'ok';
+                state.username = action.payload.username;
+                state.user_id = action.payload.user_id;
+                state.name = action.payload.name;
+                state.avatar = action.payload.avatar;
+                state.email = action.payload.email;
+                state.dob = action.payload.dob;
+            })
+            .addCase(getProfileAsync.rejected, (state, action: PayloadAction<any>) => {
+                state = { ...initialState, status: "failed" };
+            })
 
         builder.addCase(setProfileAsync.pending, (state) => {
             state.status = 'loading';
         })
-        .addCase(setProfileAsync.fulfilled, (state, action:PayloadAction<any>) => {
-            state = {... initialState, status: "ok" };
-            // console.log(action.payload);
-        })
-        .addCase(setProfileAsync.rejected, (state, action:PayloadAction<any>) =>{
-            // console.log(action.payload);
-            state = {... initialState, status: "failed" };
-        })
+            .addCase(setProfileAsync.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = "ok";
+                state.name = action.payload.name;
+                state.email = action.payload.email;
+                state.avatar = action.payload.avatar;
+                state.dob = action.payload.dob;
+            })
+            .addCase(setProfileAsync.rejected, (state, action: PayloadAction<any>) => {
+                // console.log(action.payload);
+                state = { ...initialState, status: "failed" };
+            })
 
     }
 
 });
 
-const selectProfile = (state:RootState) => state.profile;
+const selectProfile = (state: RootState) => state.profile;
 
 export const selectors = {
     selectProfile
 };
 
 const { clear, setField } = profileSlice.actions;
-export const actions = { 
+export const actions = {
     clear,
     setField
 };

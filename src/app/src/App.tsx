@@ -55,7 +55,7 @@ function App() {
     console.log('-> ws')
     let local_url: string = window.location.protocol + "://" + window.location.host
     let base_url: string = process.env.REACT_APP_BASE_URL || local_url;
-    let ws_url: string = `ws://${base_url.split('://')[1]}`;
+    let ws_url: string = `wss://${base_url.split('://')[1]}`;
     let _ws = new WebSocket(ws_url);
     _ws.onerror = function () {
       navigate('/login')

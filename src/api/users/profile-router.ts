@@ -17,20 +17,13 @@ router.put('/', async (req:any, res) => {
     let profile:ProfileType|undefined;
     let {decodedToken} = req;
     const username = decodedToken?.username;
-
     if (!username) return res.status(403).json({error: 'user undefined'});
-    try {
-        profile = await Profiles.byId(decodedToken.subject);
-    } catch (e) {
-        console.log('error, ', e)
-        profile = undefined;
-        return res.status(404).json({error: e});
-    }
     let { name, avatar, email, dob } = req.body;
-    // console.log(req.body)
-    let id:number = profile?.id||0;
+    let id:number = Number(decodedToken.subject);
     if (id > 0){
-        let result = await Profiles.update(id, { name,/* avatar,*/ email, dob });
+        let result = await Profiles.update(id, 
+            { name, avatar, email, dob 
+        });
         res.status(200).json(result);
     } else {
         console.log('error', profile)

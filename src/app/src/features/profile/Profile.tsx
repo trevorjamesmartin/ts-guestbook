@@ -30,11 +30,6 @@ function Profile() {
         if (match == null) {
             throw 'Could not parse result'; // should not happen
         }
-        // var mimeType = match[1];
-        // var content = match[2];
-        // alert(mimeType);
-        // alert(content);
-        // create image element
         const imgElement = document.createElement("img");
         imgElement.src = event.target.result;
         imgElement.onload = function (e:any) {

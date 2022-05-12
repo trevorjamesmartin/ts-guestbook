@@ -102,7 +102,15 @@ function Feed() {
   const handleChange = (e: any) => {
     let name: string = e.currentTarget.name;
     let value: any = e.target.value;
-    dispatch(setCurrent({ [name]: value }));
+    switch (name) {
+      case 'content':
+        dispatch(setCurrent({ [name]: value.slice(0, 254) }));
+        break;
+    
+      default:
+        dispatch(setCurrent({ [name]: value }));
+        break;
+    }
   }
 
   return (<div className="Posts">
@@ -111,7 +119,13 @@ function Feed() {
         <Form onSubmit={handleSubmitForm}>
           <FormGroup>
             <Label for="shout-out">What's happening?</Label>
-            <Input id="shout-out" ref={shoutOut} className="shout" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
+            <Input id="shout-out" 
+              ref={shoutOut} 
+              className="shout" placeholder="..." 
+              type="textarea" 
+              value={currentPost?.content} 
+              onChange={handleChange} 
+              name="content" />
             <Button className="shout-out btn-primary">shout</Button>
           </FormGroup>
         </Form>
