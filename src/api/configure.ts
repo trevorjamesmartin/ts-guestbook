@@ -16,7 +16,15 @@ const corsConfig = {
   origin: true,
   credentials: true,
 };
-
+const DEPLOYED = {
+  csp: false
+}
+try {
+  require('dotenv').config();
+  DEPLOYED.csp = true
+} catch {
+  console.log('[production mode]');
+}
 export const sessionParser = session(sessionConfig);
 
 const corsMiddleware = cors(corsConfig);
@@ -27,6 +35,7 @@ const corsMiddleware = cors(corsConfig);
 // const WEBSOCKET = 'ws://localhost:8080'
 // const SECURE_WEBSOCKET = 'wss://vigilant-cloud.herokuapp.com'
 // const WEB_RESOURCES = `${S3BUCKET_URL} ${LOCAL8080} ${HOST} ${SECURE_WEBSOCKET} ${WEBSOCKET}`
+//   `default-src 'self'; font-src 'self' *; img-src 'self' ${WEB_RESOURCES}; script-src 'self' ${WEB_RESOURCES}; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css; frame-src 'self'; connect-src ${WEB_RESOURCES}`
 export default function (server: Express) {
   // const server = express();
   server.use(corsMiddleware);
@@ -36,12 +45,27 @@ export default function (server: Express) {
   // server.use(enforcesSSL());
   // Content Security Policy (WARN)
   server.use(function (req, res, next) {
-      res.setHeader(
-        'Content-Security-Policy-Report-Only',
-        `Content-Security-Policy: default-src https: wss:; img-src * 'self' data: https:; script-src https: 'unsafe-inline'; style-src https: 'unsafe-inline'`
-      //   `default-src 'self'; font-src 'self' *; img-src 'self' ${WEB_RESOURCES}; script-src 'self' ${WEB_RESOURCES}; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css; frame-src 'self'; connect-src ${WEB_RESOURCES}`
-      );
-      next();
+    res.setHeader(
+      'Content-Security-Policy-Report-Only',
+      (DEPLOYED.csp ? 
+
+      "Content-Security-Policy: \
+        default-src https: wss:; \
+        img-src 'self' data: https:; \
+        script-src https: 'unsafe-inline'; \
+        style-src https: 'unsafe-inline'; \
+        style-src-elem https: wss:; \
+        connect-src https: wss:" :
+      
+      "Content-Security-Policy: \
+        default-src http: https: wss:; \
+        img-src 'self' data: https:; \
+        script-src http: https: 'unsafe-inline'; \
+        style-src http https: 'unsafe-inline'; \
+        style-src-elem http: https: wss: ws:; \
+        connect-src http: https: wss: ws:")
+    );
+    next();
   });
   // 0. allow origins
   server.use(hostValidation({
