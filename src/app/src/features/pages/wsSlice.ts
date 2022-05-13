@@ -11,7 +11,7 @@ interface wsMessage {
 
 const initialMessage:wsMessage = {
     message: undefined,
-    status: 'idle'
+    status: 'disconnected'
 }
 
 interface wsPayload {
@@ -42,10 +42,10 @@ export const wsSlice = createSlice({
     reducers: {
         //
         setStatusConnected: (state) => {
-            state.status = 'idle';
+            state.status = 'connected';
         },
         setStatusDisconnected: (state) => {
-            state.status = '';
+            state.status = 'disconnected';
         }
     },
     extraReducers: (builder) => {

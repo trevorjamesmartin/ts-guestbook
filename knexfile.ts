@@ -1,5 +1,9 @@
 import type { Knex } from "knex";
-
+try {
+  require('dotenv').config();
+} catch {
+  console.log('[production mode]');
+}
 // Update with your config settings.
 
 const config: { [key: string]: Knex.Config } = {

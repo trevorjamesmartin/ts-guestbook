@@ -8,11 +8,9 @@ const sessionConfig = {
     name: "monkey",
     secret: "typewriters",
     cookie: {
-      maxAge: 1000 * 60 * 7,
       secure: false,
-      httpOnly: true
     },
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     store: new KnexStore({
       knex,
