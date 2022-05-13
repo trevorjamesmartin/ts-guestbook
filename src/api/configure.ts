@@ -45,21 +45,26 @@ export default function configureServer(server: Express) {
         'Content-Security-Policy-Report-Only',
         (process.env.NODE_ENV !== "development" ?
 
-          "Content-Security-Policy: \
-        default-src https: wss:; \
-        img-src 'self' data: https:; \
-        script-src https: 'unsafe-inline'; \
-        style-src https: 'unsafe-inline'; \
-        style-src-elem https: wss:; \
-        connect-src https: wss:" :
+        "default-src 'self';\
+        script-src 'report-sample' 'self';\
+        style-src 'report-sample' 'self' https://fonts.googleapis.com;\
+        object-src 'none';\
+        base-uri 'self';\
+        connect-src 'self' https://vigilant-s3.s3.amazonaws.com;\
+        font-src 'self' https://fonts.gstatic.com;\
+        frame-src 'self';\
+        img-src 'self' https://vigilant-s3.s3.amazonaws.com;\
+        manifest-src 'self';\
+        media-src 'self';\
+        worker-src 'none';" :
 
-          "Content-Security-Policy: \
-        default-src http: https: wss:; \
+        "default-src http: https: wss:; \
         img-src 'self' data: https:; \
         script-src http: https: 'unsafe-inline'; \
         style-src http https: 'unsafe-inline'; \
         style-src-elem http: https: wss: ws:; \
         connect-src http: https: wss: ws:")
+        
       );
       next();
     })
