@@ -16,15 +16,7 @@ const corsConfig = {
   origin: true,
   credentials: true,
 };
-const DEPLOYED = {
-  csp: false
-}
-try {
-  require('dotenv').config();
-  DEPLOYED.csp = true
-} catch {
-  console.log('[production mode]');
-}
+
 export const sessionParser = session(sessionConfig);
 
 const corsMiddleware = cors(corsConfig);
@@ -47,7 +39,7 @@ export default function (server: Express) {
   server.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy-Report-Only',
-      (DEPLOYED.csp ? 
+      (process.env.NODE_ENV !== "development" ? 
 
       "Content-Security-Policy: \
         default-src https: wss:; \
