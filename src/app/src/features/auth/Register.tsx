@@ -49,11 +49,11 @@ export function Register() {
         </FormGroup>
         <FormGroup>
           <Label for="password">Password</Label>
-          <Input type="password" name="password" value={state.password} onChange={handleChange}></Input>
+          <Input autoComplete="new-password" type="password" name="password" value={state.password} onChange={handleChange}></Input>
         </FormGroup>
         <FormGroup>
           <Label for="password1">Password (confirm)</Label>
-          <Input type="password" name="password1" value={state.password1} onChange={handleChange}></Input>
+          <Input autoComplete="confirm-password" type="password" name="password1" value={state.password1} onChange={handleChange}></Input>
         </FormGroup>
         <Button>Submit</Button>
       </Form>
