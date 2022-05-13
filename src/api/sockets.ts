@@ -17,12 +17,13 @@ export default function (io: any) {
       req.session.loggedIn = true;
       req.session.save();
       map.set(req.session.username, socket);
-      
+      console.log('+ ', req.session.username, 'connected', socket.id);
+
       socket.on('disconnect', () => {
         map.delete(req.session.username);
         req.session.loggedIn = false;
         req.session.save();
-        console.log(req.session.username, 'disconnected', socket.id);
+        console.log('- ', req.session.username, 'disconnected', socket.id);
       });
     })
   

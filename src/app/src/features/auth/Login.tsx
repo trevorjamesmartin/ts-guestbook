@@ -1,6 +1,6 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import React, { useState } from "react";
-import { Container, Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { loginAsync, selectors, Credentials } from './authSlice';
 
@@ -17,10 +17,6 @@ export function Login() {
   const message: string = useAppSelector(selectMessage) || ""
   const dispatch: ThunkDispatch<any, Credentials, any> = useAppDispatch();
   const [state, setState] = useState<Credentials>(initialState);
-  const handleChange = (e: { preventDefault: () => void; currentTarget: { name: string; }; target: { value: string; }; }) => {
-    e.preventDefault();
-    setState({ ...state, [e.currentTarget.name]: e.target.value });
-  }
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     console.log(state)
@@ -42,11 +38,17 @@ export function Login() {
         : <Form onSubmit={handleSubmitForm}>
           <FormGroup>
             <Label for="username">Username</Label>
-            <Input name="username" value={state.username} onChange={handleChange}></Input>
+            <Input name="username" autoComplete="name" value={state.username} onChange={(e) => {
+              e.preventDefault();
+              setState({ ...state, username: e.target.value });
+            }}></Input>
           </FormGroup>
           <FormGroup>
             <Label for="password">Password</Label>
-            <Input type="password" name="password" value={state.password} onChange={handleChange}></Input>
+            <Input name="password" type="password" autoComplete="current-password" value={state.password} onChange={(e) => {
+              e.preventDefault();
+              setState({ ...state, password: e.target.value })
+            }}></Input>
           </FormGroup>
           <Button>Submit</Button>
         </Form>

@@ -17,6 +17,7 @@ export default function(server:express.Express) {
     server.use('/api/friends', friendsRouter);
     server.use('/api/feed', feedRouter);
     server.use('/api/aws', awsRouter);
+    server.use('/socket.io', function(_, __, next) {next()})
     // // HTML renders SPA from here, (app-wide cache settings)
     server.use('/', express.static(path.join(__dirname, "../app/build")));
     server.get("*", (req, res) => {
