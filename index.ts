@@ -59,14 +59,7 @@ server.on('upgrade', function (request: any, socket, head) {
 function broadcastGlobal(ws:any, message:string) {
     for (let sessionId of map.keys()) {
         let socket = map.get(sessionId);
-        if (!socket) {
-            return
-        }
-        if (socket !== ws) {
-            socket.send(message);
-        } else {
-            socket.send("ok");
-        }
+        socket.send(message);
     }
 }
 
@@ -82,8 +75,8 @@ wss.on('connection', function (ws, request: any) {
         switch (text) {
             case "MainPage":
                 console.log(`${username} -> /app `);
-                // ws.send(`hello ${username}`);
-                broadcastGlobal(ws, `welcome ${username}`)
+                ws.send(`hello ${username}`);
+                broadcastGlobal(ws, `${username} CONNECTED`)
                 break;
             default:
                 console.log(`${username} -> ${text}`);
@@ -96,6 +89,14 @@ wss.on('connection', function (ws, request: any) {
     });
 
 });
+
+// TODO: socket.io or setup pingback
+
+// setInterval(() => {
+//     wss.clients?.forEach((client) => {
+//       client.send(new Date().toTimeString());
+//     });
+// }, 1000);
 
 const PORT = process.env.PORT || 8080
 server.listen(process.env.PORT, function () {

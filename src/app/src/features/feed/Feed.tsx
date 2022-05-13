@@ -128,7 +128,6 @@ function Feed() {
             </Container>
             :
             <>
-            <h2>feed</h2>
             <ul>
               {socialFeed?.food?.filter((f: any) => !f.thread_id)
                 .map((mmm: any) => LiteralFood({

@@ -77,10 +77,10 @@ function Profile() {
                 <Label for="email">Email</Label>
                 <Input name='email' type='text' placeholder='email' value={profile.email || ""} onChange={handleChange} />
             </FormGroup>
-            <FormGroup>
-                <Label for="dob">Date Of Birth</Label>
-            </FormGroup>
-            <Input name='dob' type='text' placeholder='dob' value={profile.dob || ""} onChange={handleChange} />
+            {/* <FormGroup> */}
+                {/* <Label for="dob">Date Of Birth</Label> */}
+            {/* <Input name='dob' type='text' value={profile.dob || ""} onSelect={handleChange} /> */}
+            {/* </FormGroup> */}
             <Button>update</Button>
         </Form>
         <span>{profile.status}</span>

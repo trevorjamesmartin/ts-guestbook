@@ -4,11 +4,12 @@ import bcrypt from 'bcryptjs';
 function genUser(name: string, password: string) {
     return { username: name, password: String(bcrypt.hashSync(password, 13)) }
 }
+let pass = process.env.PASSWORD || ""
 
 export async function seed(knex: Knex): Promise<void> {
     // Deletes ALL existing entries
     await knex("users").del();
-    let pass = process.env.PASSWORD || "gnu1baw_GWD1fea_tqt"
+    let pass = process.env.PASSWORD
     const users = [
         ["admin", `${pass}`],
         ["development", `dev-${pass}`],
