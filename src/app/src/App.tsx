@@ -19,7 +19,7 @@ import { io } from "socket.io-client";
 
 const {setStatusConnected, setStatusDisconnected} = webSocketActions;
 
-const socket = io();
+const socket = io(window.location.origin, {  withCredentials: true });
 
 const { selectSentStatus } = webSocketSelectors;
 
