@@ -2,7 +2,7 @@ import type { Knex } from "knex";
 try {
   require('dotenv').config();
 } catch {
-  console.log('[production mode]');
+  console.log('*Knex* [production mode]');
 }
 // Update with your config settings.
 
