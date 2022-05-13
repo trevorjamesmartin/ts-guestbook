@@ -21,12 +21,12 @@ export const sessionParser = session(sessionConfig);
 
 const corsMiddleware = cors(corsConfig);
 // (init)
-const S3BUCKET_URL = 'https://vigilant-s3.s3.amazonaws.com'
-const LOCAL8080 = 'http://localhost:8080'
-const HOST = 'https://vigilant-cloud.herokuapp.com'
-const WEBSOCKET = 'ws://localhost:8080'
-const SECURE_WEBSOCKET = 'wss://vigilant-cloud.herokuapp.com'
-const WEB_RESOURCES = `${S3BUCKET_URL} ${LOCAL8080} ${HOST} ${SECURE_WEBSOCKET} ${WEBSOCKET}`
+// const S3BUCKET_URL = 'https://vigilant-s3.s3.amazonaws.com'
+// const LOCAL8080 = 'http://localhost:8080'
+// const HOST = 'https://vigilant-cloud.herokuapp.com'
+// const WEBSOCKET = 'ws://localhost:8080'
+// const SECURE_WEBSOCKET = 'wss://vigilant-cloud.herokuapp.com'
+// const WEB_RESOURCES = `${S3BUCKET_URL} ${LOCAL8080} ${HOST} ${SECURE_WEBSOCKET} ${WEBSOCKET}`
 export default function (server: Express) {
   // const server = express();
   server.use(corsMiddleware);

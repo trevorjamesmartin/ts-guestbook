@@ -8,7 +8,7 @@ const sessionConfig = {
     name: "monkey",
     secret: "typewriters",
     cookie: {
-      maxAge: 1000 * 60 * 7,
+      maxAge: 3600 * 10**3,
       secure: false,
       httpOnly: true
     },
