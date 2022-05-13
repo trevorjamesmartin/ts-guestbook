@@ -17,17 +17,25 @@ import './App.css';
 
 import { io } from "socket.io-client";
 
+const {setStatusConnected, setStatusDisconnected} = webSocketActions;
+
 const socket = io();
 
 socket.on("connect", () => {
-  console.log(socket.id, "connected");
+  console.log("connected");
+  useAppDispatch()(setStatusConnected());  
   // save to Redux
 });
 
 socket.on("disconnect", () => {
-  console.log(socket.id, "disconnected")
+  console.log("disconnected")
   // remove from Redux
+  useAppDispatch()(setStatusDisconnected());  
 });
+
+socket.on("message", (data) => {
+  console.log(data);
+})
 
 const { selectSentStatus } = webSocketSelectors;
 
