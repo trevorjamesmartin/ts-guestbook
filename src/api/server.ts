@@ -12,7 +12,13 @@ try {
 const httpServer = http.createServer(configureRoutes(configureServer(express())));
 
 const io = new Server(httpServer, {
-  // options
+  // websocket options
+  cors: {
+    origin: [
+      "http://localhost:8080", 
+      "https://vigilant-cloud.herokuapp.com"
+    ]
+  }
 });
 
 export { io };
