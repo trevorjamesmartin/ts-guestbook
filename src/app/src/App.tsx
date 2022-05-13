@@ -21,22 +21,6 @@ const {setStatusConnected, setStatusDisconnected} = webSocketActions;
 
 const socket = io();
 
-socket.on("connect", () => {
-  console.log("connected");
-  useAppDispatch()(setStatusConnected());  
-  // save to Redux
-});
-
-socket.on("disconnect", () => {
-  console.log("disconnected")
-  // remove from Redux
-  useAppDispatch()(setStatusDisconnected());  
-});
-
-socket.on("message", (data) => {
-  console.log(data);
-})
-
 const { selectSentStatus } = webSocketSelectors;
 
 function App() {
@@ -58,8 +42,27 @@ function App() {
     }
   }
 
+  const handleIO = () => {
+    socket.on("connect", () => {
+      console.log("connected");
+      dispatch(setStatusConnected());  
+      // save to Redux
+    });
+    
+    socket.on("disconnect", () => {
+      console.log("disconnected")
+      // remove from Redux
+      dispatch(setStatusDisconnected());  
+    });
+    
+    socket.on("message", (data) => {
+      console.log(data);
+    })
+  }
+
   useEffect(() => {
     catchAll();
+    handleIO();
   }, []);
 
   return (<ErrorBoundary>
