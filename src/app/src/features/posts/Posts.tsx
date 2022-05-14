@@ -14,9 +14,6 @@ const { selectProfile } = profileSelectors;
 
 const PostCard = (props: any) => {
     const profile = props.profile
-    // console.log({ props })
-    // console.log({profile})
-    // const replies = props.replies;
     const findAvatar = () => {
         if (profile.user_id === props.author_id) {
             return profile?.avatar || "/user.png";
@@ -59,12 +56,9 @@ function Thread() {
     const replies = socialFeed.food.filter((value: any) => value.thread_id === Number(thread_id));
 
     useEffect(() => {
-        if (thread_id) {
-            console.log('thread id ', thread_id)
-            console.log({ mainThread })
-            console.log(currentList)
-            console.log(socialFeed)
-        }
+        // if (thread_id) {
+        //     console.log('thread id ', thread_id)
+        // }
         // dispatch(getPostsAsync());
     }, [])
     const handleSubmitReply = (e: any) => {

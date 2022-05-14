@@ -40,8 +40,7 @@ class VigilantAPI extends Axios {
     };
   
     get<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R> {
-        console.log('GET', url);
-        // console.log('auth -', this.auth)
+        console.log('[GET]', url);
         return this.client.get(url, config)
     };
     delete<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R> {

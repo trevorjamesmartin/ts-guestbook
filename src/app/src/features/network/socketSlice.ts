@@ -3,13 +3,13 @@ import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
 // import api from '../api';
 
-interface wsMessage {
+interface NetworkSocket {
     message: string | undefined;
     status: string;
     [key: string]: any;
 }
 
-const initialMessage: wsMessage = {
+const initialMessage: NetworkSocket = {
     message: undefined,
     status: 'disconnected'
 }
@@ -35,7 +35,7 @@ function socketPayload(socket: any, text: string): ioPayloadAction {
 const setStatusConnected = createAction("socket/connect", socketPayload);
 const setStatusDisconnected = createAction("socket/disconnect", socketPayload);
 
-export const wsSlice = createSlice({
+export const socketSlice = createSlice({
     name: 'socket',
     initialState: persistedStore?.socket || initialMessage,
     reducers: {
@@ -43,24 +43,24 @@ export const wsSlice = createSlice({
     },
     extraReducers: (builder) => {
 
-        builder.addCase(setStatusConnected, (state: wsMessage, action:ioPayloadAction) => {
+        builder.addCase(setStatusConnected, (state: NetworkSocket, action: ioPayloadAction) => {
             state.status = 'connected';
             action.payload.socket.emit(action.payload.text);
         });
 
-        builder.addCase(setStatusDisconnected, (state:wsMessage, action:ioPayloadAction) => {
+        builder.addCase(setStatusDisconnected, (state: NetworkSocket, action: ioPayloadAction) => {
             state.status = 'disconnected';
             action.payload.socket.emit(action.payload.text);
         })
     }
 });
-const selectSentMessage = (state: RootState) => <string | undefined>state.socket.message;
-const selectSentStatus = (state: RootState) => <string>state.socket.status;
+const selectMessage = (state: RootState) => <string | undefined>state.socket.message;
+const selectStatus = (state: RootState) => <string>state.socket.status;
 
 
 export const selectors = {
-    selectSentMessage,
-    selectSentStatus
+    selectMessage,
+    selectStatus
 }
 
 export const actions = {
@@ -68,4 +68,4 @@ export const actions = {
     setStatusDisconnected
 }
 
-export default wsSlice.reducer;
+export default socketSlice.reducer;

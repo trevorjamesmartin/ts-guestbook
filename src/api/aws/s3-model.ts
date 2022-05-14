@@ -20,7 +20,6 @@ const s3 = new aws.S3({
 });
 
 export async function generateSignedURL(fileName:string, fileType:string) {
-  console.log({ fileName, fileType });
   const s3Params = {
     Bucket: bucketName,
     Key: fileName,

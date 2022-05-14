@@ -19,7 +19,6 @@ export function Login() {
   const [state, setState] = useState<Credentials>(initialState);
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    console.log(state)
     if (state.password.length > 4 && state.username.length > 0) {
       dispatch(loginAsync(state));
       setState(initialState);

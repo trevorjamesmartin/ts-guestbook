@@ -17,7 +17,7 @@ import ConnectRequests from './features/social/Requests';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
 import { getFeedAsync } from './features/feed/feedSlice';
-import { actions as webSocketActions } from './features/pages/wsSlice';
+import { actions as webSocketActions } from './features/network/socketSlice';
 
 import { Container } from 'reactstrap';
 import './App.css';

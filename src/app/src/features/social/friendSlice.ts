@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../api';
+import api from '../network/api';
 import { RootState } from '../../memory/store'
 
 export const friendListAsync = createAsyncThunk(
@@ -113,7 +113,6 @@ export const userSlice = createSlice({
     })
       .addCase(friendListAsync.fulfilled, (state, action: PayloadAction<any>) => {
         state.status = 'idle';
-        console.log(action.payload)
         state.list = action.payload;
       })
       .addCase(friendListAsync.rejected, (state, action: PayloadAction<any>) => {
@@ -136,8 +135,6 @@ export const userSlice = createSlice({
         }
         const outgoing_request = { ...request_to, connect_id };
         state.outgoing = [...state.outgoing, outgoing_request];
-        console.log(action.payload)
-        console.log(state.outgoing)
       })
       .addCase(friendRequestAsync.rejected, (state, action: PayloadAction<any>) => {
         state.status = 'failed';
@@ -148,7 +145,6 @@ export const userSlice = createSlice({
     })
       .addCase(friendCheckAsync.fulfilled, (state, action: PayloadAction<any>) => {
         state.status = 'idle';
-        console.log(action.payload)
         state.incoming = action.payload.requests;
         state.list = action.payload.friends;
       })
@@ -176,7 +172,6 @@ export const userSlice = createSlice({
     })
       .addCase(rejectFriendRequestAsync.fulfilled, (state, action: PayloadAction<any>) => {
         state.status = 'idle';
-        console.log(action.payload)
       })
       .addCase(rejectFriendRequestAsync.rejected, (state, action: PayloadAction<any>) => {
         state.status = 'failed';

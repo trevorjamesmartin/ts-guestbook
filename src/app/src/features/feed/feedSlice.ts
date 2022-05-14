@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
-import api from '../api';
+import api from '../network/api';
 import { RootState } from '../../memory/store'
 import { persistedStore } from '../../memory/persist';
 
@@ -56,11 +56,12 @@ export const profileSlice = createSlice({
                 if (Array.isArray(action.payload)) {
                     state.food = action.payload;
                 } else {
-                    console.log(action.payload)
+                    console.log("ERROR", action.payload)
+                    state.food = [];
                 }
             })
             .addCase(getFeedAsync.rejected, (state, action: PayloadAction<any>) => {
-                console.log(action.payload);
+                console.log("REJECTED!", action.payload);
                 state.food = [];
                 state.status = "failed"
             })

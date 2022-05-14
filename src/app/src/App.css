@@ -267,3 +267,7 @@ a.clickable-card .card {
   color: darkslategrey;
   /* border: 19px solid black; */
 }
+
+.socket-connect-status {
+  margin-right: 1rem;
+}

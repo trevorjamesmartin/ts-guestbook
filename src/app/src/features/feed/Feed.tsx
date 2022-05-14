@@ -45,7 +45,12 @@ export const LiteralFood = (props: any) => {
       <Card key={props.id} className="blog-post">
         <Container>
           <Row xs="3" >
-            <CardImg src={findAvatar()} className="shout-out-avatar" />
+            <CardImg
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null; // prevents looping
+                currentTarget.src = "/user.png";
+              }}
+              src={findAvatar()} className="shout-out-avatar" />
             <CardText className="shouter-username">@{props.username || "You"}</CardText>
             <CardText className="shouter-timestamp">{posted_at}</CardText>
           </Row>
@@ -60,10 +65,10 @@ export const LiteralFood = (props: any) => {
             <Col />
             <Col />
           </Row>
-        {replies.length > 0 && `replies: ${replies.length}` || 'reply'}
+          {replies.length > 0 && `replies: ${replies.length}` || 'reply'}
         </Container>
       </Card>
-      </Link>
+    </Link>
   )
 }
 
@@ -82,7 +87,6 @@ function Feed() {
       dispatch(getFeedAsync());
       setTimeout(() => {
         setLoading(false);
-        console.log(socialFeed)
       }, 500);
     } else {
       dispatch(clearFeed());
@@ -111,12 +115,12 @@ function Feed() {
         <Form onSubmit={handleSubmitForm}>
           <FormGroup>
             <Label for="shout-out">What's happening?</Label>
-            <Input id="shout-out" 
-              ref={shoutOut} 
-              className="shout" placeholder="..." 
-              type="textarea" 
-              value={currentPost?.content} 
-              onChange={handleChange} 
+            <Input id="shout-out"
+              ref={shoutOut}
+              className="shout" placeholder="..."
+              type="textarea"
+              value={currentPost?.content}
+              onChange={handleChange}
               name="content" />
             <Button className="shout-out btn-primary">shout</Button>
           </FormGroup>
@@ -128,16 +132,16 @@ function Feed() {
             </Container>
             :
             <>
-            <ul>
-              {socialFeed?.food?.filter((f: any) => !f.thread_id)
-                .map((mmm: any) => LiteralFood({
-                  ...mmm,
-                  profile,
-                  replies: [
-                    ...socialFeed?.food?.filter((reply: any) => reply.parent_id === mmm.id)
-                  ]
-                })) || []}
-            </ul>
+              <ul>
+                {socialFeed?.food?.filter((f: any) => !f.thread_id)
+                  .map((mmm: any) => LiteralFood({
+                    ...mmm,
+                    profile,
+                    replies: [
+                      ...socialFeed?.food?.filter((reply: any) => reply.parent_id === mmm.id)
+                    ]
+                  })) || []}
+              </ul>
             </>
         }
       </> :

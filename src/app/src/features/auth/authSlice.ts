@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
 // import bcrypt from 'bcryptjs';
-import api from '../api';
+import api from '../network/api';
 
 export interface Credentials {
   username: string;

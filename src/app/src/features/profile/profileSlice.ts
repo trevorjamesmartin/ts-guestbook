@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
-import api from '../api';
+import api from '../network/api';
 // import axios from 'axios';
 import { RootState } from '../../memory/store'
 import { persistedStore } from '../../memory/persist';
@@ -8,7 +8,7 @@ import { fileLoader } from 'ejs';
 export const getProfileAsync = createAsyncThunk(
     'profile/get',
     async (_, thunkAPI) => {
-        console.log('GET PROFILE')
+        // console.log('GET PROFILE')
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         const response =await new api(token).get('/api/profile'); // pending
@@ -54,16 +54,11 @@ export const setProfileAsync = createAsyncThunk(
         const token = state?.auth?.token || undefined;
         // upload to s3 
         const cloud = new api(token);
-        console.log('requesting s3 signature')
         let fileType='image/jpeg';
         const getSigned = await cloud.get(`/api/aws/sign-s3?file-name=${profileData.username}-avatar.jpeg&file-type=${fileType}`);
         const { signedURL } = getSigned.data;
-        console.log("UPLOAD URL", signedURL);
-        console.log('uploading avatar to s3 bucket...');
-        const imageUpload = await uploadToS3(avatar, signedURL);
-        console.log(imageUpload.status);
+        await uploadToS3(avatar, signedURL);
         const imageURL = signedURL.split('?')[0];
-        console.log("IMAGE URL", imageURL);
         // update profile with s3 URL
         const updatedProfile = {
             name, 
@@ -71,7 +66,6 @@ export const setProfileAsync = createAsyncThunk(
             email, 
             dob
         };
-        console.log({updatedProfile})
         await cloud.put('/api/profile', updatedProfile); // pending
         return updatedProfile; // fulfilled
     }
@@ -120,14 +114,14 @@ export const profileSlice = createSlice({
                         state.dob = value;
                         break;
                     default:
-                        console.log("no case defined for", { fieldName, value });
+                        // console.log("no case defined for", { fieldName, value });
                         break;
                 }
             }
 
         },
         clear: (state) => {
-            console.log('CLEAR PROFILE')
+            // console.log('CLEAR PROFILE');
             state.status = ''
             state.name = ''
             state.avatar = ''

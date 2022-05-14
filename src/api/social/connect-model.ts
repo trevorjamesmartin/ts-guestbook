@@ -92,7 +92,6 @@ async function rejectRequest(request_id: number, to_id: number) {
 
 async function createRequest(from_id: number, to_id: number, accepted: boolean) {
     const existingRequest = await db("request-connect").where({ from_id, to_id }).first();
-    // console.log(existingRequest)
     if (existingRequest) {
         let { id } = existingRequest;
         let updated = await db("request-connect")
@@ -101,7 +100,6 @@ async function createRequest(from_id: number, to_id: number, accepted: boolean) 
                 updated_at: timestamp(),
                 accepted
             });
-        // console.log('updated', id, updated);
         if (updated) {
             return [{id}]
         }

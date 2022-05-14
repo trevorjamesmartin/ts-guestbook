@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../api';
+import api from '../network/api';
 import { RootState } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
 
@@ -104,26 +104,21 @@ export const postsSlice = createSlice({
             state.status = 'pending';
         })
             .addCase(submitPostAsync.fulfilled, (state, action: PayloadAction<any>) => {
-                console.log(action.payload);
                 state.status = 'ok'
-                // state.listed = [...state.listed, action.payload];
                 state.current = clearState.current;
             })
             .addCase(submitPostAsync.rejected, (state, action: PayloadAction<any>) => {
-                console.log(action.payload);
                 state.status = 'failed';
             })
         builder.addCase(replyPostAsync.pending, (state) => {
             state.status = 'pending';
         })
             .addCase(replyPostAsync.fulfilled, (state, action: PayloadAction<any>) => {
-                console.log(action.payload);
                 state.status = 'ok'
                 // state.listed = [...state.listed, action.payload];
                 state.current = clearState.current;
             })
             .addCase(replyPostAsync.rejected, (state, action: PayloadAction<any>) => {
-                console.log(action.payload);
                 state.status = 'failed';
             })
     }

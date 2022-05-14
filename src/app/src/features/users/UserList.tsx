@@ -16,7 +16,15 @@ const UserCard = (props: any) => {
   return <Card key={data.username} className="userlist-card">
     <Container className='userlist-body-wrap'>
       <CardBody className='userlist-card-body'>
-        <CardImg className='avatar-thumb' src={data.avatar || '/user.png'} alt={`${data.username}'s avatar`} />
+        <CardImg
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src = "/user.png";
+          }}
+          className='avatar-thumb' 
+          src={data.avatar || '/user.png'} 
+          alt={`${data.username}'s avatar`}
+        />
         <CardTitle>@{data.username}</CardTitle>
         {!isFriend && !requestedConnect && <Button onClick={() => {
           dispatcher(friendRequestAsync(data));

@@ -2,7 +2,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/users/userSlice';
 import profileReducer from '../features/profile/profileSlice';
-import socketReducer from '../features/pages/wsSlice';
+import socketReducer from '../features/network/socketSlice';
 import postsReducer from '../features/posts/postsSlice';
 import feedReducer from '../features/feed/feedSlice';
 import friendReducer from '../features/social/friendSlice';
