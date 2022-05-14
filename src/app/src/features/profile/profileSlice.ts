@@ -11,7 +11,7 @@ export const getProfileAsync = createAsyncThunk(
         console.log('GET PROFILE')
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response = await api(token).get('/api/profile'); // pending
+        const response =await new api(token).get('/api/profile'); // pending
         return response.data; // fulfilled
     }
 );
@@ -53,7 +53,7 @@ export const setProfileAsync = createAsyncThunk(
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         // upload to s3 
-        const cloud = api(token);
+        const cloud = new api(token);
         console.log('requesting s3 signature')
         let fileType='image/jpeg';
         const getSigned = await cloud.get(`/api/aws/sign-s3?file-name=${profileData.username}-avatar.jpeg&file-type=${fileType}`);

@@ -1,21 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import { logoutAsync } from '../auth/authSlice';
 import { actions as webSocketActions } from '../pages/wsSlice';
-import { actions as profileActions } from '../profile/profileSlice'
+import { actions as profileActions, selectors as profileSelectors } from '../profile/profileSlice'
 const { setStatusDisconnected } = webSocketActions;
 const { clear: clearProfile } = profileActions;
-export function Logout() {
+const { selectProfile } = profileSelectors;
+export function Logout(props: any) {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(clearProfile()) &&
-        dispatch(logoutAsync()) && // logout (serverside)
-        dispatch(setStatusDisconnected()) // logout (client side)
+    const dispatch = useAppDispatch();
+    const profile = useAppSelector(selectProfile);
+    const message:string = `logout:${profile.username}`;
+    const socket = props.socket;
+    const goodbye = useCallback(async () => {
+        dispatch(clearProfile())
+        await dispatch(logoutAsync()) && // logout (serverside)
+        dispatch(setStatusDisconnected(socket, message)) // logout (client side)
         setTimeout(() => {
             navigate('/');
         }, 500); // reload to trigger a websocket connection
+    }, [])
+
+    useEffect(() => {
+        goodbye();
     }, []);
     return (<h4>GoodBye</h4>)
 }

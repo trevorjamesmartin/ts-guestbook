@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
 // import api from '../api';
@@ -6,66 +6,56 @@ import { persistedStore } from '../../memory/persist';
 interface wsMessage {
     message: string | undefined;
     status: string;
-    [key:string]:any;
+    [key: string]: any;
 }
 
-const initialMessage:wsMessage = {
+const initialMessage: wsMessage = {
     message: undefined,
     status: 'disconnected'
 }
 
-interface wsPayload {
-    ws: WebSocket|undefined;
-    message: string
+interface ioPayloadAction {
+    payload: {
+        text: string;
+        socket: any;
+        createdAt: string;
+    }
 }
 
-export const sendMessage = createAsyncThunk(
-    'socket/send',
-    async (payload:wsPayload) => {
-        const { ws, message } = payload;
-        if (ws) {
-            // send over websocket
-            // console.log('send over websocket', message)
-            ws.send(message);
-            return message
-        } else {
-            console.log('websocket not found.')
-            // send over api ?
-            return false
+function socketPayload(socket: any, text: string): ioPayloadAction {
+    return {
+        payload: {
+            text,
+            socket,
+            createdAt: new Date().toISOString()
         }
     }
-);
+}
+
+const setStatusConnected = createAction("socket/connect", socketPayload);
+const setStatusDisconnected = createAction("socket/disconnect", socketPayload);
 
 export const wsSlice = createSlice({
     name: 'socket',
     initialState: persistedStore?.socket || initialMessage,
     reducers: {
         //
-        setStatusConnected: (state) => {
-            state.status = 'connected';
-        },
-        setStatusDisconnected: (state) => {
-            state.status = 'disconnected';
-        }
     },
     extraReducers: (builder) => {
-        builder.addCase(sendMessage.pending, (state:wsMessage) => {
-            state.status = 'sending';
-        })
-        .addCase(sendMessage.fulfilled, (state:wsMessage, action:PayloadAction<any>) => {
-            state.status = '';
-            if (action.payload) {
-                state.message = action.payload;
-            }
-        })
-        .addCase(sendMessage.rejected, (state:wsMessage) => {
-            state.status = 'failed';
+
+        builder.addCase(setStatusConnected, (state: wsMessage, action:ioPayloadAction) => {
+            state.status = 'connected';
+            action.payload.socket.emit(action.payload.text);
+        });
+
+        builder.addCase(setStatusDisconnected, (state:wsMessage, action:ioPayloadAction) => {
+            state.status = 'disconnected';
+            action.payload.socket.emit(action.payload.text);
         })
     }
 });
-const {setStatusConnected, setStatusDisconnected} = wsSlice.actions;
-const selectSentMessage = (state:RootState) => <string|undefined>state.socket.message;
-const selectSentStatus = (state:RootState) => <string>state.socket.status;
+const selectSentMessage = (state: RootState) => <string | undefined>state.socket.message;
+const selectSentStatus = (state: RootState) => <string>state.socket.status;
 
 
 export const selectors = {

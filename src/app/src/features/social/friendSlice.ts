@@ -7,7 +7,7 @@ export const friendListAsync = createAsyncThunk(
   async (_, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await api(token).get('/api/friends'); // pending
+    const response =await new api(token).get('/api/friends'); // pending
     return response.data; // fulfilled
   }
 );
@@ -17,7 +17,7 @@ export const friendRequestAsync = createAsyncThunk(
   async (user: any, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await api(token).post('/api/connect', {
+    const response =await new api(token).post('/api/connect', {
       username: user.username
     }); // pending
     const result: requestPayload = {
@@ -33,7 +33,7 @@ export const friendCheckAsync = createAsyncThunk(
   async (_, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await api(token).get('/api/friends/check'); // pending
+    const response =await new api(token).get('/api/friends/check'); // pending
     return response.data; // fulfilled
   }
 );
@@ -43,7 +43,7 @@ export const acceptFriendRequestAsync = createAsyncThunk(
   async (connect_id: number, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await api(token).post('/api/connect/accept', {
+    const response =await new api(token).post('/api/connect/accept', {
       connect_id
     }); // pending
     const result:any = {
@@ -60,7 +60,7 @@ export const rejectFriendRequestAsync = createAsyncThunk(
   async (connect_id: number, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await api(token).post('/api/connect/reject', {
+    const response =await new api(token).post('/api/connect/reject', {
       connect_id
     }); // pending
     return response.data; // fulfilled

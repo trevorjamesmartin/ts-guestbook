@@ -7,7 +7,7 @@ export const usersAsync = createAsyncThunk(
     async (_, thunkAPI) => {
       const state:any = thunkAPI.getState();
       const token = state?.auth?.token || undefined;
-      const response = await api(token).get('/api/users/with-profiles'); // pending
+      const response =await new api(token).get('/api/users/with-profiles'); // pending
       return response.data; // fulfilled
     }
 );
