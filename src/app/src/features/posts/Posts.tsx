@@ -24,7 +24,12 @@ const PostCard = (props: any) => {
         <Card key={props.id} className="blog-post">
             <Container>
                 <Row xs="3" >
-                    <CardImg src={findAvatar()} className="shout-out-avatar" />
+                    <CardImg src={findAvatar()} className="shout-out-avatar"
+                        onError={({ currentTarget }) => {
+                            currentTarget.onerror = null; // prevents looping
+                            currentTarget.src = "/user.png";
+                        }}
+                    />
                     <CardText className="shouter-username">@{props.username || "You"}</CardText>
                     {/* <CardText className="shouter-timestamp">{posted_at}</CardText> */}
                 </Row>
@@ -52,8 +57,8 @@ function Thread() {
     const socialFeed = useAppSelector(selectFeed);
     const profile = useAppSelector(selectProfile);
     const currentPost = useAppSelector(selectCurrent);
-    const mainThread = socialFeed.food.find((value: any) => value.id === Number(thread_id));
-    const replies = socialFeed.food.filter((value: any) => value.thread_id === Number(thread_id));
+    const mainThread = socialFeed.pages.find((value: any) => value.id === Number(thread_id));
+    const replies = socialFeed.pages.filter((value: any) => value.thread_id === Number(thread_id));
 
     useEffect(() => {
         // if (thread_id) {

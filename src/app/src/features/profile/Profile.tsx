@@ -32,20 +32,20 @@ function Profile() {
         }
         const imgElement = document.createElement("img");
         imgElement.src = event.target.result;
-        imgElement.onload = function (e:any) {
-        // create canvas element to resize the image
-        const canvas = document.createElement("canvas");
-        // keep aspect ration when scaling
-        const scaler = MAX_IMAGE_WIDTH / e.target.width;
-        canvas.width = MAX_IMAGE_WIDTH;
-        canvas.height = e.target.height * scaler;
-        // redraw at scale & capture as jpeg
-        const ctx:any = canvas.getContext("2d");
-        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
-        const srcEncoded = ctx.canvas.toDataURL("image/jpeg");
-        // store result in preview space
-        setPreview(srcEncoded);
-        dispatch(setField({ avatar: srcEncoded }));
+        imgElement.onload = function (e: any) {
+            // create canvas element to resize the image
+            const canvas = document.createElement("canvas");
+            // keep aspect ration when scaling
+            const scaler = MAX_IMAGE_WIDTH / e.target.width;
+            canvas.width = MAX_IMAGE_WIDTH;
+            canvas.height = e.target.height * scaler;
+            // redraw at scale & capture as jpeg
+            const ctx: any = canvas.getContext("2d");
+            ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
+            const srcEncoded = ctx.canvas.toDataURL("image/jpeg");
+            // store result in preview space
+            setPreview(srcEncoded);
+            dispatch(setField({ avatar: srcEncoded }));
         };
     }
 
@@ -65,7 +65,12 @@ function Profile() {
         <Form onSubmit={handleUpdateProfile}>
             <Label for="preview-image">Avatar</Label>
             <FormGroup>
-                <img className='preview-image' src={preview || profile.avatar || '/user.png'} />
+                <img className='preview-image' src={preview || profile.avatar || '/user.png'}
+                    onError={({ currentTarget }) => {
+                        currentTarget.onerror = null; // prevents looping
+                        currentTarget.src = "/user.png";
+                    }}
+                />
                 <Input type="file" id="file-input" onChange={handleFileSelect} />
                 <output id="list"></output>
             </FormGroup>
@@ -78,7 +83,7 @@ function Profile() {
                 <Input name='email' type='text' placeholder='email' value={profile.email || ""} onChange={handleChange} />
             </FormGroup>
             {/* <FormGroup> */}
-                {/* <Label for="dob">Date Of Birth</Label> */}
+            {/* <Label for="dob">Date Of Birth</Label> */}
             {/* <Input name='dob' type='text' value={profile.dob || ""} onSelect={handleChange} /> */}
             {/* </FormGroup> */}
             <Button>update</Button>

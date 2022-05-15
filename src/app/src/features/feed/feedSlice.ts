@@ -8,10 +8,11 @@ export const getFeedAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response =await new api(token).get('/api/feed'); // pending
+        const response = await new api(token).get('/api/feed'); // pending
         return response.data; // fulfilled
     }
 );
+interface PaginatedFeed { next: { page: number; limit: number; } | undefined, previous: { page: number; limit: number; } | undefined, pages: any[] }
 
 export interface Food {
     id: number;
@@ -27,14 +28,14 @@ export interface Food {
     avatar: any;
     name: any;
 }
-
-interface Feed {
-    food: Food[];
+interface Feed extends PaginatedFeed {
     status: string;
 }
 
-const clearState = {
-    food: [],
+const clearState: Feed = {
+    pages: [],
+    next: undefined,
+    previous: undefined,
     status: ""
 };
 const initialState: Feed = persistedStore?.feed || clearState;
@@ -51,18 +52,17 @@ export const profileSlice = createSlice({
         builder.addCase(getFeedAsync.pending, (state) => {
             state.status = 'loading';
         })
-            .addCase(getFeedAsync.fulfilled, (state, action: PayloadAction<Food|Food[]>) => {
+            .addCase(getFeedAsync.fulfilled, (state, action: PayloadAction<PaginatedFeed>) => {
                 state.status = 'ok';
-                if (Array.isArray(action.payload)) {
-                    state.food = action.payload;
-                } else {
-                    console.log("ERROR", action.payload)
-                    state.food = [];
-                }
+                state.pages = action.payload.pages;
+                state.previous = action.payload.previous;
+                state.next = action.payload.next;
             })
             .addCase(getFeedAsync.rejected, (state, action: PayloadAction<any>) => {
                 console.log("REJECTED!", action.payload);
-                state.food = [];
+                state.pages = [];
+                state.previous = undefined;
+                state.next = undefined;
                 state.status = "failed"
             })
 

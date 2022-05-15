@@ -133,12 +133,12 @@ function Feed() {
             :
             <>
               <ul>
-                {socialFeed?.food?.filter((f: any) => !f.thread_id)
+                {socialFeed?.pages?.filter((f: any) => !f.thread_id)
                   .map((mmm: any) => LiteralFood({
                     ...mmm,
                     profile,
                     replies: [
-                      ...socialFeed?.food?.filter((reply: any) => reply.parent_id === mmm.id)
+                      ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === mmm.id)
                     ]
                   })) || []}
               </ul>
