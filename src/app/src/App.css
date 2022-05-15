@@ -177,16 +177,19 @@ a {
   font-family: 'Space Mono';
   font-size: medium;
 }
+
 .navatar {
   border-radius: 90%;
 }
+
 .avatar-thumb {
   width: 5rem;
   height: 5rem;
   border-radius: 90%;
 }
+
 .shout-out-avatar {
-  height:3.4rem;
+  height: 3.4rem;
   width: 5rem;
 
   /* margin: 0.4rem; */
@@ -202,13 +205,15 @@ a {
   font-size: small;
   color: darkslateblue;
 }
+
 .shouter-username {
   margin-top: 1rem;
   font-weight: 400;
   font-style: normal;
   font-size: small;
-  color:darkslategray
+  color: darkslategray
 }
+
 .shouter-timestamp {
   margin-top: 1rem;
   font-weight: 400;
@@ -216,6 +221,7 @@ a {
   font-size: x-small;
   color: darkgreen;
 }
+
 .blog-post {
   font-family: 'Space Mono';
   font-size: medium;
@@ -245,6 +251,7 @@ a {
   /* justify-content: center; */
   width: 12rem;
 }
+
 .userlist-card:hover {
   -webkit-box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
   box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
@@ -263,6 +270,7 @@ a {
   justify-content: center;
   margin-top: 7rem;
 }
+
 a.clickable-card .card {
   color: darkslategrey;
   /* border: 19px solid black; */
@@ -270,4 +278,23 @@ a.clickable-card .card {
 
 .socket-connect-status {
   margin-right: 1rem;
+}
+
+li {
+  list-style-type: none;
+
+}
+
+.nav-item.active {
+  /* border:rgba(64, 64, 64, 0.3) 1px solid; */
+  /* border-radius: 5px; */
+  /* color: whitesmoke; */
+  /* background-color: grey; */
+  text-decoration: underline;
+}
+
+
+a>span.app-clock {
+  font-size: smaller;
+  color: rgba(33, 37, 41, 0.7)
 }
