@@ -174,9 +174,19 @@ a {
 
 .shout.form-control {
   min-height: 125px;
+  max-width: 80%;
   font-family: 'Space Mono';
   font-size: medium;
 }
+
+.shout.btn-primary {
+  font-family: 'Space Mono';
+  padding: 2rem;
+  font-size: large;
+  /* border: 1px solid lightgrey; */
+  border-radius: 1rem;
+}
+
 
 .navatar {
   border-radius: 90%;
@@ -226,13 +236,6 @@ a {
   font-family: 'Space Mono';
   font-size: medium;
   padding-bottom: 0.5rem;
-}
-
-.shout-out {
-  padding: 2rem;
-  font-size: large;
-  border: 1px solid lightgrey;
-  border-radius: 1rem;
 }
 
 .preview-image {
@@ -292,9 +295,57 @@ li {
   /* background-color: grey; */
   text-decoration: underline;
 }
+.nav-link {
+  color:rgba(64, 64, 64, 0.7)
+}
+
+a>.active {
+  color:rgba(64, 64, 64, 0.7)
+}
 
 
 a>span.app-clock {
   font-size: smaller;
   color: rgba(33, 37, 41, 0.7)
+}
+
+
+.show>.dropdown-menu {
+  animation-name: slidenavAnimation;
+  animation-duration: .34s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-name: slidenavAnimation;
+  -webkit-animation-duration: .34s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease;
+  -webkit-animation-fill-mode: forwards;
+
+  -moz-animation-name: slidenavAnimation;
+  -moz-animation-duration: .34s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: ease;
+  -moz-animation-fill-mode: forwards;
+}
+
+@keyframes slidenavAnimation {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes slidenavAnimation {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
