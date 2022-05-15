@@ -13,9 +13,9 @@ function descending(y: any, x: any) {
 
 export interface Paginated { next: { page: number; limit: number; } | undefined, previous: { page: number; limit: number; } | undefined, pages: any[] }
 
-export function paginatedWithToken(model: any, sortFunction?: any) {
+export function paginate(model: any, sortFunction?: any) {
     return async (req: any, res: any, next: any) => {
-        let { decodedToken } = req; // restricted-middleware
+        let { decodedToken } = req;
         let results: any;
         if (sortFunction) {
             results = (await model(decodedToken)).sort(sortFunction);
@@ -40,30 +40,6 @@ export function paginatedWithToken(model: any, sortFunction?: any) {
             }
         }
         paginated.pages = results.slice(startIndex, endIndex);
-        req.paginatedResult = paginated;
-        next();
-    }
-}
-export function paginated(model: any) {
-    return (req: any, res: any, next: any) => {
-        const page = Number(req.query.page);
-        const limit = Number(req.query.limit);
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-        const paginated = { next: {}, previous: {}, pages: [] };
-        if (endIndex < model.length) {
-            paginated.next = {
-                page: page + 1,
-                limit: limit,
-            }
-        }
-        if (startIndex > 0) {
-            paginated.previous = {
-                page: page - 1,
-                limit: limit,
-            }
-        }
-        paginated.pages = model.slice(startIndex, endIndex);
         req.paginatedResult = paginated;
         next();
     }
