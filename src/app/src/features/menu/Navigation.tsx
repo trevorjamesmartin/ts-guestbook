@@ -1,67 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+// local memory
 import { selectors as authSelectors } from '../auth/authSlice'
 import { selectors as profileSelectors } from '../profile/profileSlice';
 import { selectors as friendSelectors, friendCheckAsync } from '../social/friendSlice';
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 import { getProfileAsync } from '../profile/profileSlice';
 import { selectors as socketSelectors } from '../network/socketSlice';
+// local component
+import Clock from './Clock';
+// bootstrap components
 import { Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
-
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import relativeTime from 'dayjs/plugin/relativeTime';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.extend(relativeTime)
-dayjs.extend(localizedFormat)
 
 const { selectToken, selectStatus: selectAuthStatus, selectLoggedIn } = authSelectors;
 const { selectProfile } = profileSelectors;
 const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectStatus: selectSocketStatus, selectMessage } = socketSelectors;
-
-class Clock extends React.Component<any> {
-  state: any;
-  interval: any;
-  format: string;
-  config:any;
-  constructor(props: any) {
-    const { clockConfig, ...duper } = props;
-    super(duper);
-    this.format = clockConfig?.seconds ? 'LTS' : 'LT';
-    if (clockConfig?.military) {
-      this.format = 'HH:mm:ss';
-    }
-    this.config = clockConfig;
-    this.state = {
-      time: dayjs(new Date()).format(this.format)
-    };
-  };
-
-  componentDidMount() {
-    this.format = this.config?.seconds ? 'LTS' : 'LT';
-    if (this.config?.military) {
-      this.format = 'HH:mm:ss';
-    }
-    this.interval = setInterval(() => this.setState({
-      time: dayjs(new Date()).format(this.format)
-    }), 1000);
-  }
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  render() {
-    return (
-      <span className="app-clock">{this.state.time}</span>
-    );
-  }
-}
-
 
 function Navigation() {
   const [collapsed, setCollapsed] = useState(true);
@@ -120,16 +74,18 @@ function Navigation() {
           alt={profile.name}
         />
       </DropdownToggle>
-      <DropdownMenu end>
+      <DropdownMenu>
         <DropdownItem>
+            <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
           <NavItem active={isActive('/app/profile')}>
-            <Link to={authorized ? '/app/profile' : '/login'}>
               Profile
-            </Link>
           </NavItem>
+            </Link>
         </DropdownItem>
-        <DropdownItem>
-          Settings
+        <DropdownItem disabled>
+          <Link className='nav-link' to="#">
+            Settings
+          </Link>
         </DropdownItem>
         <DropdownItem divider />
         <DropdownItem>
@@ -148,22 +104,26 @@ function Navigation() {
       className="me-auto align-items-center"
       navbar
     >
-      <NavItem active={isActive('/app')}>
-        <Link className='nav-link' to={authorized ? '/app' : '/'}>
+      <Link className='nav-link' to={authorized ? '/app' : '/'}>
+        <NavItem active={isActive('/app')}>
           App
-        </Link>
-      </NavItem>
-      <NavItem active={isActive('/app/users')}>
-        <Link className='nav-link' to='/app/users'>People</Link>
-      </NavItem>
-      <NavItem>
-        <NavLink target="_blank" href="https://github.com/trevorjamesmartin/vigilant-cloud">
+        </NavItem>
+      </Link>
+      <Link className='nav-link' to='/app/users'>
+        <NavItem active={isActive('/app/users')}>
+          People
+        </NavItem>
+      </Link>
+      <NavLink target="_blank" href="https://github.com/trevorjamesmartin/vigilant-cloud">
+        <NavItem>
           GitHub
-        </NavLink>
-      </NavItem>
-      <NavItem active={isActive('/app/requests')}>
-        <Link className='nav-link' to='/app/requests'>{friendRequests.length > 0 && `(${friendRequests.length}) `}Request</Link>
-      </NavItem>
+        </NavItem>
+      </NavLink>
+      <Link className='nav-link' to='/app/requests'>
+        <NavItem active={isActive('/app/requests')}>
+          {friendRequests.length > 0 && `(${friendRequests.length}) `}Request
+        </NavItem>
+      </Link>
     </Nav>
   }
 
@@ -194,7 +154,6 @@ function Navigation() {
     light
   >
     <NavbarBrand>🧭</NavbarBrand>
-
     <NavbarToggler onClick={toggleNavbar} />
     <Collapse navbar isOpen={!collapsed}>
       {authorized ? onlineNav() : offlineNav()}
@@ -209,24 +168,16 @@ function Navigation() {
           inNavbar
         >
           <DropdownToggle nav>
-            <Clock key={clockConfig.military ? "24 hour": "12 hour"+ clockConfig.seconds ? " + seconds": "" } clockConfig={clockConfig} />
+            <Clock key={clockConfig.military ? "24 hour" : "12 hour" + clockConfig.seconds ? " + seconds" : ""} clockConfig={clockConfig} />
           </DropdownToggle>
-          <DropdownMenu end>
-            <DropdownItem>
-              <NavItem onClick={() => {
-                setClockConfig({ ...clockConfig, military: !clockConfig.military })
-              }}>
+          <DropdownMenu>
+            <NavItem onClick={() => {
+              setClockConfig({ ...clockConfig, military: !clockConfig.military })
+            }}>
+              <DropdownItem>
                 {clockConfig.military ? "12 hour" : "24 hour"}
-              </NavItem>
-            </DropdownItem>
-            {/* <DropdownItem>
-              <NavItem onClick={() => {
-                setClockConfig({ ...clockConfig, seconds: !clockConfig.seconds })
-              }}>
-                {!clockConfig.military ? "Seconds" : ""}
-              </NavItem>
-            </DropdownItem>
-            <DropdownItem divider /> */}
+              </DropdownItem>
+            </NavItem>
           </DropdownMenu>
         </UncontrolledDropdown>
 
