@@ -41,7 +41,7 @@ export const LiteralFood = (props: any) => {
   }
   const posted_at = dayjs.utc(props.posted_at).local().fromNow()
   return (
-    <Link className="clickable-card" to={`/app/thread/${props.id}`}>
+    <Link key={props.id} className="clickable-card" to={`/app/thread/${props.id}`}>
       <Card key={props.id} className="blog-post">
         <Container>
           <Row xs="3" >
@@ -122,7 +122,7 @@ function Feed() {
               value={currentPost?.content}
               onChange={handleChange}
               name="content" />
-            <Button className="shout-out btn-primary">shout</Button>
+            <Button className="shout btn-primary">shout</Button>
           </FormGroup>
         </Form>
         {
