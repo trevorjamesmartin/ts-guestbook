@@ -1,7 +1,7 @@
 import postsModel from "../posts/posts-model";
 import connectModel from "../social/connect-model";
 
-export default {
+export {
     mainFeed
 }
 

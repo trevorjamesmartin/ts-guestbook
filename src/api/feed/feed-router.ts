@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { paginatedWithToken, Paginated } from '../../util';
-import feedModel from "./feed-model";
+import { paginate, Paginated } from '../../util';
+import { mainFeed } from "./feed-model";
 const router = Router();
 
-router.get('/', paginatedWithToken(feedModel.mainFeed), (req: any, res: any) => {
-    const paginatedResult:Paginated = req.paginatedResult;
+router.get('/', paginate(mainFeed), (req: any, res: any) => {
+    const paginatedResult: Paginated = req.paginatedResult;
     return res.status(200).json(paginatedResult);
 });
 
