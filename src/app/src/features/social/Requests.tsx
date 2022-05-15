@@ -1,20 +1,20 @@
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 import { selectors as socialSelectors, acceptFriendRequestAsync, rejectFriendRequestAsync, friendListAsync } from '../social/friendSlice';
-import { Button, Card, CardBody, CardHeader, CardImg } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, CardImg, Container, Label } from 'reactstrap';
 const { selectRequestsRecieved } = socialSelectors;
 
 const SocialRequest = (props: Partial<any>) => {
   const dispatch = useAppDispatch();
   const { connect_id, username, name, avatar, email, dob } = props;
-  const handleAcceptConnect = (e:any) => {
+  const handleAcceptConnect = (e: any) => {
     e.preventDefault();
     dispatch(acceptFriendRequestAsync(connect_id));
     setTimeout(() => {
       dispatch(friendListAsync());
     }, 500);
   }
-  const handleRejectConnect = (e:any) => {
+  const handleRejectConnect = (e: any) => {
     e.preventDefault();
     dispatch(rejectFriendRequestAsync(connect_id));
     setTimeout(() => {
@@ -31,23 +31,23 @@ const SocialRequest = (props: Partial<any>) => {
         <span className="email">{email}</span>
         <p className="name">{name}</p>
       </CardBody>
-      <div className="bottom-wrap"> 
+      <div className="bottom-wrap">
         <Button color="primary" onClick={handleAcceptConnect}>Accept</Button>
-        <div className="price-wrap"> 
-        <Button color="danger" onClick={handleRejectConnect}>Reject</Button> 
+        <div className="price-wrap">
+          <Button color="danger" onClick={handleRejectConnect}>Reject</Button>
         </div>
       </div>
     </Card>
-    
+
   )
 }
 
 function ConnectRequests() {
   const friendRequests = useAppSelector(selectRequestsRecieved);
-  return (<div className="Posts">
-    <ul>
-      {friendRequests.map((fr: Partial<any>) => SocialRequest(fr))}
-    </ul>
-  </div>)
+  return (<Container className="connect-request-container">
+    {friendRequests[0] ? 
+      <ul>{friendRequests.map((fr: Partial<any>) => SocialRequest(fr))}</ul> :
+      <Label>No pending requests</Label>}  
+    </Container>)
 }
 export default ConnectRequests;
