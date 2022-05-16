@@ -106,7 +106,7 @@ function Navigation() {
     >
       <Link className='nav-link' to={authorized ? '/app' : '/'}>
         <NavItem active={isActive('/app')}>
-          App
+          Lately
         </NavItem>
       </Link>
       <Link className='nav-link' to='/app/users'>
@@ -114,16 +114,16 @@ function Navigation() {
           People
         </NavItem>
       </Link>
-      <NavLink target="_blank" href="https://github.com/trevorjamesmartin/vigilant-cloud">
-        <NavItem>
-          GitHub
-        </NavItem>
-      </NavLink>
-      <Link className='nav-link' to='/app/requests'>
-        <NavItem active={isActive('/app/requests')}>
-          {friendRequests.length > 0 && `(${friendRequests.length}) `}Request
+      <Link className='nav-link' to='/about'>
+        <NavItem active={isActive('/about')}>
+          About
         </NavItem>
       </Link>
+      {friendRequests[0] &&<Link className='nav-link' to='/app/requests'>
+        <NavItem active={isActive('/app/requests')}>
+          {`Requests (${friendRequests.length}) `}
+        </NavItem>
+      </Link>}
     </Nav>
   }
 
