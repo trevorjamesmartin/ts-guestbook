@@ -1,7 +1,7 @@
 import { Knex } from "knex";
 import bcrypt from 'bcryptjs';
 
-const SAMPLE_PROFILES = process.env.SAMPLE_SIZE ? Number(process.env.SAMPLE_SIZE) : 24;
+const SAMPLE_PROFILES = process.env.SAMPLE_SIZE ? Number(process.env.SAMPLE_SIZE) : 100;
 
 interface Sample {
     id: number;
@@ -28,38 +28,43 @@ function genUser(name: string, password: string) {
 
 const profiles = require('../sample/profiles.json');
 
-function fromSampleData(count: number, start?: number) {
+function fromSampleData(count: number, start?: number): Sample[] {
     let limit = profiles.length - 1;
-    let sample: Sample[] = [];
+    let memo: { [key: string]: any } = {};
     let index: number;
     let x = start || 0;
     for (let id = (x + 1); id <= (x + count); id++) {
         index = Math.ceil(Math.random() * limit);
-        sample.push({
-            id, ...profiles[index]
-        });
+        if (memo[index]) {
+            index = Math.ceil(Math.random() * limit);
+        }
+        memo[`${index}`] = id
     }
-    return sample;
+    let sample: Sample[] = [];
+    for (let k of Object.keys(memo)) {
+        let id = memo[k];
+        sample.push({ ...profiles[Number(k)], id });
+    }
+    return sample.sort((s1, s2) => s1.id - s2.id);
 }
-
-
 
 export async function seed(knex: Knex): Promise<void> {
     await knex("users").del();
     let pass: string = process.env.PASSWORD || 'password'
     let admin = genUser("admin", `${pass}`);
     let development = genUser("development", `dev-${pass}`);
-    let users: User[] = [ admin, development ];
+    let users: User[] = [admin, development];
     await knex("users").insert(users);
-    let userProfiles: Partial<Profile>[] = [{ user_id:1 }, { user_id:2 }];
+    let userProfiles: Partial<Profile>[] = [{ user_id: 1 }, { user_id: 2 }];
     await knex("profiles").insert(userProfiles);
     let sample = fromSampleData(SAMPLE_PROFILES, 2);
     for (let { id: user_id, name, email, avatar, username } of sample) {
-        let newuser:User = genUser(username, 'sample');
-        let newprofile:Partial<Profile> = { user_id, avatar: `${avatar.split('?')[0]}?size=100x100?set=set5`, email, name };
-        console.log(newuser);
-        await knex("users").insert(newuser);
-        console.log(newprofile);
-        await knex("profiles").insert(newprofile);
+        let newuser: User = genUser(username, 'sample');
+        let newprofile: Partial<Profile> = { user_id, avatar: '/user.png', email, name };
+        await knex("users").insert(newuser)
+            .then(async () => {
+                await knex("profiles")
+                    .insert(newprofile);
+            });
     }
 };
