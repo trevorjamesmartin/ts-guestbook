@@ -60,12 +60,6 @@ function Thread() {
     const mainThread = socialFeed.pages.find((value: any) => value.id === Number(thread_id));
     const replies = socialFeed.pages.filter((value: any) => value.thread_id === Number(thread_id));
 
-    useEffect(() => {
-        // if (thread_id) {
-        //     console.log('thread id ', thread_id)
-        // }
-        // dispatch(getPostsAsync());
-    }, [])
     const handleSubmitReply = (e: any) => {
         e.preventDefault();
         if (mainThread) {
@@ -104,20 +98,20 @@ function Thread() {
                     <CardBody>
                         <CardText className="content">{mainThread.content}</CardText>
                     </CardBody>
-                    <Row xs="4">
-                        <Col />
-                        <Col />
-                        <Col />
-                        {/* <Link to={`/app/thread/${mainThread.id}`}>{replies.length > 0 && `replies: ${replies.length}` || 'reply'}</Link> */}
-                    </Row>
                 </Container>
             </Card>)}
         <ul>
-            {replies?.sort((a: any, b: any) => a.id - b.id).map(pc => <PostCard {...pc} profile={profile} />)}
+            {replies?.sort((a: any, b: any) => a.id - b.id).map(pc => <PostCard id={pc.id} {...pc} profile={profile} />)}
         </ul>
+
         <Form onSubmit={handleSubmitReply} >
-            <Input className="reply-textarea" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
-            <Button color="primary">reply</Button>
+            <div className="input-group mb-3">
+                <Input className="reply-textarea" placeholder="..." type="textarea" value={currentPost?.content} onChange={handleChange} name="content" />
+                <div className="input-group-append">
+                    <Button className="shout btn">reply</Button>
+
+                </div>
+            </div>
         </Form>
     </div>)
 }
