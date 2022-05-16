@@ -7,7 +7,10 @@ import { connectRouter, friendsRouter } from './social';
 import { feedRouter } from './feed';
 import awsRouter from './aws/router';
 
+const REACTION = '../app/build';
+
 export default function(server:express.Express) {
+
     server.use('/auth', authRouter);
     server.use('/api', authMiddleware);
     server.use('/api/users', usersRouter);
@@ -18,11 +21,9 @@ export default function(server:express.Express) {
     server.use('/api/feed', feedRouter);
     server.use('/api/aws', awsRouter);
     server.use('/socket.io', function(_, __, next) {next()})
-    // // HTML renders SPA from here, (app-wide cache settings)
-    server.use('/', express.static(path.join(__dirname, "../app/build")));
-    server.get("*", (req, res) => {
-        // * catch-all, reformat as search-params & redirect to SPA
-        res.redirect(`/?${req.path}`);
+    server.use('/', express.static(path.join(__dirname, REACTION)));
+    server.get("*", (_, res) => {
+        res.sendFile(path.join(__dirname, REACTION, "index.html"));
     });
     return server;
 }
