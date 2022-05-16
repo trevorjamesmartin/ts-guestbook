@@ -1,5 +1,6 @@
 import { Router } from "express";
 import Users, {UserType} from './users-model';
+import { paginate, Paginated } from '../util';
 
 const router = Router();
 
@@ -9,8 +10,9 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/with-profiles', async (req, res) => {
-    res.status(200).json((await Users.withProfiles()));
+router.get('/with-profiles', paginate((Users.withProfiles)), async (req:any, res) => {
+    const paginatedResult: Paginated = req.paginatedResult;
+    return res.status(200).json(paginatedResult);
 });
 
 export default router;
