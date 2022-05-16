@@ -1,7 +1,7 @@
 import db from '../../data/dbConfig';
 import profileModel from '../users/profile-model';
 import friendsModel from './friends-model';
-import { timestamp } from '../../util';
+import { timestamp } from '../util';
 
 export interface RequestConnect {
     id: number;

@@ -1,5 +1,5 @@
 import db from '../../data/dbConfig';
-import { timestamp } from '../../util';
+import { timestamp } from '../util';
 import usersModel from '../users/users-model';
 export interface PostType {
     id: number;
