@@ -10,9 +10,11 @@ import { Logout } from './features/auth/Logout';
 import { UserList } from './features/users/UserList';
 import Pages from './features/pages';
 import Posts from './features/posts/Posts';
+import About from './features/pages/About';
 import Profile from './features/profile/Profile';
 import Navigation from './features/menu/Navigation';
 import ConnectRequests from './features/social/Requests';
+
 
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
@@ -82,6 +84,7 @@ function App() {
     </div>
     <Container>
       <Routes>
+        <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={<Pages.MainPage ws={socket} />} />
