@@ -74,23 +74,26 @@ a {
 }
 
 .card {
-  max-width: 64rem;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+}
+
+.card {
+  margin: 1ch;
   position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
   flex-direction: column;
   min-width: 0;
   word-wrap: break-word;
   background-color: #fff;
   background-clip: border-box;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 23px;
-  /* margin-top: 1rem; */
-  margin: .1rem;
+  border: 0 solid rgba(0,0,0,.125);
+  border-radius: .25rem;
+}
+
+.card-body {
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 1rem;
 }
 
 .blog-post:hover {
@@ -112,6 +115,9 @@ a {
 .card-lg .img-wrap {
   height: 280px
 }
+
+
+
 
 .blog-post .img-wrap {
   border-radius: 0.2rem 0.2rem 0 0;
@@ -173,18 +179,23 @@ a {
 }
 
 .shout.form-control {
-  min-height: 125px;
+  min-height: 11ch;
   max-width: 80%;
+  max-height: 20ch;
   font-family: 'Space Mono';
   font-size: medium;
 }
 
-.shout.btn-primary {
+
+.shout.btn {
+  min-height: 11ch;
+  min-width: 100%;
   font-family: 'Space Mono';
-  padding: 2rem;
+  /* padding: 2rem; */
   font-size: large;
-  /* border: 1px solid lightgrey; */
-  border-radius: 1rem;
+  margin-left: 1ch;
+  border: 1px solid lightgrey;
+  /* border-radius: 1rem; */
 }
 
 
@@ -195,7 +206,6 @@ a {
 .avatar-thumb {
   width: 5rem;
   height: 5rem;
-  border-radius: 90%;
 }
 
 .shout-out-avatar {
@@ -247,12 +257,11 @@ a {
 .userlist-container {
   display: flex;
   flex-flow: row wrap;
+  justify-content: center;
 }
 
 .userlist-card {
-  display: flex;
-  /* justify-content: center; */
-  width: 12rem;
+  min-width: 12rem;
 }
 
 .userlist-card:hover {
@@ -348,4 +357,8 @@ a>span.app-clock {
   to {
     opacity: 1;
   }
+}
+.paginator {
+  margin: 1rem;
+  border-radius: 100%;
 }
