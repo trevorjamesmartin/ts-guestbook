@@ -8,7 +8,7 @@ export const getPostsAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response =await new api(token).get('/api/posts');
+        const response = await new api(token).get('/api/posts');
         return response.data;
     }
 );
@@ -19,7 +19,7 @@ export const submitPostAsync = createAsyncThunk(
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         const { content, id, tags, title } = state.posts.current;
-        const response =await new api(token).post('/api/posts', { content, id, tags, title });
+        const response = await new api(token).post('/api/posts', { content, id, tags, title });
         return response.data;
     }
 );
@@ -31,9 +31,19 @@ export const replyPostAsync = createAsyncThunk(
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         const { content } = state.posts.current;
-        const response =await new api(token).post(`/api/posts/reply/${id}`, {
+        const response = await new api(token).post(`/api/posts/reply/${id}`, {
             content
         });
+        return response.data;
+    }
+);
+
+export const getThreadAsync = createAsyncThunk(
+    'posts/replies',
+    async (id: number, thunkAPI) => {
+        const state: any = thunkAPI.getState();
+        const token = state?.auth?.token || undefined;
+        const response = await new api(token).get(`/api/posts/thread/${id}`);
         return response.data;
     }
 );
@@ -79,11 +89,11 @@ export const postsSlice = createSlice({
             for (let name of Object.keys(action.payload)) {
                 switch (name) {
                     case 'content':
-                      state.current.content = action.payload.content.slice(0, 254);
-                      break;
+                        state.current.content = action.payload.content.slice(0, 254);
+                        break;
                     default:
-                      break;
-                  }
+                        break;
+                }
             }
             state.current = { ...state.current, ...action.payload };
         }
@@ -99,6 +109,18 @@ export const postsSlice = createSlice({
             .addCase(getPostsAsync.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed'
                 state.listed = [];
+            });
+        builder.addCase(getThreadAsync.pending, (state) => {
+            state.status = 'pending';
+        })
+            .addCase(getThreadAsync.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'ok';
+                state.listed = action.payload;
+            })
+            .addCase(getThreadAsync.rejected, (state, action: PayloadAction<any>) => {
+                state.status = 'failed'
+                state.listed = [];
+                console.log(action.payload)
             });
         builder.addCase(submitPostAsync.pending, (state) => {
             state.status = 'pending';
