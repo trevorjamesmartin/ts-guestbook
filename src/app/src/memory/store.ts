@@ -3,7 +3,7 @@ import authReducer from '../features/auth/authSlice';
 import userReducer from '../features/users/userSlice';
 import profileReducer from '../features/profile/profileSlice';
 import socketReducer from '../features/network/socketSlice';
-import postsReducer from '../features/thread/postsSlice';
+import threadReducer from '../features/thread/threadSlice';
 import feedReducer from '../features/feed/feedSlice';
 import friendReducer from '../features/social/friendSlice';
 
@@ -15,7 +15,7 @@ export const store = configureStore({
     users: userReducer,
     socket: socketReducer,
     profile: profileReducer,
-    posts: postsReducer,
+    thread: threadReducer,
     feed: feedReducer,
     friends: friendReducer,
   },

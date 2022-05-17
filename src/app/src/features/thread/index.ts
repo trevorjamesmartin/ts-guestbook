@@ -1,7 +1,7 @@
-import PostCard from "./Posts";
+// import PostCard from "./Posts";
 import Thread from "./Thread";
 
 export {
-  PostCard,
+  // PostCard,
   Thread
 }

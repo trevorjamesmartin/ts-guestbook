@@ -1,19 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { BlogPost, selectors as postsSelectors, submitPostAsync, actions as postsActions } from '../thread/postsSlice';
+import { BlogPost, selectors as postsSelectors, submitPostAsync, actions as postsActions } from '../thread/threadSlice';
 import { getFeedAsync, selectors as feedSelectors, actions as feedActions } from './feedSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
 import { selectors as authSelectors } from '../auth/authSlice'
-
-import {
-  Form, FormGroup, Label, Input, Button,
-  Card, CardBody, CardImg, CardText, Container, Row, Spinner, Col
-} from 'reactstrap';
+import FeedCard from "../cards/FeedCard";
+import { Form, FormGroup, Label, Input, Button, Container, Spinner } from 'reactstrap';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -22,52 +19,10 @@ dayjs.extend(relativeTime)
 const { selectProfile } = profileSelectors;
 const { selectFeed } = feedSelectors;
 const { selectToken } = authSelectors;
+const { selectCurrent } = postsSelectors;
 
 const { clear: clearFeed } = feedActions;
-const { selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
-
-export const LiteralFood = (props: any) => {
-  const profile = props.profile;
-  const replies = props.replies;
-  const findAvatar = () => {
-    if (props.avatar) {
-      return props.avatar;
-    }
-    return profile.avatar || "/user.png";
-  }
-  const posted_at = dayjs.utc(props.posted_at).local().fromNow()
-  return (
-    <Link key={props.id} className="clickable-card" to={`/app/thread/${props.id}`}>
-      <Card key={props.id} className="blog-post">
-        <Container>
-          <Row xs="3" >
-            <CardImg
-              onError={({ currentTarget }) => {
-                currentTarget.onerror = null; // prevents looping
-                currentTarget.src = "/user.png";
-              }}
-              src={findAvatar()} className="shout-out-avatar" />
-            <CardText className="shouter-username">@{props.username || "You"}</CardText>
-            <CardText className="shouter-timestamp">{posted_at}</CardText>
-          </Row>
-          <Row xs="1">
-            <CardText className="shouter-name">{props.name}</CardText>
-          </Row>
-          <CardBody>
-            <CardText className="content">{props.content}</CardText>
-          </CardBody>
-          <Row xs="4">
-            <Col />
-            <Col />
-            <Col />
-          </Row>
-          {replies.length > 0 && `replies: ${replies.length}` || 'reply'}
-        </Container>
-      </Card>
-    </Link>
-  )
-}
 
 function Feed() {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -180,12 +135,11 @@ function Feed() {
             :
             <>
               <ul>
-                {socialFeed?.pages?.filter((f: any) => !f.thread_id)
-                  .map((mmm: any) => LiteralFood({
-                    ...mmm,
+                {socialFeed?.pages.map((page: any) => FeedCard({
+                    ...page,
                     profile,
                     replies: [
-                      ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === mmm.id),
+                      ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === page.id),
                     ]
                   })) || []}
               </ul>

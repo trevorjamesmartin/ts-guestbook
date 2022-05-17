@@ -3,22 +3,12 @@ import api from '../network/api';
 import { RootState } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
 
-export const getPostsAsync = createAsyncThunk(
-    'posts/get',
-    async (_, thunkAPI) => {
-        const state: any = thunkAPI.getState();
-        const token = state?.auth?.token || undefined;
-        const response = await new api(token).get('/api/posts');
-        return response.data;
-    }
-);
-
 export const submitPostAsync = createAsyncThunk(
     'posts/submit',
     async (_, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const { content, id, tags, title } = state.posts.current;
+        const { content, id, tags, title } = state.thread.current;
         const response = await new api(token).post('/api/posts', { content, id, tags, title });
         return response.data;
     }
@@ -30,7 +20,8 @@ export const replyPostAsync = createAsyncThunk(
     async (id: number, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const { content } = state.posts.current;
+        console.log(state)
+        const { content } = state.thread.current;
         const response = await new api(token).post(`/api/posts/reply/${id}`, {
             content
         });
@@ -99,17 +90,6 @@ export const postsSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(getPostsAsync.pending, (state) => {
-            state.status = 'pending';
-        })
-            .addCase(getPostsAsync.fulfilled, (state, action: PayloadAction<any>) => {
-                state.status = 'ok';
-                state.listed = action.payload;
-            })
-            .addCase(getPostsAsync.rejected, (state, action: PayloadAction<any>) => {
-                state.status = 'failed'
-                state.listed = [];
-            });
         builder.addCase(getThreadAsync.pending, (state) => {
             state.status = 'pending';
         })
@@ -146,10 +126,10 @@ export const postsSlice = createSlice({
     }
 });
 
-const selectPosts = (state: RootState) => state.posts.listed;
-const selectCurrent = (state: RootState) => state.posts.current;
+const selectListed = (state: RootState) => state.thread.listed;
+const selectCurrent = (state: RootState) => state.thread.current;
 export const selectors = {
-    selectPosts,
+    selectListed,
     selectCurrent
 };
 

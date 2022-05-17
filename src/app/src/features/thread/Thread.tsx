@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
-import { selectors as postsSelectors, getThreadAsync, replyPostAsync, actions as postsActions } from './postsSlice';
+import { selectors as postsSelectors, getThreadAsync, replyPostAsync, actions as postsActions } from './threadSlice';
 import { selectors as feedSelectors } from '../feed/feedSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
 import { Spinner, Card, Container, Row, CardImg, CardText, CardBody, Form, Input, Button } from 'reactstrap';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
-import PostCard from './Posts';
-
-const { selectPosts, selectCurrent } = postsSelectors;
+import ReplyCard from "../cards/ReplyCard";
+import dayjs from "dayjs";
+const { selectListed, selectCurrent } = postsSelectors;
 const { setCurrent } = postsActions;
 const { selectFeed } = feedSelectors;
 const { selectProfile } = profileSelectors;
@@ -16,7 +16,7 @@ const { selectProfile } = profileSelectors;
 function Thread() {
   let { thread_id } = useParams();
   const dispatch = useAppDispatch();
-  const replies = useAppSelector(selectPosts);
+  const replies = useAppSelector(selectListed);
   const socialFeed = useAppSelector(selectFeed);
   const profile = useAppSelector(selectProfile);
   const currentPost = useAppSelector(selectCurrent);
@@ -26,6 +26,8 @@ function Thread() {
     lastLoaded: 0,
   });
   useEffect(() => {
+    console.log(replies.length);
+    console.log(replies);
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now() });
@@ -34,12 +36,13 @@ function Thread() {
         setLoading(false);
       }, 500);
     }
-  }, [replies])
+  }, [replies.length])
+  const posted_at = dayjs.utc(mainThread.posted_at).local().fromNow()
 
   function handleSubmitReply(e: any) {
     e.preventDefault();
     if (mainThread) {
-      dispatch(replyPostAsync(mainThread.id));
+      dispatch(replyPostAsync(Number(thread_id)));
       setTimeout(() => {
         dispatch(getThreadAsync(Number(thread_id)));
       }, 500);
@@ -58,44 +61,35 @@ function Thread() {
     }
     return "/user.png";
   }
-  const showReplies = (
-    <ul>
-      {replies?.sort((a: any, b: any) => a.id - b.id).map(pc => {
-        return (
-          <PostCard key={pc.id} {...pc} profile={profile} />
-        )
-      })}
-    </ul>);
-
-  const showLoading = (
-    <Container className="centered-spinner-container">
-      <Spinner />
-    </Container>
-  );
-
-  const originalPost = (
-    <Card key={mainThread.id} className="blog-post">
-      <Container>
-        <Row xs="3" >
-          <CardImg src={findAvatar()} className="shout-out-avatar" />
-          <CardText className="shouter-username">@{mainThread.username || "You"}</CardText>
-          {/* <CardText className="shouter-timestamp">{posted_at}</CardText> */}
-        </Row>
-        <Row xs="1">
-          <CardText className="shouter-name">{mainThread.name}</CardText>
-        </Row>
-        <CardBody>
-          <CardText className="content">{mainThread.content}</CardText>
-        </CardBody>
-      </Container>
-    </Card>);
 
   return (<div className="Posts">
-    {mainThread && originalPost}
+    {mainThread &&
+      (
+        <Card key={mainThread.id} className="blog-post">
+          <Container>
+            <Row xs="3" >
+              <CardImg src={findAvatar()} className="shout-out-avatar" />
+              <CardText className="shouter-username">@{mainThread.username || "You"}</CardText>
+              <CardText className="shouter-timestamp">{posted_at}</CardText>
+            </Row>
+            <Row xs="1">
+              <CardText className="shouter-name">{mainThread.name}</CardText>
+            </Row>
+            <CardBody>
+              <CardText className="content">{mainThread.content}</CardText>
+            </CardBody>
+          </Container>
+        </Card>)
+    }
     {
       loading ?
-        showLoading :
-        showReplies
+        // show spinner
+        <Container className="centered-spinner-container">
+          <Spinner />
+        </Container>
+        :
+        // show replies
+        <ul>{[...replies.map(ReplyCard)]}</ul>
     }
     <Form onSubmit={handleSubmitReply} >
       <div className="input-group mb-3">

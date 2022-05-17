@@ -20,7 +20,6 @@ export const getFeedAsync = createAsyncThunk(
         searchString = `?page=${page}`;
       }
       let url = `${protocol}//${host}${pathname}${searchString}`;
-      console.log(url)
       window.history.pushState({}, '', url);
       return response.data; // fulfilled
     }
