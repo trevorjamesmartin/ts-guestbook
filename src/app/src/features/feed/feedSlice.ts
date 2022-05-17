@@ -2,17 +2,30 @@ import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@redux
 import api from '../network/api';
 import { RootState } from '../../memory/store'
 import { persistedStore } from '../../memory/persist';
+import { Paginated } from '../pagination';
 
 export const getFeedAsync = createAsyncThunk(
     'feed/get',
-    async (_, thunkAPI) => {
-        const state: any = thunkAPI.getState();
-        const token = state?.auth?.token || undefined;
-        const response = await new api(token).get('/api/feed'); // pending
-        return response.data; // fulfilled
+    async (params: any, thunkAPI) => {
+      const state: any = thunkAPI.getState();
+      const token = state?.auth?.token;
+      const apiClient = new api(token);
+      const { protocol, pathname, host } = window.location;
+      let searchString = '';
+      const { page } = params;
+      let response: any = !page ?
+        await apiClient.get('/api/feed', { params: { limit: 4 }}) :
+        await apiClient.get('/api/feed', { params: {...params, limit: 4} });
+      if  (page > 1 && response.status === 200) {
+        searchString = `?page=${page}`;
+      }
+      let url = `${protocol}//${host}${pathname}${searchString}`;
+      console.log(url)
+      window.history.pushState({}, '', url);
+      return response.data; // fulfilled
     }
-);
-interface PaginatedFeed { next: { page: number; limit: number; } | undefined, previous: { page: number; limit: number; } | undefined, pages: any[] }
+  );
+
 
 export interface Food {
     id: number;
@@ -28,7 +41,7 @@ export interface Food {
     avatar: any;
     name: any;
 }
-interface Feed extends PaginatedFeed {
+interface Feed extends Paginated {
     status: string;
 }
 
@@ -52,7 +65,7 @@ export const profileSlice = createSlice({
         builder.addCase(getFeedAsync.pending, (state) => {
             state.status = 'loading';
         })
-            .addCase(getFeedAsync.fulfilled, (state, action: PayloadAction<PaginatedFeed>) => {
+            .addCase(getFeedAsync.fulfilled, (state, action: PayloadAction<Paginated>) => {
                 state.status = 'ok';
                 state.pages = action.payload.pages;
                 state.previous = action.payload.previous;
