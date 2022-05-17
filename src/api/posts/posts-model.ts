@@ -20,6 +20,7 @@ export default {
     update,
     findByUsername,
     findByThread,
+    findByLimited,
     replyTo
 }
 
@@ -58,6 +59,10 @@ function add(post:Partial<PostType>, thread_id:number, parent_id:number):PostedM
 
 async function findBy(filter:Partial<PostType>):Promise<PostType[]> {
     return await db("posts").where(filter);
+}
+
+async function findByLimited(filter:Partial<PostType>, limit:number):Promise<PostType[]> {
+    return await db("posts").where(filter).limit(limit);
 }
 
 async function findByUsername(username:string):Promise<PostedMessage[]>  {
