@@ -9,7 +9,7 @@ import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
 import { UserList } from './features/users/UserList';
 import Pages from './features/pages';
-import Posts from './features/posts/Posts';
+import { Thread } from './features/thread';
 import About from './features/pages/About';
 import Profile from './features/profile/Profile';
 import Navigation from './features/menu/Navigation';
@@ -18,7 +18,7 @@ import ConnectRequests from './features/social/Requests';
 
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
-import { getFeedAsync } from './features/feed/feedSlice';
+// import { getFeedAsync } from './features/feed/feedSlice';
 import { actions as webSocketActions } from './features/network/socketSlice';
 
 import { Container } from 'reactstrap';
@@ -65,7 +65,6 @@ function App() {
 
     socket.on("update:feed", () => {
       console.log('update feed...')
-      dispatch(getFeedAsync());
     });
 
     socket.on("update:thread", (threadId: string | number) => {
@@ -92,7 +91,7 @@ function App() {
         <Route path="/app/profile" element={<Profile />} />
         <Route path="/app/logout" element={<Logout socket={socket} />} />
         <Route path="/app/requests" element={<ConnectRequests />} />
-        <Route path="/app/thread/:thread_id" element={<Posts />} />
+        <Route path="/app/thread/:thread_id" element={<Thread />} />
         <Route path="/" element={<Pages.Welcome ws={socket} />} />
       </Routes>
     </Container>
