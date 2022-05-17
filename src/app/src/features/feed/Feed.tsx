@@ -1,16 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { BlogPost, selectors as postsSelectors, submitPostAsync, actions as postsActions } from '../posts/postsSlice';
+import { BlogPost, selectors as postsSelectors, submitPostAsync, actions as postsActions } from '../thread/postsSlice';
 import { getFeedAsync, selectors as feedSelectors, actions as feedActions } from './feedSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
 import { selectors as authSelectors } from '../auth/authSlice'
-
-import { selectors as userSelectors } from '../users/userSlice';
 
 import {
   Form, FormGroup, Label, Input, Button,
@@ -23,7 +21,6 @@ dayjs.extend(relativeTime)
 
 const { selectProfile } = profileSelectors;
 const { selectFeed } = feedSelectors;
-const { selectList } = userSelectors;
 const { selectToken } = authSelectors;
 
 const { clear: clearFeed } = feedActions;
@@ -73,40 +70,84 @@ export const LiteralFood = (props: any) => {
 }
 
 function Feed() {
+  let [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const profile = useAppSelector(selectProfile);
-  const socialFeed = useAppSelector(selectFeed);
+  const socialFeed:any = useAppSelector(selectFeed);
   const token = useAppSelector(selectToken);
   const authorized = token && token.length > 4;
   const shoutOut: any = useRef();
   const dispatch = useAppDispatch();
   const currentPost: BlogPost = useAppSelector(selectCurrent);
   const [loading, setLoading] = useState(true);
+  const [state, setState] = useState({ lastLoaded: 0, page: searchParams.get('page') });
+
   useEffect(() => {
-    if (authorized) {
-      dispatch(getFeedAsync());
+    const delta = (Date.now() - state.lastLoaded);
+    if (!authorized) {
+      dispatch(clearFeed());
+      navigate('/login')
+      return
+    }
+    if (delta > 15000) {
+      setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
+      dispatch(getFeedAsync({ page: searchParams.get('page'), limit: searchParams.get('limit') }));
       setTimeout(() => {
         setLoading(false);
       }, 500);
-    } else {
-      dispatch(clearFeed());
-      navigate('/login')
     }
-  }, []);
+  }, [socialFeed.pages, searchParams]);
+
+  const page = !socialFeed.previous ? 1 : socialFeed.previous.page + 1;
 
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
     if (socialFeed.status !== "pending") {
       dispatch(submitPostAsync());
       setTimeout(() => {
-        dispatch(getFeedAsync());
+        dispatch(getFeedAsync({ page: searchParams.get('page') }));
       }, 500);
     }
   }
-  const handleChange = (e: any) => {
+
+  const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     let name: string = e.currentTarget.name;
-    let value: any = e.target.value;
+    let value = e.target.value;
     dispatch(setCurrent({ [name]: value }));
+  }
+
+  const turnPage = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    switch (e.currentTarget.name) {
+      case "previous":
+        console.log('< previous page')
+        searchParams.set('page', socialFeed.previous.page);
+        break;
+      case "next":
+        console.log('next page >')
+        searchParams.set('page', socialFeed.next.page);
+        break;
+      default:
+        break;
+    }
+    setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
+    dispatch(getFeedAsync({ page: searchParams.get('page') }));
+  }
+
+  function Paginator() {
+    return <Container className="paginator flex align-items-center text-center" hidden={!(socialFeed.next || socialFeed.previous)} >
+      {!socialFeed?.previous?.page || page === 1 ?
+        <Button className="paginator btn" disabled>⇦</Button> :
+        <Button name="previous" className="paginator btn btn-success"
+          onClick={turnPage}
+        >⇦</Button>}
+      <Label>{page}</Label>
+      {!socialFeed?.next?.page ?
+        <Button className="paginator btn" disabled>⇨</Button> :
+        <Button name="next" className="paginator btn btn-success"
+          onClick={turnPage}
+        >⇨</Button>}
+    </Container>
   }
 
   return (<div className="Posts">
@@ -115,14 +156,20 @@ function Feed() {
         <Form onSubmit={handleSubmitForm}>
           <FormGroup>
             <Label for="shout-out">What's happening?</Label>
-            <Input id="shout-out"
-              ref={shoutOut}
-              className="shout" placeholder="..."
-              type="textarea"
-              value={currentPost?.content}
-              onChange={handleChange}
-              name="content" />
-            <Button className="shout btn-primary">shout</Button>
+            <div className="input-group mb-3">
+              <Input id="shout-out"
+                ref={shoutOut}
+                className="shout" placeholder="..."
+                type="textarea"
+                value={currentPost?.content}
+                onChange={handleChange}
+                name="content" />
+              <div className="input-group-append">
+
+                <Button className="shout btn">shout</Button>
+              </div>
+
+            </div>
           </FormGroup>
         </Form>
         {
@@ -138,10 +185,11 @@ function Feed() {
                     ...mmm,
                     profile,
                     replies: [
-                      ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === mmm.id)
+                      ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === mmm.id),
                     ]
                   })) || []}
               </ul>
+              {Paginator()}
             </>
         }
       </> :
