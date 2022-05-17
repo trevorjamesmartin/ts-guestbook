@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
-import { usersAsync, selectors, usersNextPageAsync, } from './userSlice';
+import { usersAsync, selectors } from './userSlice';
 import { selectors as friendSelectors, friendRequestAsync } from '../social/friendSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
 import { Card, CardImg, CardTitle, CardLink, Row, Col, Button, Container, CardBody, CardText, Label } from 'reactstrap';
@@ -46,24 +46,35 @@ export function UserList() {
   const friendList = useAppSelector(selectFriendList);
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const profile = useAppSelector(selectProfile);
-  const [state, setState] = useState({ lastLoaded: 0 });
+  let [searchParams, setSearchParams] = useSearchParams();
+  const [state, setState] = useState({ lastLoaded: 0, page: searchParams.get('page') });
   useEffect(() => {
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
-      setState({ lastLoaded: Date.now() });
-      dispatch(usersAsync());
+      setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
+      dispatch(usersAsync({page: searchParams.get('page')}));
     }
-  }, []);
+
+  }, [userlist.pages, searchParams]);
+  const page = !userlist.previous ? 1 : userlist.previous.page + 1;
 
   const nextPage = (e: any) => {
     e.preventDefault();
-    let key: string = e.currentTarget.name;
-    dispatch(usersNextPageAsync(key))
+    switch (e.currentTarget.name) {
+      case 'next':
+        searchParams.set('page', userlist.next.page);
+        break;
+      case 'previous':
+        searchParams.set('page', userlist.previous.page);
+        break;      
+      default:
+        return
+    }
+    setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
+    dispatch(usersAsync({page: searchParams.get('page')}));
   };
-  const page = !userlist.previous ? 1 : userlist.previous.page + 1;
-  return (<>
-    <Label>Who's who?</Label>
-    <Container className="paginator flex align-items-center text-center" hidden={!(userlist.next || userlist.previous)} >
+  function Paginator() {
+    return <Container className="paginator flex align-items-center text-center" hidden={!(userlist.next || userlist.previous)} >
       {!userlist?.previous?.page || page === 1 ?
         <Button className="paginator btn" disabled>⇦</Button> :
         <Button name="previous" className="paginator btn btn-success"
@@ -76,8 +87,13 @@ export function UserList() {
           onClick={nextPage}
         >⇨</Button>}
     </Container>
+  }
+
+  return (<>
+    <Label>Who's who?</Label>
+
     <Container className='userlist-container'>
-      {userlist?.pages?.map((user: any, i: number) => {
+      {userlist.pages.map((user: any, i: number) => {
         if (profile.username === user.username) {
           return null
         };
@@ -93,7 +109,7 @@ export function UserList() {
       })}
 
     </Container>
-
+    {Paginator()}
 
   </>);
 }
