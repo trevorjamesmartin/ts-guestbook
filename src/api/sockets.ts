@@ -39,7 +39,7 @@ export default function (io: any) {
 
       });
 
-      socket.on('post:feed', postIO);
+      socket.on('post', postIO);
 
 
     })
