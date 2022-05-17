@@ -23,7 +23,7 @@ export function paginate(model: any, sortFunction?: any) {
             results = (await model(decodedToken)).sort(descending);
         }
         const page: number = Number(req.query.page) || 1;
-        const limit: number = Number(req.query.limit) || 5;
+        const limit: number = Number(req.query.limit) || 4;
         const startIndex: number = (page - 1) * limit;
         const endIndex: number = page * limit;
         const paginated: Paginated = { next: undefined, previous: undefined, pages: [] };
