@@ -21,14 +21,29 @@ interface Food {
 }
 
 async function mainFeed(decodedToken: any) {
-    let friends = (await connectModel.connectedTo(decodedToken.subject)).friends
-    let myfeed:any[] = (await postsModel.findByUsername(decodedToken.username));
-    for (let friend of friends) {
-        let { username, avatar, name } = friend;
-        let meal:Food[] = [...(await postsModel.findByUsername(username)).map(post => ({
+    let author_id = decodedToken.subject;
+    // set filter
+    let options:any = {
+        author_id, // self authored
+        thread_id: null // main stream
+    }
+    // read db
+    let myMainFeed: any[] = (await postsModel.findBy(options));
+
+    for (let friend of (await connectModel.connectedTo(decodedToken.subject)).friends) {        
+        let { id: author_id, username, avatar, name } = friend;
+        // set filter
+        options = { 
+            author_id, // friend authored
+            thread_id: null // main stream
+        };
+        // read db
+        let meal: Food[] = [...(await postsModel.findBy(options)).map(post => ({
             username, avatar, name, ...post
         }))];
-        myfeed = [ ...myfeed, ...meal ];
+
+        myMainFeed = [...myMainFeed, ...meal]; // collect
     }
-    return myfeed
+
+    return myMainFeed
 }
