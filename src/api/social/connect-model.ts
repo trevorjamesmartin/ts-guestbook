@@ -118,6 +118,7 @@ const withProfiles = async (rcList: RequestConnect[]) => {
     for (let r of rcList) {
         let profile = await profileModel.findByUserId(r.from_id);
         friends = [...friends, {
+            id: r.from_id,
             connect_id: r.id,
             username: profile.username,
             name: profile.name,
