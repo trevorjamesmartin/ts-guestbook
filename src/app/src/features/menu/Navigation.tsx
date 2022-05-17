@@ -106,12 +106,12 @@ function Navigation() {
     >
       <Link className='nav-link' to={authorized ? '/app' : '/'}>
         <NavItem active={isActive('/app')}>
-          Lately
+          App
         </NavItem>
       </Link>
       <Link className='nav-link' to='/app/users'>
         <NavItem active={isActive('/app/users')}>
-          People
+          Directory
         </NavItem>
       </Link>
       <Link className='nav-link' to='/about'>
