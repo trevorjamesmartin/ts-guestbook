@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { selectors as profileSelectors, getProfileAsync, setProfileAsync, actions as profileActions } from '../profile/profileSlice';
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Container } from 'reactstrap';
 
 const { setField } = profileActions;
 const { selectProfile } = profileSelectors;
@@ -61,7 +61,7 @@ function Profile() {
         reader.readAsDataURL(file);
     }
 
-    return (<div className="profile">
+    return (<Container className="profile-page">
         <Form onSubmit={handleUpdateProfile}>
             <Label for="preview-image">Avatar</Label>
             <FormGroup>
@@ -89,7 +89,7 @@ function Profile() {
             <Button>update</Button>
         </Form>
         <span>{profile.status}</span>
-    </div>)
+    </Container>)
 }
 
 export default Profile;
