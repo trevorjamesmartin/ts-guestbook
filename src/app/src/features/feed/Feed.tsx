@@ -134,7 +134,7 @@ function Feed() {
             </Container>
             :
             <>
-              <ul>
+              <ul className="feedList">
                 {socialFeed?.pages.map((page: any) => FeedCard({
                     ...page,
                     profile,
