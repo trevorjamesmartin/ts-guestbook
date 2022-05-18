@@ -87,7 +87,7 @@ function Thread() {
         </Container>
         :
         // show replies
-        <ul>{[...replies.map(ReplyCard)]}</ul>
+        <ul className="threadList">{[...replies.map(ReplyCard)]}</ul>
     }
     <Form onSubmit={handleSubmitReply} >
       <div className="input-group mb-3">
