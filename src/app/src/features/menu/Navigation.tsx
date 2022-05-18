@@ -76,11 +76,11 @@ function Navigation() {
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem>
-            <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
-          <NavItem active={isActive('/app/profile')}>
+          <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
+            <NavItem active={isActive('/app/profile')}>
               Profile
-          </NavItem>
-            </Link>
+            </NavItem>
+          </Link>
         </DropdownItem>
         <DropdownItem disabled>
           <Link className='nav-link' to="#">
@@ -95,6 +95,31 @@ function Navigation() {
             </Link>
           </NavItem>
         </DropdownItem>
+      </DropdownMenu>
+    </UncontrolledDropdown>
+  }
+
+  function connectionMenu() {
+    return <UncontrolledDropdown
+      inNavbar
+    >
+      <DropdownToggle nav>
+        <span className="socket-connect-status">{networkStatus()}</span>
+
+      </DropdownToggle>
+      <DropdownMenu>
+        {
+          authorized && socketStatus === 'connected' ?
+            <DropdownItem>
+              <Link className='nav-link' to={'/app/test'}>
+                <NavItem active={isActive('/app/test')}>{window.location.protocol}</NavItem>
+                <NavItem active={isActive('/app/test')}>(test io)</NavItem>
+              </Link>
+            </ DropdownItem>
+            : <DropdownItem>
+              <NavItem>{window.location.protocol}</NavItem>
+            </DropdownItem>
+        }
       </DropdownMenu>
     </UncontrolledDropdown>
   }
@@ -119,7 +144,7 @@ function Navigation() {
           About
         </NavItem>
       </Link>
-      {friendRequests[0] &&<Link className='nav-link' to='/app/requests'>
+      {friendRequests[0] && <Link className='nav-link' to='/app/requests'>
         <NavItem active={isActive('/app/requests')}>
           {`Requests (${friendRequests.length}) `}
         </NavItem>
@@ -162,8 +187,9 @@ function Navigation() {
           <NavItem active={isActive('/app/profile')}>
             {profileMenu()}
           </NavItem>}
-        <span className="socket-connect-status">{networkStatus()}</span>
-
+        <NavItem>
+          {connectionMenu()}
+        </NavItem>
         <UncontrolledDropdown
           inNavbar
         >
