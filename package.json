@@ -18,7 +18,7 @@
     "precompile": "npm run build",
     "compile": "tsc",
     "release:scripts": "npx ts-node scripts/release-package.ts && rm -rf dist/scripts",
-    "prepackage": "mkdir -p dist/src/app/build && cp -rp src/app/build dist/src/app && npm run release:scripts",
+    "prepackage": "mkdir -p dist/src/app/build && cp -rp src/app/build dist/src/app && cp -rp src/data/sample dist/src/data/sample && npm run release:scripts",
     "package": "tar czvf dist.tar.gz dist/* && mkdir -p release && mv dist.tar.gz release",
     "clean": "rm -rf dist/* >> /dev/null 2>&1;rm dist.tar.gz >> /dev/null 2>&1;rm release/* >> /dev/null 2>&1",
     "release": "npm run compile && npm run package",
