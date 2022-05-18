@@ -14,7 +14,7 @@ import About from './features/pages/About';
 import Profile from './features/profile/Profile';
 import Navigation from './features/menu/Navigation';
 import ConnectRequests from './features/social/Requests';
-
+import SocketTest from './features/network/SocketTest';
 
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
@@ -85,6 +85,7 @@ function App() {
       <Routes>
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/app/test" element={<SocketTest socket={socket} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={<Pages.MainPage ws={socket} />} />
         <Route path="/app/users" element={<UserList />} />
