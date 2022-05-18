@@ -27,9 +27,9 @@ export default {
 
 export type PostedMessage = Required<PostType>
 
-async function replyTo(parent_id:number, post:Partial<PostType>, author_id:number):Promise<PostedMessage> {
+async function replyTo(parent_id: number, post: Partial<PostType>, author_id: number): Promise<PostedMessage> {
     const op = await byId(Number(parent_id));
-    let thread_id = op.thread_id ? op.thread_id: parent_id;
+    let thread_id = op.thread_id ? op.thread_id : parent_id;
     let message = {
         ...post,
         author_id
@@ -37,35 +37,31 @@ async function replyTo(parent_id:number, post:Partial<PostType>, author_id:numbe
     return add(message, thread_id, parent_id);
 }
 
-function byId(id:number):Promise<PostedMessage> {
+function byId(id: number): Promise<PostedMessage> {
     return db('posts')
-    .where({id})
-    .select('id', 'author_id', 'content', 'posted_at', 'created_at', 'parent_id', 'thread_id', 'title', 'tags')
-    .first();
+        .where({ id })
+        .select('id', 'author_id', 'content', 'posted_at', 'created_at', 'parent_id', 'thread_id', 'title', 'tags')
+        .first();
 }
 
-function add(post:Partial<PostType>, thread_id:number, parent_id:number):PostedMessage {
+function add(post: Partial<PostType>, thread_id: number, parent_id: number): PostedMessage {
     return db("posts")
-    .insert({
-        ...post,
-        thread_id: thread_id > 0 ? thread_id : null,
-        parent_id: parent_id > 0 ? parent_id : null,
-    }).returning('id')
-    // .then(async (p:any) => {
-    //     let rec = await byId(p.id);
-    //     return rec
-    // })
+        .insert({
+            ...post,
+            thread_id: thread_id > 0 ? thread_id : null,
+            parent_id: parent_id > 0 ? parent_id : null,
+        }).returning('id')
 }
 
-async function findBy(filter:Partial<PostType>):Promise<PostType[]> {
+async function findBy(filter: Partial<PostType>): Promise<PostType[]> {
     return await db("posts").where(filter);
 }
 
-async function findByLimited(filter:Partial<PostType>, limit:number):Promise<PostType[]> {
+async function findByLimited(filter: Partial<PostType>, limit: number): Promise<PostType[]> {
     return await db("posts").where(filter).limit(limit);
 }
 
-async function findByUsername(username:string):Promise<PostedMessage[]>  {
+async function findByUsername(username: string): Promise<PostedMessage[]> {
     let u = await usersModel.userId(username);
     if (!u) {
         console.log('no id found for user', username);
@@ -74,10 +70,25 @@ async function findByUsername(username:string):Promise<PostedMessage[]>  {
     return await db("posts").where({ author_id: u.id })
 }
 
-async function findByThread(thread_id:number):Promise<any[]> {
-    return await db("posts").where({ thread_id })
+async function findByThread(thread_id: number): Promise<any[]> {
+    return await db("posts")
+        .join("profiles", "profiles.id", "=", "posts.author_id")
+        .join("users", "users.id", "=", "posts.author_id")
+        .select({
+            id: 'posts.id',
+            author_id: 'posts.author_id',
+            avatar: 'profiles.avatar',
+            content: 'posts.content',
+            created_at: 'posts.created_at',
+            name: 'profiles.name',
+            username: 'users.username',
+            parent_id: 'posts.parent_id',
+            posted_at: 'posts.posted_at',
+            thread_id: 'posts.thread_id',            
+        })
+        .where({ thread_id });
 
 }
-function update(id:number, data:Partial<PostType>) {
-    return db("posts").where({ id }).update({...data, posted_at: timestamp() });
+function update(id: number, data: Partial<PostType>) {
+    return db("posts").where({ id }).update({ ...data, posted_at: timestamp() });
 }
