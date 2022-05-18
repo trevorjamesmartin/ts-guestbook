@@ -208,8 +208,13 @@ a {
   height: 5rem;
 }
 
+.reply-avatar {
+  width: 2.5rem;
+  margin-right: 1rem;
+  border-radius: 100%;
+}
+
 .shout-out-avatar {
-  height: 3.4rem;
   width: 5rem;
 
   /* margin: 0.4rem; */

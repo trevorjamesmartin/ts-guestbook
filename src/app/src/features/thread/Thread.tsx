@@ -26,8 +26,6 @@ function Thread() {
     lastLoaded: 0,
   });
   useEffect(() => {
-    console.log(replies.length);
-    console.log(replies);
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now() });
