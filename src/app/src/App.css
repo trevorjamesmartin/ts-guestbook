@@ -325,26 +325,26 @@ a>span.app-clock {
 
 
 .show>.dropdown-menu {
-  animation-name: slidenavAnimation;
+  animation-name: basicAnimation;
   animation-duration: .34s;
   animation-iteration-count: 1;
   animation-timing-function: ease;
   animation-fill-mode: forwards;
 
-  -webkit-animation-name: slidenavAnimation;
+  -webkit-animation-name: basicAnimation;
   -webkit-animation-duration: .34s;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-timing-function: ease;
   -webkit-animation-fill-mode: forwards;
 
-  -moz-animation-name: slidenavAnimation;
+  -moz-animation-name: basicAnimation;
   -moz-animation-duration: .34s;
   -moz-animation-iteration-count: 1;
   -moz-animation-timing-function: ease;
   -moz-animation-fill-mode: forwards;
 }
 
-@keyframes slidenavAnimation {
+@keyframes basicAnimation {
   from {
     opacity: 0;
   }
@@ -354,7 +354,7 @@ a>span.app-clock {
   }
 }
 
-@-webkit-keyframes slidenavAnimation {
+@-webkit-keyframes basicAnimation {
   from {
     opacity: 0;
   }
@@ -363,7 +363,52 @@ a>span.app-clock {
     opacity: 1;
   }
 }
+
 .paginator {
   margin: 1rem;
   border-radius: 100%;
+}
+
+.threadList {
+  animation: basicAnimation 2s;
+}
+/* .feedList {
+  animation-name: basicAnimation;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-name: basicAnimation;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease;
+  -webkit-animation-fill-mode: forwards;
+
+  -moz-animation-name: basicAnimation;
+  -moz-animation-duration: 1s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: ease;
+  -moz-animation-fill-mode: forwards;
+} */
+.userlist-container {
+  animation: basicAnimation 1s;
+}
+
+.profile-page {
+  animation: basicAnimation 1s;
+}
+
+.blog-post.card {
+  animation: basicAnimation 1s;
+}
+
+.userlist-card.card {
+  animation: .5s ease-in basicAnimation;
+}
+
+.socket-event {
+  background-color: #343a40;
+  min-height: 42ch;
+  color:rgba(18, 219, 68, 0.7)
 }
