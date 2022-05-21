@@ -17,7 +17,7 @@ const sessionConfig = {
       tablename: "sessions",
       createtable: true,
       sidfieldname: "sid",
-      clearInterval: 1000 * 60 * 15
+      clearInterval: 1000
     })
 };
 

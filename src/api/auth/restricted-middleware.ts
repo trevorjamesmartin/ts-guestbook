@@ -17,6 +17,18 @@ export function generateToken(user: UserType) {
     return jwt.sign(payload, JWT_SECRET, options);
 }
 
+// io handler 
+export const verifyToken = (authorization:string) => {
+    if (!authorization) return 400
+    return jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: any) => {
+        if (err) {
+            return 401
+        } else {
+            return decodedToken;
+        }
+    });
+}
+
 /**
  * verify authorization for a given route, 
  * using a secret or a public key to decode a provided token.
@@ -29,6 +41,7 @@ export default (req: any, res: any, next: any) => {
                 res.status(401).json({ message: "invalid credentials" });
             } else {
                 req.decodedToken = decodedToken;
+                res.decodedToken = decodedToken;
                 next();
             }
         });

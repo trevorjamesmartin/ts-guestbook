@@ -3,10 +3,21 @@ import Users, {UserType} from '../users/users-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';
+import { session, sessionConfig } from './session';
 
-const map = new Map();
+import userMap from '../common/maps';
+
+export const sessionParser = session(sessionConfig);
+
+
+// const authMap = new Map();
+
+// export {
+//     authMap
+// };
 
 const router = Router();
+// export const readMap = (username:string) => authMap.get(username)
 
 router.get('/', (req, res) => {
     res.status(200).send("?");
@@ -39,26 +50,43 @@ router.post('/login', async (req, res) => {
         return res.status(404).json({ message });
     }
     if (bcrypt.compareSync(req.body.password, user.password)) {
-        req.session.userId = v4(); // create new unique session-id;
+        const token = generateToken(user);
+        const uid = v4();
+        req.session.userId = uid;
         req.session.username = user.username;
         req.session.loggedIn = true;
         req.session.save();
+        userMap.addUser({
+            username: user.username,
+            token, uid, loggedIn: true
+        });
         return res.status(200).json({
             message: 'welcome',
             username: user.username,
-            token: generateToken(user)
+            token, // authorization
+            uid // socket id
         });
     }
     return res.status(400).json({ message });
 });
 
 router.delete('/logout', (req, res) => {
-    const ws = map.get(req.session.userId);
-    console.log(`${req.session.username} logged out.`);
+    let username = req.session.username;
+    let space:any;
+    
+    if (username) {
+        space = userMap.getUser(username);
+    }
+    
+    if (username){
+        console.log(`${username} logged out.`);
+    }
+    if (space) {
+        console.log(space);
+    }
     req.session.destroy(function() {
-        if (ws) ws.close();
         res.send({result: 'OK', message: 'Logged out'});
-    })
+    });
 })
 
 export default router;

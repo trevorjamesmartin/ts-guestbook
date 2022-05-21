@@ -1,5 +1,5 @@
 import { Express, json } from 'express';
-import session from 'express-session';
+// import session from 'express-session';
 import cors from 'cors';
 import helmet from 'helmet';
 import hostValidation from 'host-validation';
@@ -9,7 +9,7 @@ import hpp from 'hpp';
 import ejs from 'ejs';
 // import enforcesSSL from 'express-enforces-ssl';
 
-import { sessionConfig } from './auth-session'
+import { sessionParser } from './auth'
 
 const MAX_CONTENT_LENGTH_ACCEPTED = 8 ** 8;
 
@@ -19,7 +19,6 @@ const corsMiddleware = cors({
 });
 
 
-export const sessionParser = session(sessionConfig);
 
 export default function configureServer(server: Express) {
   server.use(corsMiddleware);

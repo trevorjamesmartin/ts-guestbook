@@ -74,7 +74,7 @@ a {
 }
 
 .card {
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
 }
 
 .card {
@@ -86,7 +86,7 @@ a {
   word-wrap: break-word;
   background-color: #fff;
   background-clip: border-box;
-  border: 0 solid rgba(0,0,0,.125);
+  border: 0 solid rgba(0, 0, 0, .125);
   border-radius: .25rem;
 }
 
@@ -309,12 +309,13 @@ li {
   /* background-color: grey; */
   text-decoration: underline;
 }
+
 .nav-link {
-  color:rgba(64, 64, 64, 0.7)
+  color: rgba(64, 64, 64, 0.7)
 }
 
 a>.active {
-  color:rgba(64, 64, 64, 0.7)
+  color: rgba(64, 64, 64, 0.7)
 }
 
 
@@ -372,6 +373,7 @@ a>span.app-clock {
 .threadList {
   animation: basicAnimation 2s;
 }
+
 /* .feedList {
   animation-name: basicAnimation;
   animation-duration: 1s;
@@ -408,7 +410,18 @@ a>span.app-clock {
 }
 
 .socket-event {
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #34403f;
+  min-height: 20ch;
+  color: whitesmoke;
+}
+
+.socket-result {
+  display: flex;
+  flex-direction: column-reverse;
   background-color: #343a40;
   min-height: 42ch;
-  color:rgba(18, 219, 68, 0.7)
+  color: rgba(18, 219, 25, .9);
+  max-height: 42ch;
 }

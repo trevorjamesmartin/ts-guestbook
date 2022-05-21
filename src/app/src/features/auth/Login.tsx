@@ -1,5 +1,6 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { loginAsync, selectors, Credentials } from './authSlice';
@@ -12,6 +13,7 @@ const initialState: Credentials = {
 }
 
 export function Login() {
+  const navigate = useNavigate();
   const loggedIn = useAppSelector(selectLoggedIn);
   const status = useAppSelector(selectStatus);
   const message: string = useAppSelector(selectMessage) || ""
@@ -22,7 +24,10 @@ export function Login() {
     if (state.password.length > 4 && state.username.length > 0) {
       dispatch(loginAsync(state));
       setState(initialState);
-      setTimeout(() => window.location.reload(), 1700); // reload to trigger a websocket connection
+      setTimeout(() => {
+        // Re-initiate the websocket connection; Now, authorized.
+        window.location.replace('/'); // is there a better to handle this ?
+      }, 1700);
     }
   }
   return (

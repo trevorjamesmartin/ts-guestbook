@@ -6,12 +6,16 @@ import { persistedStore } from '../../memory/persist';
 interface NetworkSocket {
     message: string | undefined;
     status: string;
+    chat: any[];
+    userlist: string[];
     [key: string]: any;
 }
 
 const initialMessage: NetworkSocket = {
     message: undefined,
-    status: 'disconnected'
+    status: 'disconnected',
+    chat: [],
+    userlist: []
 }
 
 interface ioPayloadAction {
@@ -39,7 +43,9 @@ export const socketSlice = createSlice({
     name: 'socket',
     initialState: persistedStore?.socket || initialMessage,
     reducers: {
-        //
+        updateChat: (state: NetworkSocket, action: PayloadAction<any[]>) => {
+            state.chat = [...state.chat, ...action.payload]
+        }
     },
     extraReducers: (builder) => {
 
@@ -56,16 +62,19 @@ export const socketSlice = createSlice({
 });
 const selectMessage = (state: RootState) => <string | undefined>state.socket.message;
 const selectStatus = (state: RootState) => <string>state.socket.status;
-
+const selectChat = (state: RootState) => <any[]>state.socket.chat;
+const { updateChat } = socketSlice.actions;
 
 export const selectors = {
     selectMessage,
-    selectStatus
+    selectStatus,
+    selectChat
 }
 
 export const actions = {
     setStatusConnected,
-    setStatusDisconnected
+    setStatusDisconnected,
+    updateChat
 }
 
 export default socketSlice.reducer;

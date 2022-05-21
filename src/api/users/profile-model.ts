@@ -1,5 +1,5 @@
 import db from '../../data/dbConfig';
-import { timestamp } from '../util';
+import { timestamp } from '../common/util';
 export interface ProfileType {
     id: number;
     user_id: number;

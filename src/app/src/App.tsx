@@ -16,17 +16,17 @@ import Navigation from './features/menu/Navigation';
 import ConnectRequests from './features/social/Requests';
 import SocketTest from './features/network/SocketTest';
 
-import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
-// import { getFeedAsync } from './features/feed/feedSlice';
-import { actions as webSocketActions } from './features/network/socketSlice';
-
+import { useAppSelector, useAppDispatch } from './memory/hooks';
 import { Container } from 'reactstrap';
+
+import handleIO from './features/network/config';
+
 import './App.css';
 
 const socket = io(window.location.origin, { withCredentials: true });
-const { setStatusConnected, setStatusDisconnected } = webSocketActions;
 const { selectProfile } = profileSelectors;
+
 
 function App() {
   // Router
@@ -35,46 +35,8 @@ function App() {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectProfile);
 
-  const catchAll = () => {
-    // * catch-all (from api)
-    const pathSearch = window.location.search.split('?')[1] || undefined;
-    if (pathSearch && pathSearch.startsWith('/')) {
-      navigate(pathSearch);
-    }
-  }
-
-  const handleIO = () => {
-    // socket events are declared within the component, 
-    // because hooks (dispatch) update the store.
-
-    socket.on("connect", () => {
-      console.log("connected");
-      dispatch(setStatusConnected(socket, `hello:${profile.username}`));
-      // save to Redux
-    });
-
-    socket.on("disconnect", () => {
-      console.log("disconnected")
-      // remove from Redux
-      dispatch(setStatusDisconnected(socket, `goodbye:${profile.username}`));
-    });
-
-    socket.on("message", (data) => {
-      console.log("@message: " + data);
-    })
-
-    socket.on("update:feed", () => {
-      console.log('update feed...')
-    });
-
-    socket.on("update:thread", (threadId: string | number) => {
-      console.log('update thread with id', threadId);
-    });
-  }
-
   useEffect(() => {
-    catchAll();
-    handleIO();
+    handleIO(socket, dispatch, profile, navigate);
   }, []);
 
   return (<ErrorBoundary>

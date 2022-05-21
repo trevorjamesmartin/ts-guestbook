@@ -46,6 +46,12 @@ export const userSlice = createSlice({
       state.next = clearState.next;
       state.previous = clearState.previous;
     },
+    updateUsers: (state, action: PayloadAction<UserList>) => {
+      state.status = 'ok';
+      state.pages = action.payload.pages;
+      state.previous = action.payload.previous;
+      state.next = action.payload.next;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(usersAsync.pending, (state) => {
@@ -72,10 +78,11 @@ export const selectors = {
   selectList, selectStatus
 };
 
-const { clear } = userSlice.actions;
+const { clear, updateUsers } = userSlice.actions;
 
 export const actions = {
-  clear
+  clear,
+  updateUsers
 };
 
 export default userSlice.reducer;

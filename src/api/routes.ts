@@ -1,6 +1,6 @@
 import path from 'path';
 import express from 'express';
-import { authRouter, authMiddleware } from './auth-session'
+import { authRouter, authMiddleware } from './auth'
 import { usersRouter, profileRouter } from './users'
 import { postsRouter } from './posts';
 import { connectRouter, friendsRouter } from './social';
