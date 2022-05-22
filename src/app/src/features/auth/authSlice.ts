@@ -7,6 +7,7 @@ import api from '../network/api';
 export interface Credentials {
   username: string;
   password: string;
+  socket?:any;
 }
 
 interface credStatus {
@@ -28,7 +29,7 @@ export const loginAsync = createAsyncThunk(
   async (data: Credentials, thunkAPI) => {
     const state:any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await new api(token).post('/auth/login', data); // pending
+    const response = await new api({ token, socket: data.socket }).post('/auth/login', data); // pending
     return response.data; // fulfilled
   }
 );

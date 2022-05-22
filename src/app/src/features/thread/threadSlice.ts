@@ -9,7 +9,7 @@ export const submitPostAsync = createAsyncThunk(
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         const { content, id, tags, title } = state.thread.current;
-        const response = await new api(token).post('/api/posts', { content, id, tags, title });
+        const response = await new api({ token }).post('/api/posts', { content, id, tags, title });
         return response.data;
     }
 );
@@ -17,12 +17,13 @@ export const submitPostAsync = createAsyncThunk(
 // todo
 export const replyPostAsync = createAsyncThunk(
     'posts/reply',
-    async (id: number, thunkAPI) => {
+    async (params: any, thunkAPI) => {
+        const { id } = params;
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         console.log(state)
         const { content } = state.thread.current;
-        const response = await new api(token).post(`/api/posts/reply/${id}`, {
+        const response = await new api({ token }).post(`/api/posts/reply/${id}`, {
             content
         });
         return response.data;
@@ -31,10 +32,20 @@ export const replyPostAsync = createAsyncThunk(
 
 export const getThreadAsync = createAsyncThunk(
     'posts/replies',
-    async (id: number, thunkAPI) => {
+    async (params: any, thunkAPI) => {
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        const response = await new api(token).get(`/api/posts/thread/${id}`);
+        const { id, socket } = params;
+        const socketPath = {
+            '/api/posts/thread/:id': {
+                event: 'api:thread',
+                params: { id }
+            }
+        }
+        const apiClient = new api({ token, socket, socketPath });
+        const response:any = await apiClient.get('/api/posts/thread/:id', { params: { id } });
+        console.log({response})
+        // const response = await new api({ token }).get(`/api/posts/thread/${id}`);
         return response.data;
     }
 );
@@ -76,6 +87,9 @@ export const postsSlice = createSlice({
         clear: (state) => {
             state = { ...clearState }
         },
+        updateListed: (state, action:PayloadAction<any[]>) => {
+            state.listed = action.payload;
+        },
         setCurrent: (state, action: PayloadAction<Partial<BlogPost>>) => {
             for (let name of Object.keys(action.payload)) {
                 switch (name) {
@@ -87,7 +101,8 @@ export const postsSlice = createSlice({
                 }
             }
             state.current = { ...state.current, ...action.payload };
-        }
+        },
+        
     },
     extraReducers: (builder) => {
         builder.addCase(getThreadAsync.pending, (state) => {
@@ -100,7 +115,7 @@ export const postsSlice = createSlice({
             .addCase(getThreadAsync.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed'
                 state.listed = [];
-                console.log(action.payload)
+                console.log(action)
             });
         builder.addCase(submitPostAsync.pending, (state) => {
             state.status = 'pending';
@@ -128,16 +143,19 @@ export const postsSlice = createSlice({
 
 const selectListed = (state: RootState) => state.thread.listed;
 const selectCurrent = (state: RootState) => state.thread.current;
+const selectStatus = (state: RootState) => state.thread.status;
 export const selectors = {
     selectListed,
-    selectCurrent
+    selectCurrent,
+    selectStatus
 };
 
-const { clear, setCurrent } = postsSlice.actions;
+const { clear, setCurrent, updateListed } = postsSlice.actions;
 
 export const actions = {
     clear,
-    setCurrent
+    setCurrent,
+    updateListed
 }
 
 export default postsSlice.reducer;

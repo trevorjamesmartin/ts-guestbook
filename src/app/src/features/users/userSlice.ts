@@ -19,14 +19,21 @@ export const usersAsync = createAsyncThunk(
   async (params: any, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token;
-    const apiClient = new api(token);
     const { protocol, pathname, host } = window.location;
     let searchString = '';
     const { page } = params;
-    let response: any = !page ?
-      await apiClient.get('/api/users/with-profiles', { params: { page: 1, limit: 9 } }) :
-      await apiClient.get('/api/users/with-profiles', { params: { page, limit: 9 } });
-    // console.log(response)
+    let pageParams = !page ? { page: 1, limit: 9 } : { page, limit: 9 };
+    const socketPath = {
+      '/api/users': {
+        event: 'api:usernames'
+      },
+      '/api/users/with-profiles': {
+        event: 'api:users:with-profiles',
+        params: pageParams
+      }
+    };
+    const apiClient = new api({ token, socket: params.socket, socketPath })
+    let response: any = await apiClient.get('/api/users/with-profiles', { params: pageParams });
     if (page > 1 && response.status === 200) {
       searchString = `?page=${page}`;
     }
@@ -59,9 +66,11 @@ export const userSlice = createSlice({
     })
       .addCase(usersAsync.fulfilled, (state, action: PayloadAction<UserList>) => {
         state.status = 'ok';
-        state.pages = action.payload.pages;
-        state.previous = action.payload.previous;
-        state.next = action.payload.next;
+        if (action.payload.pages.length > 0) {
+          state.pages = action.payload.pages;
+          state.previous = action.payload.previous;
+          state.next = action.payload.next;
+        }
       })
       .addCase(usersAsync.rejected, (state, action: PayloadAction<any>) => {
         state.status = 'failed';
