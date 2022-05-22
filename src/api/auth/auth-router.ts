@@ -3,12 +3,8 @@ import Users, {UserType} from '../users/users-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';
-import { session, sessionConfig } from './session';
 
 import userMap from '../common/maps';
-
-export const sessionParser = session(sessionConfig);
-
 
 // const authMap = new Map();
 
