@@ -53,7 +53,7 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
 });
 
 function getPoolConfig() {
-  let url: string = process.env.DATABASE || '';
+  let url: string = process.env.DATABASE_URL || '';
   let [_, b, c, d] = url?.split(':');
   let [__, user] = b.split('//');
   let [password, host] = c.split('@');
