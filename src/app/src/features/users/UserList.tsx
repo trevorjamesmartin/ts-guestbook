@@ -39,8 +39,9 @@ const UserCard = (props: any) => {
   </Card>
 }
 
-export function UserList() {
+export function UserList(props:any) {
   const dispatch = useAppDispatch();
+  const socket = props?.socket;
   const userlist: any = useAppSelector(selectList);
   // const status = useAppSelector(selectStatus);
   const friendList = useAppSelector(selectFriendList);
@@ -52,7 +53,7 @@ export function UserList() {
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-      dispatch(usersAsync({page: searchParams.get('page')}));
+      dispatch(usersAsync({socket, page: searchParams.get('page')}));
     }
 
   }, [userlist.pages, searchParams]);
@@ -71,7 +72,7 @@ export function UserList() {
         return
     }
     setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-    dispatch(usersAsync({page: searchParams.get('page')}));
+    dispatch(usersAsync({socket, page: searchParams.get('page')}));
   };
   function Paginator() {
     return <Container className="paginator flex align-items-center text-center" hidden={!(userlist.next || userlist.previous)} >

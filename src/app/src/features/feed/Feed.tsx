@@ -24,9 +24,10 @@ const { selectCurrent } = postsSelectors;
 const { clear: clearFeed } = feedActions;
 const { setCurrent } = postsActions;
 
-function Feed() {
+function Feed(props:any) {
   let [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const socket = props?.socket;
   const profile = useAppSelector(selectProfile);
   const socialFeed:any = useAppSelector(selectFeed);
   const token = useAppSelector(selectToken);
@@ -34,7 +35,6 @@ function Feed() {
   const shoutOut: any = useRef();
   const dispatch = useAppDispatch();
   const currentPost: BlogPost = useAppSelector(selectCurrent);
-  const [loading, setLoading] = useState(true);
   const [state, setState] = useState({ lastLoaded: 0, page: searchParams.get('page') });
 
   useEffect(() => {
@@ -46,10 +46,7 @@ function Feed() {
     }
     if (delta > 15000) {
       setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-      dispatch(getFeedAsync({ page: searchParams.get('page'), limit: searchParams.get('limit') }));
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
+      dispatch(getFeedAsync({ socket, page: searchParams.get('page'), limit: searchParams.get('limit') }));
     }
   }, [socialFeed.pages, searchParams]);
 
@@ -60,7 +57,7 @@ function Feed() {
     if (socialFeed.status !== "pending") {
       dispatch(submitPostAsync());
       setTimeout(() => {
-        dispatch(getFeedAsync({ page: searchParams.get('page') }));
+        dispatch(getFeedAsync({ socket, page: searchParams.get('page') }));
       }, 500);
     }
   }
@@ -86,7 +83,7 @@ function Feed() {
         break;
     }
     setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-    dispatch(getFeedAsync({ page: searchParams.get('page') }));
+    dispatch(getFeedAsync({ socket, page: searchParams.get('page') }));
   }
 
   function Paginator() {
@@ -128,7 +125,7 @@ function Feed() {
           </FormGroup>
         </Form>
         {
-          loading ?
+          socialFeed.status === 'loading' ?
             <Container className="centered-spinner-container">
               <Spinner />
             </Container>

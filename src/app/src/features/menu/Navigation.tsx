@@ -10,14 +10,15 @@ import { selectors as socketSelectors } from '../network/socketSlice';
 // local component
 import Clock from './Clock';
 // bootstrap components
-import { Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+import { Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle, Button } from 'reactstrap';
 
 const { selectToken, selectStatus: selectAuthStatus, selectLoggedIn } = authSelectors;
 const { selectProfile } = profileSelectors;
 const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectStatus: selectSocketStatus, selectMessage } = socketSelectors;
 
-function Navigation() {
+function Navigation(props:any) {
+  const {toggleRTC} = props;
   const [collapsed, setCollapsed] = useState(true);
   const [clockConfig, setClockConfig] = useState({
     military: false,
@@ -120,6 +121,9 @@ function Navigation() {
               <NavItem>{window.location.protocol}</NavItem>
             </DropdownItem>
         }
+        <DropdownItem>
+          <Button onClick={toggleRTC}>rtc</Button>
+        </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
   }

@@ -7,21 +7,23 @@ import { Spinner, Card, Container, Row, CardImg, CardText, CardBody, Form, Input
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import ReplyCard from "../cards/ReplyCard";
 import dayjs from "dayjs";
-const { selectListed, selectCurrent } = postsSelectors;
+const { selectListed, selectCurrent, selectStatus } = postsSelectors;
 const { setCurrent } = postsActions;
 const { selectFeed } = feedSelectors;
 const { selectProfile } = profileSelectors;
 
 
-function Thread() {
+function Thread(props:any) {
   let { thread_id } = useParams();
   const dispatch = useAppDispatch();
+  const {socket} = props;
+  const status = useAppSelector(selectStatus);
   const replies = useAppSelector(selectListed);
   const socialFeed = useAppSelector(selectFeed);
   const profile = useAppSelector(selectProfile);
   const currentPost = useAppSelector(selectCurrent);
   const mainThread = socialFeed.pages.find((value: any) => value.id === Number(thread_id));
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     lastLoaded: 0,
   });
@@ -29,10 +31,10 @@ function Thread() {
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now() });
-      dispatch(getThreadAsync(Number(thread_id)));
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
+      dispatch(getThreadAsync({ id: Number(thread_id), socket }));
+      // setTimeout(() => {
+      //   setLoading(false);
+      // }, 500);
     }
   }, [replies.length])
   const posted_at = dayjs.utc(mainThread.posted_at).local().fromNow()
@@ -40,9 +42,9 @@ function Thread() {
   function handleSubmitReply(e: any) {
     e.preventDefault();
     if (mainThread) {
-      dispatch(replyPostAsync(Number(thread_id)));
+      dispatch(replyPostAsync({ id: Number(thread_id) }));
       setTimeout(() => {
-        dispatch(getThreadAsync(Number(thread_id)));
+        dispatch(getThreadAsync({ id: Number(thread_id), socket }));
       }, 500);
     }
   }
@@ -80,7 +82,7 @@ function Thread() {
         </Card>)
     }
     {
-      loading ?
+      status === 'loading' ?
         // show spinner
         <Container className="centered-spinner-container">
           <Spinner />

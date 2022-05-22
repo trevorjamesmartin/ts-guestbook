@@ -23,7 +23,6 @@ export default (io: any, socket: any) => {
     console.log(GET_FEED);
     getPage(decodedToken, mainFeed, { page: page ? Number(page) : 1, limit: 4, sortOrder: 'asc' })
     .then(result => {
-      console.log(result)
       socket.emit(RETURN_FEED, result);
     })
     .catch(console.log)

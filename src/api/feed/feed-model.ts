@@ -21,7 +21,15 @@ interface Food {
 }
 
 async function mainFeed(decodedToken: any) {
-    let author_id = decodedToken.subject;
+    let author_id = decodedToken?.subject;
+    if (!author_id) {
+        // TODO
+        // this could happen due to a re-connected web socket.
+        // 
+        console.log('ERROR DECODING TOKEN - mainFeed');
+
+        return []
+    }
     // set filter
     let options:any = {
         author_id, // self authored

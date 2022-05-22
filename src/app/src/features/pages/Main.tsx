@@ -15,7 +15,7 @@ function MainPage({ ws, ...props }:propsWithWebSocket) {
             setMessageSent(true);
         };
     }, [ws, messageSent, dispatch, message, status]);
-    return (<Feed />)
+    return (<Feed socket={ws} />)
 }
 
 export default MainPage;

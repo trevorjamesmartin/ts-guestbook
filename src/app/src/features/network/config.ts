@@ -1,11 +1,15 @@
 import { actions as webSocketActions } from './socketSlice';
 import { actions as usersActions } from '../users/userSlice';
-const { setStatusConnected, setStatusDisconnected, updateChat } = webSocketActions;
-const { updateUsers } = usersActions;
+import { actions as feedActions } from '../feed/feedSlice';
+import { actions as threadActions } from '../thread/threadSlice';
 
-export default function (socket: any, dispatch: any, profile: any, navigate:any) {
+const { setStatusConnected, setStatusDisconnected, updateChat } = webSocketActions;
+const { clear: clearFeed, update: updateFeed } = feedActions;
+const { updateUsers } = usersActions;
+const {updateListed} = threadActions;
+export default function (socket: any, dispatch: any, profile: any, navigate: any) {
   // socket events are declared within the component, 
-  // because hooks (dispatch) update the store.
+  // a hook from App (main) dispatches the update event. 
 
   socket.on("connect", () => {
     console.log("connected");
@@ -24,7 +28,7 @@ export default function (socket: any, dispatch: any, profile: any, navigate:any)
     dispatch(setStatusDisconnected(socket, `goodbye:${profile.username}`));
   });
 
-  socket.on("message", (data:any) => {
+  socket.on("message", (data: any) => {
     // decode the payload.
     console.log('->', data);
   });
@@ -35,26 +39,25 @@ export default function (socket: any, dispatch: any, profile: any, navigate:any)
   })
 
   socket.on('verify:auth', (...args: any[]) => {
-    console.log(profile)
+    // console.log(profile)
     alert(args)
   });
 
   socket.on("api:users", (result: any) => {
     dispatch(updateUsers(result));
   })
+
   socket.on("api:usernames", (result: string[]) => {
-    console.log(result);
     dispatch(updateChat(result));
   })
 
   socket.on("api:feed-content", (result: any) => {
-    console.log(result);
     if (!Object.keys(result).includes('pages')) return
-    for (let t of result.pages) {
-      let output = `/app/thread/${t.id}
-      ${t.content}`;
-      dispatch(updateChat([output]));
-    }
+    dispatch(updateFeed(result));
+  })
+
+  socket.on("api:thread", (result: any[])=> {
+    dispatch(updateListed(result));
   })
 
 }

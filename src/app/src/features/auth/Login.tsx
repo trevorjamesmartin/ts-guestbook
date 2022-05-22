@@ -1,6 +1,6 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, useNavigate } from "react-router-dom";
 import { Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { loginAsync, selectors, Credentials } from './authSlice';
@@ -19,6 +19,12 @@ export function Login() {
   const message: string = useAppSelector(selectMessage) || ""
   const dispatch: ThunkDispatch<any, Credentials, any> = useAppDispatch();
   const [state, setState] = useState<Credentials>(initialState);
+  //@ts-ignore
+  useEffect(() => {
+    // cookies.remove('monkey');
+    let c = document.cookie.match(/monkey/);
+    console.log(c);
+  })
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (state.password.length > 4 && state.username.length > 0) {
