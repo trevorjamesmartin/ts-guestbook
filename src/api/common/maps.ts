@@ -39,7 +39,7 @@ class UserSpace {
   }
 
   public get socketId(): string {
-    return this._socket.id;
+    return this?._socket?.id;
   }
 
 
@@ -79,7 +79,7 @@ class MapConnector {
   public addUser(v: AuthMapItem) {
     let r = this.getUser(v.username);
     if (r) {
-      console.log('user exists... updating');
+      console.log(v.username, ' exists... updating');
       r.updateAuth(v);
     } else {
       this._authority[v.username] = new UserSpace(v);
