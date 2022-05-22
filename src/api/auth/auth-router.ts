@@ -70,16 +70,16 @@ router.delete('/logout', (req, res) => {
     let username = req.session.username;
     let space:any;
     
-    if (username) {
-        space = userMap.getUser(username);
-    }
+    // if (username) {
+    //     space = userMap.getUser(username);
+    // }
     
     if (username){
         console.log(`${username} logged out.`);
     }
-    if (space) {
-        console.log(space);
-    }
+    // if (space) {
+    //     // console.log(space);
+    // }
     req.session.destroy(function() {
         res.send({result: 'OK', message: 'Logged out'});
     });

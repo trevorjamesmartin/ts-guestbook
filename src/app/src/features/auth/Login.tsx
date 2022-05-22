@@ -22,8 +22,8 @@ export function Login() {
   //@ts-ignore
   useEffect(() => {
     // cookies.remove('monkey');
-    let c = document.cookie.match(/monkey/);
-    console.log(c);
+    // let c = document.cookie.match(/monkey/);
+    // console.log(c);
   })
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();

@@ -135,9 +135,7 @@ class VigilantAPI extends Axios {
     get<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R> {
         console.log(url, this.hasIO(url), config?.params)
         if (this.hasIO(url)) {
-            console.log("HAS IO")
             let { params }: any = config;
-            console.log({ params })
             return new Promise(() => this.socketAPI(url, params));
         } else {
             const resolved = this.dynamicURL(url, config?.params);

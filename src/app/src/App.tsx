@@ -30,7 +30,7 @@ const { selectProfile } = profileSelectors;
 
 function App() {
   // Real Time Connection?, (toggle)
-  const [rtc, toggleRTC] = useState(socket.connected);
+  const [rtc, toggleRTC] = useState(true); // start connected.
   const connectIt = rtc && socket;
   // Router
   const navigate = useNavigate();
