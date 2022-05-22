@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+
 // local memory
 import { selectors as authSelectors } from '../auth/authSlice'
 import { selectors as profileSelectors } from '../profile/profileSlice';
@@ -17,8 +18,8 @@ const { selectProfile } = profileSelectors;
 const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectStatus: selectSocketStatus, selectMessage } = socketSelectors;
 
-function Navigation(props:any) {
-  const {toggleRTC} = props;
+function Navigation(props: any) {
+  const { toggleRTC } = props;
   const [collapsed, setCollapsed] = useState(true);
   const [clockConfig, setClockConfig] = useState({
     military: false,
@@ -35,28 +36,18 @@ function Navigation(props:any) {
   const friendList = useAppSelector(selectFriendList);
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const authorized = token && token.length > 4;
+  const [connection, setConnection] = useState(socketStatus === 'connected');
 
   useEffect(() => {
     if (authorized) {
       dispatch(getProfileAsync())
       dispatch(friendCheckAsync());
     };
-  }, [token]);
-
-  const networkStatus = () => {
-    if (loggedIn) {
-      switch (socketStatus) {
-        case 'connected':
-          return "🟢"
-
-        case 'disconnected':
-          return "🔴";
-
-        default:
-          break;
-      }
+    let stateofconnect = socketStatus === 'connected';
+    if (connection !== stateofconnect) {
+      setConnection(!connection);
     }
-  }
+  }, [token, socketStatus]);
 
   function profileMenu() {
     return <UncontrolledDropdown
@@ -76,26 +67,42 @@ function Navigation(props:any) {
         />
       </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem>
-          <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
-            <NavItem active={isActive('/app/profile')}>
-              Profile
-            </NavItem>
-          </Link>
-        </DropdownItem>
-        <DropdownItem disabled>
-          <Link className='nav-link' to="#">
-            Settings
-          </Link>
-        </DropdownItem>
-        <DropdownItem divider />
-        <DropdownItem>
-          <NavItem>
-            <Link className='nav-link' to='/app/logout'>
-              Logout
-            </Link>
-          </NavItem>
-        </DropdownItem>
+        {socketStatus === 'connected' ? (
+          <>
+            <DropdownItem>
+              <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
+                <NavItem active={isActive('/app/profile')}>
+                  Profile
+                </NavItem>
+              </Link>
+            </DropdownItem>
+            <DropdownItem disabled>
+              <Link className='nav-link' to="#">
+                Settings
+              </Link>
+            </DropdownItem>
+            <DropdownItem divider />
+            <DropdownItem>
+              <NavItem>
+                <Link className='nav-link' to='/app/logout'>
+                  Logout
+                </Link>
+              </NavItem>
+            </DropdownItem>
+          </>
+        ) : (
+          <>
+            <DropdownItem>
+              <NavItem>
+                <Link className='nav-link' to='/about'>
+                  About
+                </Link>
+              </NavItem>
+            </DropdownItem>
+          </>
+        )
+        }
+
       </DropdownMenu>
     </UncontrolledDropdown>
   }
@@ -105,7 +112,11 @@ function Navigation(props:any) {
       inNavbar
     >
       <DropdownToggle nav>
-        <span className="socket-connect-status">{networkStatus()}</span>
+        {socketStatus === 'connected' ?
+          <i className="fa-regular fa-face-smile"></i> :
+          <i className="fa-regular fa-face-meh"></i>
+        }
+
 
       </DropdownToggle>
       <DropdownMenu>
@@ -187,10 +198,9 @@ function Navigation(props:any) {
     <Collapse navbar isOpen={!collapsed}>
       {authorized ? onlineNav() : offlineNav()}
       <Nav className="align-items-center">
-        {loggedIn &&
-          <NavItem active={isActive('/app/profile')}>
-            {profileMenu()}
-          </NavItem>}
+        {<NavItem active={isActive('/app/profile')}>
+          {profileMenu()}
+        </NavItem>}
         <NavItem>
           {connectionMenu()}
         </NavItem>

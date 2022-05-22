@@ -63,7 +63,11 @@ export default (io: any, socket: any) => {
       .catch(error => socket.emit('verify:auth', JSON.stringify(error)))
   }
 
-  const updateAuth = (token:string) => {
+  const updateAuth = (token:any) => {
+    console.log('VERIFY TOKEN, ', token);
+    if (!token) {
+      return;
+    }
     let decodedToken:any = verifyToken(token);
     if (decodedToken !== 400) {
       console.log('decodedToken, ', decodedToken)
@@ -77,11 +81,10 @@ export default (io: any, socket: any) => {
     user.updateAuth({
       token
     });
+    console.log(user);
   }
 
-  socket.on('update:auth', updateAuth)
-
-  socket.on('verify:auth', verifyAuth);
+  socket.on('verify:token', updateAuth)
 
   socket.on('whoami', verifyAuth); // easier to remember!
 

@@ -2,12 +2,11 @@ import { actions as webSocketActions } from './socketSlice';
 import { actions as usersActions } from '../users/userSlice';
 import { actions as feedActions } from '../feed/feedSlice';
 import { actions as threadActions } from '../thread/threadSlice';
-
 const { setStatusConnected, setStatusDisconnected, updateChat } = webSocketActions;
 const { clear: clearFeed, update: updateFeed } = feedActions;
 const { updateUsers } = usersActions;
 const {updateListed} = threadActions;
-export default function (socket: any, dispatch: any, profile: any, navigate: any) {
+export default function (socket: any, dispatch: any, profile: any, token:any, navigate: any) {
   // socket events are declared within the component, 
   // a hook from App (main) dispatches the update event. 
 
@@ -15,6 +14,12 @@ export default function (socket: any, dispatch: any, profile: any, navigate: any
     console.log("connected");
     dispatch(setStatusConnected(socket, `hello:${profile.username}`));
     // save to Redux
+  });
+
+  socket.on("token?", () => {
+    console.log('server reported token error');
+    let returnURL = window.location.toString();
+    navigate(`/reclaim?returnTo=${returnURL.match(/reclaim/) ? '/app' : returnURL}`);
   });
 
   socket.on("question", () => {

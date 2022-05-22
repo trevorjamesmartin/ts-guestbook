@@ -24,7 +24,13 @@ export default (io: any, socket: any) => {
     console.log(GET_FEED);
     getPage(decodedToken, mainFeed, { page: page ? Number(page) : 1, limit: limit ? limit : 4, sortOrder: 'asc' })
       .then(result => {
-        socket.emit(RETURN_FEED, result);
+        let page = result.pages[0];
+        if (!page?.error) {
+          socket.emit(RETURN_FEED, result);
+        } else {
+          let {event, ...args} = page.response;
+          socket.emit(event, args);
+        }
       })
       .catch(console.log)
   }

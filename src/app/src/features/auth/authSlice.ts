@@ -7,7 +7,7 @@ import api from '../network/api';
 export interface Credentials {
   username: string;
   password: string;
-  socket?:any;
+  socket?: any;
 }
 
 interface credStatus {
@@ -24,10 +24,23 @@ export const initialCreds: credStatus = {
   token: undefined
 }
 
+export const reclaimAsync = createAsyncThunk(
+  'auth/reclaim',
+  async (data: any, thunkAPI) => {
+    const state: any = thunkAPI.getState();
+    let token = state.auth.token;
+    const apiClient = new api({ token });
+    let result = await apiClient.put('/auth/reclaim', {
+      username: state.profile.username
+    });
+    return result.data; // fulfilled
+  }
+)
+
 export const loginAsync = createAsyncThunk(
   'auth/login',
   async (data: Credentials, thunkAPI) => {
-    const state:any = thunkAPI.getState();
+    const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
     const response = await new api({ token, socket: data.socket }).post('/auth/login', data); // pending
     return response.data; // fulfilled
@@ -37,9 +50,9 @@ export const loginAsync = createAsyncThunk(
 export const logoutAsync = createAsyncThunk(
   'auth/logout',
   async (_, thunkAPI) => {
-    const state:any = thunkAPI.getState();
+    const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response =await new api(token).delete('/auth/logout'); // pending
+    const response = await new api(token).delete('/auth/logout'); // pending
     return response.data; // fulfilled
   }
 );
@@ -47,9 +60,9 @@ export const logoutAsync = createAsyncThunk(
 export const registerAsync = createAsyncThunk(
   'auth/register',
   async (data: Credentials, thunkAPI) => {
-    const state:any = thunkAPI.getState();
+    const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response =await new api(token).post('auth/register', data); // pending
+    const response = await new api(token).post('auth/register', data); // pending
     return response.data; // fulfilled
   }
 );
@@ -70,19 +83,19 @@ export const authSlice = createSlice({
         state.message = '';
         state.loggedIn = false;
       })
-      .addCase(loginAsync.fulfilled, (state, action:PayloadAction<any>) => {
+      .addCase(loginAsync.fulfilled, (state, action: PayloadAction<any>) => {
         state.status = 'idle';
         state.message = action.payload.message;
         state.loggedIn = true;
         state.token = action.payload.token; // set token
       })
-      .addCase(loginAsync.rejected, (state, action:PayloadAction<any>) => {
+      .addCase(loginAsync.rejected, (state, action: PayloadAction<any>) => {
         state.status = 'failed';
         state.message = '';
         state.token = undefined;
-        state.loggedIn = false;        
+        state.loggedIn = false;
       })
-    
+
     builder
       .addCase(registerAsync.pending, (state) => {
         state.status = 'loading';
@@ -101,7 +114,7 @@ export const authSlice = createSlice({
         state.loggedIn = false;
         console.log("[register FAIL!]", action);
       })
-    
+
     builder
       .addCase(logoutAsync.pending, (state) => {
         state.status = 'loading';
@@ -123,6 +136,24 @@ export const authSlice = createSlice({
         console.log("[error logging out!]")
       })
 
+    builder
+      .addCase(reclaimAsync.pending, (state) => {
+        state.status = 'loading';
+        state.message = 'reclaim';
+        console.log('[reclaim] LOADING');
+      })
+      .addCase(reclaimAsync.fulfilled, (state, action: PayloadAction<any>) => {
+        state.status = 'idle';
+        state.message = action.payload.message;
+        state.loggedIn = action.payload.loggedIn;
+        state.token = action.payload.token; // set token
+        console.log('[reclaim] SUCCESS!')
+      })
+      .addCase(reclaimAsync.rejected, (state, action: PayloadAction<any>) => {
+        state.staus = 'failed';
+        state.message = 'error during reclaim';
+        console.log('[reclaim] ERROR')
+      })
   }
 
 });
@@ -131,10 +162,10 @@ export const authSlice = createSlice({
 
 // export const actions = { logout }
 
-const selectLoggedIn = (state:RootState) => state.auth.loggedIn;
-const selectStatus = (state:RootState) => state.auth.status;
-const selectMessage = (state:RootState) => state.auth.message;
-const selectToken = (state:RootState) => state.auth.token;
+const selectLoggedIn = (state: RootState) => state.auth.loggedIn;
+const selectStatus = (state: RootState) => state.auth.status;
+const selectMessage = (state: RootState) => state.auth.message;
+const selectToken = (state: RootState) => state.auth.token;
 
 export const selectors = {
   selectLoggedIn,
@@ -143,21 +174,21 @@ export const selectors = {
   selectToken
 }
 
-const isLoggedIn = ():AppThunk => (
+const isLoggedIn = (): AppThunk => (
   _, // dispatch
   getState
 ) => {
   return selectLoggedIn(getState());
 }
 
-const status = ():AppThunk => (
-  _, 
+const status = (): AppThunk => (
+  _,
   getState
 ) => {
   return selectStatus(getState());
 }
 
-const message = ():AppThunk => (
+const message = (): AppThunk => (
   _,
   getState
 ) => {

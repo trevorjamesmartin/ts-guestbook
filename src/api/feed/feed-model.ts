@@ -20,38 +20,46 @@ interface Food {
     name: any;
 }
 
-async function mainFeed(decodedToken: any) {
+interface TokenError {
+    error: string;
+    response: {
+        event: string;
+        [key:string]:any;
+    }
+}
+
+async function mainFeed(decodedToken: any): Promise<Food | TokenError[]> {
     let author_id = decodedToken?.subject;
     if (!author_id) {
-        // TODO
-        // this could happen due to a re-connected web socket.
-        // 
+        // this can happen due to a stale session,
+        // a reconnected socket,
+        // or (more often) when a server loses it's memory of UserSpace. 
         console.log('ERROR DECODING TOKEN - mainFeed');
-
-        return []
+        return [{
+            error: "ERROR DECODING TOKEN - mainFeed",
+            response: { event: "token?" }
+        }];
+        // the response, handled upstream, need only enough information to fix the error.
     }
-    // set filter
-    let options:any = {
+    // setup 1st feed filter
+    let options: any = {
         author_id, // self authored
         thread_id: null // main stream
     }
-    // read db
+    // read the database
     let myMainFeed: any[] = (await postsModel.findBy(options));
 
-    for (let friend of (await connectModel.connectedTo(decodedToken.subject)).friends) {        
+    // repeat for each subscription
+    for (let friend of (await connectModel.connectedTo(decodedToken.subject)).friends) {
         let { id: author_id, username, avatar, name } = friend;
-        // set filter
-        options = { 
+        options = {
             author_id, // friend authored
             thread_id: null // main stream
         };
-        // read db
         let meal: Food[] = [...(await postsModel.findBy(options)).map(post => ({
             username, avatar, name, ...post
         }))];
-
         myMainFeed = [...myMainFeed, ...meal]; // collect
     }
-
     return myMainFeed
 }
