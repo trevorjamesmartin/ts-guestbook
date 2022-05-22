@@ -19,13 +19,14 @@ export default (io: any, socket: any) => {
     decodedToken = verifyToken(token);
   }
 
-  const getFeed = (page?:string|number) => {
+  const getFeed = (params: any) => {
+    let { page, limit } = params
     console.log(GET_FEED);
-    getPage(decodedToken, mainFeed, { page: page ? Number(page) : 1, limit: 4, sortOrder: 'asc' })
-    .then(result => {
-      socket.emit(RETURN_FEED, result);
-    })
-    .catch(console.log)
+    getPage(decodedToken, mainFeed, { page: page ? Number(page) : 1, limit: limit ? limit : 4, sortOrder: 'asc' })
+      .then(result => {
+        socket.emit(RETURN_FEED, result);
+      })
+      .catch(console.log)
   }
 
   socket.on(GET_FEED, getFeed);

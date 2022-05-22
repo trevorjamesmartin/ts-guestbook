@@ -33,9 +33,10 @@ export default (io: any, socket: any) => {
       .catch(console.log)
   }
 
-  const withProfiles = (page?: string | number) => {
+  const withProfiles = (params:any) => {
     let subject;
     let username;
+    let {page, limit} = params;
 
     if (decodedToken && decodedToken !== 400) {
       username = decodedToken.username;
@@ -46,7 +47,7 @@ export default (io: any, socket: any) => {
       console.log(username, 'requested a list of users');
       getPage(decodedToken, Users.withProfiles, {
         page: page ? Number(page) : 1,
-        limit: 200
+        limit: limit ? Number(limit) : 200
       }).then(result => socket.emit(RETURN_USERLIST, result))
         .catch(console.log)
     }

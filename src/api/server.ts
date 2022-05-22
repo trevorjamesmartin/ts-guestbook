@@ -25,8 +25,8 @@ httpServer.on('upgrade', function (request: any, socket, head) {
     }
     // console.log(request.headers)
     console.log(`${request.session.username} => upgrade`);
-    let check = userMap.getUser(request.session.username);
-    console.log({check})
+    // let check = userMap.getUser(request.session.username);
+    // console.log({check})
   });
 });
 

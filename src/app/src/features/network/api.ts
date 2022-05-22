@@ -96,12 +96,13 @@ class VigilantAPI extends Axios {
             let event = this.eventIO(urlPath);
             let args = this.eventIOparams(urlPath);
             // config should be loaded into args.
-            console.log(event, args);
+            let {socket, ...params} = config;
             switch (event) {
+                case "api:feed":
                 case "api:users:with-profiles":
                 case "api:thread":
-                    console.log('[io] -> ', event, args || config)
-                    this.io(event, args || config); // send io event 
+                    console.log('[io] -> ', event, {...args, ...params})
+                    this.io(event, {...args, ...params}); // send io event 
                     break;
 
                 default:
