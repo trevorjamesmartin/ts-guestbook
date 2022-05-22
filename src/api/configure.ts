@@ -9,7 +9,8 @@ import hpp from 'hpp';
 import ejs from 'ejs';
 // import enforcesSSL from 'express-enforces-ssl';
 
-import { sessionParser } from './auth'
+import { session, sessionConfig } from './auth/session'
+export const sessionParser = session(sessionConfig);
 
 const MAX_CONTENT_LENGTH_ACCEPTED = 8 ** 8;
 

@@ -1,13 +1,14 @@
 import express from 'express';
-import configureServer from './configure';
+import configureServer, {sessionParser} from './configure';
 import configureRoutes from './routes';
 import configureSockets from './sockets';
 import http from 'http';
 import { Server } from 'socket.io';
 import { createAdapter } from "@socket.io/postgres-adapter";
 import { Pool, PoolConfig } from "pg";
-import { sessionParser } from './auth';
+import userMap from './common/maps';
 const httpServer = http.createServer(configureRoutes(configureServer(express())));
+
 
 
 httpServer.on('upgrade', function (request: any, socket, head) {
@@ -16,6 +17,7 @@ httpServer.on('upgrade', function (request: any, socket, head) {
   // console.log(request.headers)
   sessionParser(request, response, () => {
     if (!request.session.userId) {
+      console.log(request.session)
       console.log("session errror, HTTP://1.1 401 Unauthorized");
       socket.write('HTTP://1.1 401 Unauthorized\r\n\r\n');
       socket.destroy();
@@ -23,6 +25,8 @@ httpServer.on('upgrade', function (request: any, socket, head) {
     }
     // console.log(request.headers)
     console.log(`${request.session.username} => upgrade`);
+    let check = userMap.getUser(request.session.username);
+    console.log({check})
   });
 });
 

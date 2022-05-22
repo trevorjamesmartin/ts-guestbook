@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { Socket } from 'socket.io';
-import { sessionParser } from './auth';
+import { sessionParser } from './configure';
 // import { authMap } from './auth/auth-router';
 import userMap from './common/maps';
-// io REST handlers
+// io API handlers
 import registerPostHandler from './posts';
 import registerFeedHandler from './feed';
 import registerSocialHandler from './social';
@@ -24,35 +24,38 @@ export {
 export default function (io: any) {
   // socket.io
   io.use((socket: Socket, next: NextFunction) => {
-    let req = socket.request as Request|TokenSession;
+    let req = socket.request as Request & TokenSession;
     let res = req.res as Response;
-    console.log('-> session parser auth middleware ?')
+    console.log('-> session parser')
     sessionParser(req as Request, res, next as NextFunction);
   });
 
-  io.use((socket: Socket, next: NextFunction) => {
-    console.log('-> next middleware');
-    next()
-  })
+  // io.use((socket: Socket, next: NextFunction) => {
+  //   let req = socket.request as Request & TokenSession;
+  //   let res = req.res as Response;
+  //   console.log('-> next middleware');
+  //   next()
+  // })
 
 
   io.on('connection', function (socket: Socket) {
+    const request = socket.request as Request;
+    const session = request.session;
     let r;
-    const req = socket.request as Request;
-    if (req.session.username) {
-      r = userMap.getUser(req.session.username);
+    if (session.username) {
+      r = userMap.getUser(session.username);
     }
     if (r?.token) {
+      // updated after login
       socket.data.token = r.token;
       socket.data.username = r.username;
       socket.data.uid = r.uid;
       socket.data.loggedIn = true;
-      r.updateSocket(socket);
-      req.session.loggedIn = true;
-      req.session.save();
+      r.updateSocket(socket); // add socket to UserSpace
+      session.loggedIn = true;
+      session.save();
     }
-    // socketMap.set(req.session.username, socket);
-    console.log({ checkMap: r });
+    // console.log({ checkMap: r });
 
     registerAuthHandler(io, socket);
     registerFeedHandler(io, socket);
@@ -61,13 +64,12 @@ export default function (io: any) {
     registerUserHandler(io, socket);
     registerExtraHandlers(io, socket);
 
-
     console.log('+ connected', socket.id);
     socket.broadcast.emit("message", `+ connected`);
 
     socket.on('disconnect', () => {
-      req.session.loggedIn = false;
-      req.session.save();
+      session.loggedIn = false;
+      session.save();
       socket.broadcast.emit("message", `${socket.id} - disconnected`);
       console.log('- ', socket.id, 'disconnected');
     });
