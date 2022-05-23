@@ -49,7 +49,7 @@ export default function configureServer(server: Express) {
         connect-src 'self' https://vigilant-s3.s3.amazonaws.com;\
         font-src 'self' https://fonts.gstatic.com;\
         frame-src 'self';\
-        img-src 'self' https://vigilant-s3.s3.amazonaws.com;\
+        img-src * 'self' data: https://vigilant-s3.s3.amazonaws.com;\
         manifest-src 'self';\
         media-src 'self';\
         worker-src 'none';" :

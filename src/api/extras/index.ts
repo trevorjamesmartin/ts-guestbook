@@ -1,4 +1,3 @@
-import {Request} from 'express';
 import userMap from '../common/maps';
 
 export default (io:any, socket:any) => {
@@ -12,11 +11,6 @@ export default (io:any, socket:any) => {
 
   });
   
-  socket.on('log:session', () => {
-    const req = socket.request as Request;
-    console.log(req.session);
-  })
-
   socket.on('log:data', () => {
     console.log(socket.data)
   })
