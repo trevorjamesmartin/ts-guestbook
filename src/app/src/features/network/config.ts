@@ -6,6 +6,13 @@ const { setStatusConnected, setStatusDisconnected, updateChat } = webSocketActio
 const { clear: clearFeed, update: updateFeed } = feedActions;
 const { updateUsers } = usersActions;
 const {updateListed} = threadActions;
+
+// TODO: specify events
+export interface AppEventsMap {
+  [event: string]: (...args: any[]) => void;
+}
+
+
 export default function (socket: any, dispatch: any, profile: any, token:any, navigate: any) {
   // socket events are declared within the component, 
   // a hook from App (main) dispatches the update event. 
@@ -18,8 +25,8 @@ export default function (socket: any, dispatch: any, profile: any, token:any, na
 
   socket.on("token?", () => {
     console.log('server reported token error');
-    let returnURL = window.location.toString();
-    navigate(`/reclaim?returnTo=${returnURL.match(/reclaim/) ? '/app' : returnURL}`);
+    // let returnURL = window.location.toString();
+    // navigate(`/reclaim?returnTo=${returnURL.match(/reclaim/) ? '/app' : returnURL}`);
   });
 
   socket.on("question", () => {
@@ -44,7 +51,6 @@ export default function (socket: any, dispatch: any, profile: any, token:any, na
   })
 
   socket.on('verify:auth', (...args: any[]) => {
-    // console.log(profile)
     alert(args)
   });
 

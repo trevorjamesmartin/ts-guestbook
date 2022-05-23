@@ -3,9 +3,9 @@ import ErrorBoundary from './ErrorBoundary';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-import Reclaim from './features/network/Reclaim';
+import Delay from './features/network/Delay';
 import { Register } from './features/auth/Register';
 import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
@@ -22,18 +22,22 @@ import { selectors as socketSelectors } from './features/network/socketSlice';
 import { selectors as profileSelectors } from './features/profile/profileSlice';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 
-
-import handleIO from './features/network/config';
+import handleIO, { AppEventsMap } from './features/network/config';
 import SocketTest from './features/network/SocketTest';
 
 import './App.css';
 const { selectToken } = authSelectors;
 
-const socket = io(process.env.REACT_APP_BASE_URL || window.location.origin, { withCredentials: true });
+
+
+
+// socket.disconnect();
+
 const { selectProfile } = profileSelectors;
 const { selectStatus: selectSocketStatus } = socketSelectors;
 
 function App() {
+  const [socket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
   // Real Time Connection?, (toggle)
   const [rtc, toggleRTC] = useState(true); // start connected.
   const connectIt = rtc && socket;
@@ -45,15 +49,35 @@ function App() {
   const token = useAppSelector(selectToken);
   const ioStatus = useAppSelector(selectSocketStatus);
 
+  const initSocket = () => {
+    console.log("creating initial connection.")
+    const sio = io(process.env.REACT_APP_BASE_URL || window.location.origin, {
+      withCredentials: true,
+      auth: { token }
+    });
+    // extraHeaders: {
+    //   Authorization: token
+    // }
+    console.log("registering handlers.")
+    handleIO(sio, dispatch, profile, token, navigate);
+    console.log("saving to state");
+    setSocket(sio);
+  }
+
   useEffect(() => {
     if (rtc) {
-      console.log('connect!')
-      socket.connect();
-      handleIO(socket, dispatch, profile, token, navigate);
+      if (!socket) {
+        initSocket();
+        console.log('initialization complete');
+      } else {
+        // link
+        console.log('(connect)')
+        socket?.connect();
+      }
     } else {
-      console.log('disconnect!')
-
-      socket.disconnect();
+      // unlink
+      console.log('(disconnect)')
+      socket?.disconnect();
     }
   }, [rtc]);
 
@@ -67,9 +91,6 @@ function App() {
       <Routes>
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/reclaim"
-          element={<Reclaim username={profile.username} />} />
         <Route path="/app/test" element={<SocketTest socket={connectIt} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={<Pages.MainPage ws={connectIt} />} />

@@ -12,13 +12,9 @@ const GET_FEED = "api:feed"; // eq to GET /api/feed
 const RETURN_FEED = "api:feed-content"
 
 export default (io: any, socket: any) => {
+  let decodedToken:any = socket.data.decodedToken;
   let user = userMap.withSocketId(socket.id);
-  let token = user?.token;
-  let decodedToken: any = undefined;
-  if (token) {
-    decodedToken = verifyToken(token);
-  }
-
+  console.log(user);
   const getFeed = (params: any) => {
     let { page, limit } = params
     console.log(GET_FEED);

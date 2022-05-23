@@ -1,5 +1,5 @@
 import express from 'express';
-import configureServer, {sessionParser} from './configure';
+import configureServer from './configure';
 import configureRoutes from './routes';
 import configureSockets from './sockets';
 import http from 'http';
@@ -12,22 +12,7 @@ const httpServer = http.createServer(configureRoutes(configureServer(express()))
 
 
 httpServer.on('upgrade', function (request: any, socket, head) {
-  let response: any = {};
-  console.log('upgrading to websocket')
-  // console.log(request.headers)
-  sessionParser(request, response, () => {
-    if (!request.session.userId) {
-      console.log(request.session)
-      console.log("session errror, HTTP://1.1 401 Unauthorized");
-      socket.write('HTTP://1.1 401 Unauthorized\r\n\r\n');
-      socket.destroy();
-      return;
-    }
-    // console.log(request.headers)
-    console.log(`${request.session.username} => upgrade`);
-    // let check = userMap.getUser(request.session.username);
-    // console.log({check})
-  });
+  console.log('upgrading to websocket');
 });
 
 // TODO
@@ -47,9 +32,13 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
       "http://localhost:8080",
       "http://localhost:3000",
       "http://localhost:5000",
+      "http://127.0.0.1:8080",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:5000",    
     ],
     credentials: true,
-  }
+  },
+  // allowEIO3: true
 });
 
 function getPoolConfig() {

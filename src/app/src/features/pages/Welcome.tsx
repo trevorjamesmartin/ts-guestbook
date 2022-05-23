@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Spinner } from 'reactstrap';
+import { Container } from 'reactstrap';
+import Delay from "../network/Delay";
 import { propsWithWebSocket } from './common'
 
 function Welcome({ ws, ...props }: propsWithWebSocket) {
@@ -11,9 +12,7 @@ function Welcome({ ws, ...props }: propsWithWebSocket) {
         }, 500);
     }, [ws])
     return (<Container>
-        <div className="spinner-wrap">
-            {<Spinner center />}
-        </div>
+        <Delay timeout={2000} />
     </Container>)
 }
 

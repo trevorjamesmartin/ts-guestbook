@@ -13,6 +13,7 @@ export default function(server:express.Express) {
 
     server.use('/auth', authRouter);
     server.use('/api', authMiddleware);
+    server.use('/api/socket.io', function(_, __, next) {next()})
     server.use('/api/users', usersRouter);
     server.use('/api/profile', profileRouter);
     server.use('/api/posts', postsRouter);

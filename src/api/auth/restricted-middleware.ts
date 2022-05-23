@@ -19,10 +19,10 @@ export function generateToken(user: UserType) {
 
 // io handler 
 export const verifyToken = (authorization:string) => {
-    if (!authorization) return 400
+    if (!authorization) return false
     return jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: any) => {
         if (err) {
-            return 401
+            return false
         } else {
             return decodedToken;
         }

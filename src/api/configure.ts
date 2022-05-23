@@ -1,5 +1,4 @@
 import { Express, json } from 'express';
-// import session from 'express-session';
 import cors from 'cors';
 import helmet from 'helmet';
 import hostValidation from 'host-validation';
@@ -9,8 +8,6 @@ import hpp from 'hpp';
 import ejs from 'ejs';
 // import enforcesSSL from 'express-enforces-ssl';
 
-import { session, sessionConfig } from './auth/session'
-export const sessionParser = session(sessionConfig);
 
 const MAX_CONTENT_LENGTH_ACCEPTED = 8 ** 8;
 
@@ -32,7 +29,6 @@ export default function configureServer(server: Express) {
     // 3. large payload attacks (guard)
     .use(contentLength.validateMax({ max: MAX_CONTENT_LENGTH_ACCEPTED }))
     .use(json())
-    .use(sessionParser)
     .use(helmet({
       contentSecurityPolicy: false,
       crossOriginEmbedderPolicy: false,

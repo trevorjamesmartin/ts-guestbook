@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../memory/store';
 import { persistedStore } from '../../memory/persist';
-// import bcrypt from 'bcryptjs';
 import api from '../network/api';
 
 export interface Credentials {
@@ -23,19 +22,6 @@ export const initialCreds: credStatus = {
   status: 'idle',
   token: undefined
 }
-
-export const reclaimAsync = createAsyncThunk(
-  'auth/reclaim',
-  async (data: any, thunkAPI) => {
-    const state: any = thunkAPI.getState();
-    let token = state.auth.token;
-    const apiClient = new api({ token });
-    let result = await apiClient.put('/auth/reclaim', {
-      username: state.profile.username
-    });
-    return result.data; // fulfilled
-  }
-)
 
 export const loginAsync = createAsyncThunk(
   'auth/login',
@@ -71,10 +57,13 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState: persistedStore?.auth || initialCreds,
   reducers: {
-    // logout: (state) => {
-    //   state.loggedIn = false;
-    //   state.message = "Goodbye!";
-    // }
+    logout: (state) => {
+      state.status = '';
+      state.message = 'Goodbye!';
+      state.token = undefined; // clear token
+      state.loggedIn = false;
+      console.log('[logged out!');
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -128,39 +117,20 @@ export const authSlice = createSlice({
         state.loggedIn = false;
         console.log('[logged out!');
       })
-      .addCase(logoutAsync.rejected, (state) => {
+      .addCase(logoutAsync.rejected, (state, action:any) => {
         state.status = 'failed';
         state.message = 'error logging out';
         state.token = undefined; // clear token
         state.loggedIn = false;
-        console.log("[error logging out!]")
-      })
-
-    builder
-      .addCase(reclaimAsync.pending, (state) => {
-        state.status = 'loading';
-        state.message = 'reclaim';
-        console.log('[reclaim] LOADING');
-      })
-      .addCase(reclaimAsync.fulfilled, (state, action: PayloadAction<any>) => {
-        state.status = 'idle';
-        state.message = action.payload.message;
-        state.loggedIn = action.payload.loggedIn;
-        state.token = action.payload.token; // set token
-        console.log('[reclaim] SUCCESS!')
-      })
-      .addCase(reclaimAsync.rejected, (state, action: PayloadAction<any>) => {
-        state.staus = 'failed';
-        state.message = 'error during reclaim';
-        console.log('[reclaim] ERROR')
+        console.log("[error logging out!]", action)
       })
   }
 
 });
 
-// const { logout } = authSlice.actions;
+const { logout } = authSlice.actions;
 
-// export const actions = { logout }
+export const actions = { logout }
 
 const selectLoggedIn = (state: RootState) => state.auth.loggedIn;
 const selectStatus = (state: RootState) => state.auth.status;

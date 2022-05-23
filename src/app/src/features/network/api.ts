@@ -107,7 +107,7 @@ class VigilantAPI extends Axios {
 
                 default:
                     console.log('[io] -> ', event);
-                    this.io(event, undefined); // send without args 
+                    this.io(event, undefined); // send without args (saftey)
                     break;
             }
             return this.detour(); // return with status 42
@@ -134,14 +134,13 @@ class VigilantAPI extends Axios {
     }
 
     get<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R> {
-        console.log(url, this.hasIO(url), config?.params)
+        const { params }: any = config;
         if (this.hasIO(url)) {
-            let { params }: any = config;
             return new Promise(() => this.socketAPI(url, params));
         } else {
-            const resolved = this.dynamicURL(url, config?.params);
+            const resolved = this.dynamicURL(url, params);
             console.log('[GET]', resolved);
-            return this.client.get(resolved, { params: config?.params });
+            return this.client.get(resolved, { params });
         }
     };
 

@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../memory/hooks';
+import { useAppSelector } from '../../memory/hooks';
 import { useParams } from 'react-router-dom';
 import { Col, Container, Row, Spinner } from 'reactstrap';
-import { reclaimAsync, selectors as authSelectors } from '../auth/authSlice';
+import { selectors as authSelectors } from '../auth/authSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
 const { selectStatus } = authSelectors;
 const { selectProfile } = profileSelectors;
 
-function Reclaim(props: any) {
-  const { returnTo } = useParams();
-  const { username } = props.username;
+function Delay(props: any) {
+  const { timeout } = props;
   const [waiting, setWaiting] = useState(0);
   const status = useAppSelector(selectStatus);
   const profile = useAppSelector(selectProfile);
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (waiting === 0) {
-      setWaiting(Date.now());
-      dispatch(reclaimAsync({ username }))
-      console.log('calling reclaim', returnTo);
+      setWaiting(Date.now());      
       setTimeout(() => {
         setWaiting(0);
-        window.location.replace(returnTo || "/");
-      }, 3000);
+      }, Number(timeout));
     }
   })
 
@@ -54,10 +49,8 @@ function Reclaim(props: any) {
 
       </div>
       <div className=''></div>
-
-
     </Container>
   )
 }
 
-export default Reclaim;
+export default Delay;
