@@ -3,7 +3,7 @@ import ErrorBoundary from './ErrorBoundary';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 import { Register } from './features/auth/Register';
 import { Login } from './features/auth/Login';
@@ -26,18 +26,6 @@ import SocketTest from './features/network/SocketTest';
 
 import './App.css';
 const { selectToken } = authSelectors;
-let socket: any;
-const createConnection = async (token: string) => {
-  if (socket) {
-    return socket;
-  }
-  console.log("creating initial connection.")
-  socket = io(process.env.REACT_APP_BASE_URL || window.location.origin, {
-    withCredentials: true,
-    auth: { token }
-  });
-  return socket;
-}
 
 
 // socket.disconnect();
@@ -46,10 +34,10 @@ const { selectProfile } = profileSelectors;
 const { selectStatus: selectSocketStatus } = socketSelectors;
 
 function App() {
-  // const [socket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
+  const [localSocket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
   // Real Time Connection?, (toggle)
   const [rtc, toggleRTC] = useState(true); // start connected.
-  const connectIt = rtc && socket;
+  const connectIt = rtc && localSocket;
   // Router
   const navigate = useNavigate();
   // Redux
@@ -58,29 +46,28 @@ function App() {
   const token = useAppSelector(selectToken);
   const ioStatus = useAppSelector(selectSocketStatus);
 
-  const initSocket = async () => {
-    createConnection(token);
-    setTimeout(() =>
-      handleIO(socket, dispatch, profile, token, navigate)
-      , 1000) // init time
-  }
+  useEffect(() => {
+    if (token && !localSocket) {
+      console.log('[io] create initial connection')
+      let socket = io(process.env.REACT_APP_BASE_URL || window.location.origin, {
+        withCredentials: true,
+        auth: { token }
+      });
+      handleIO(socket, dispatch, profile, token, navigate);
+      setSocket(socket); // save localSocket
+      return
+    }
+  }, [token]);
 
   useEffect(() => {
     if (rtc) {
-      if (!socket) {
-        initSocket();
-      } else {
-        // link
-        console.log('(connect)')
-        socket?.connect();
-      }
+      console.log('(connect)')
+      localSocket?.connect();
     } else {
-      // unlink
       console.log('(disconnect)')
-      socket?.disconnect();
+      localSocket?.disconnect();
     }
-  }, [rtc]);
-
+  }, [rtc])
 
   return (<ErrorBoundary>
     <div className='App'>
