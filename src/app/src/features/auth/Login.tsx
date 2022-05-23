@@ -31,9 +31,9 @@ export function Login() {
       dispatch(loginAsync(state));
       setState(initialState);
       setTimeout(() => {
-        navigate('/')
         // Re-initiate the websocket connection; Now, authorized.
-        // window.location.replace('/'); // is there a better to handle this ?
+        window.location.replace('/'); // is there a better to handle this ?
+        // navigate does not seem to work.
       }, 1700);
     }
   }
