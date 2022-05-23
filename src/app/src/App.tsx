@@ -3,9 +3,8 @@ import ErrorBoundary from './ErrorBoundary';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 
-import Delay from './features/network/Delay';
 import { Register } from './features/auth/Register';
 import { Login } from './features/auth/Login';
 import { Logout } from './features/auth/Logout';
@@ -27,8 +26,18 @@ import SocketTest from './features/network/SocketTest';
 
 import './App.css';
 const { selectToken } = authSelectors;
-
-
+let socket: any;
+const createConnection = async (token: string) => {
+  if (socket) {
+    return socket;
+  }
+  console.log("creating initial connection.")
+  socket = io(process.env.REACT_APP_BASE_URL || window.location.origin, {
+    withCredentials: true,
+    auth: { token }
+  });
+  return socket;
+}
 
 
 // socket.disconnect();
@@ -37,7 +46,7 @@ const { selectProfile } = profileSelectors;
 const { selectStatus: selectSocketStatus } = socketSelectors;
 
 function App() {
-  const [socket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
+  // const [socket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
   // Real Time Connection?, (toggle)
   const [rtc, toggleRTC] = useState(true); // start connected.
   const connectIt = rtc && socket;
@@ -49,26 +58,17 @@ function App() {
   const token = useAppSelector(selectToken);
   const ioStatus = useAppSelector(selectSocketStatus);
 
-  const initSocket = () => {
-    console.log("creating initial connection.")
-    const sio = io(process.env.REACT_APP_BASE_URL || window.location.origin, {
-      withCredentials: true,
-      auth: { token }
-    });
-    // extraHeaders: {
-    //   Authorization: token
-    // }
-    console.log("registering handlers.")
-    handleIO(sio, dispatch, profile, token, navigate);
-    console.log("saving to state");
-    setSocket(sio);
+  const initSocket = async () => {
+    createConnection(token);
+    setTimeout(() =>
+      handleIO(socket, dispatch, profile, token, navigate)
+      , 1000) // init time
   }
 
   useEffect(() => {
     if (rtc) {
       if (!socket) {
         initSocket();
-        console.log('initialization complete');
       } else {
         // link
         console.log('(connect)')
