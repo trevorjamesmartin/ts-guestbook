@@ -16,6 +16,7 @@ export interface AppEventsMap {
 export default function (socket: any, dispatch: any, profile: any, token:any, navigate: any) {
   // socket events are declared within the component, 
   // a hook from App (main) dispatches the update event. 
+  console.log('[io] register handlers')
 
   socket.on("connect", () => {
     console.log("connected");
