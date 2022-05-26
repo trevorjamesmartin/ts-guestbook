@@ -36,13 +36,14 @@ const options = {
       },
     },
     servers: [
-      {
-        url: `http://localhost${PORT ? ':' + PORT : ''}/api`,
-        description: "development server",
-      },
+      __filename.split('.').pop() === 'js' ?
       {
         url: `https://vigilant-cloud.herokuapp.com/api`,
         description: "Heroku App",
+      } :
+      {
+        url: `http://localhost${PORT ? ':' + PORT : ''}/api`,
+        description: "development server",
       },
     ],
     components: {
@@ -60,12 +61,13 @@ const options = {
   },
   apis: [
     __filename,
-    path.join(process.cwd(), 'src/api/auth', '*.ts'),
-    path.join(process.cwd(), 'src/api/aws', '*.ts'),
-    path.join(process.cwd(), 'src/api/feed', '*.ts'),
-    path.join(process.cwd(), 'src/api/posts', '*.ts'),
-    path.join(process.cwd(), 'src/api/social', '*.ts'),
-    path.join(process.cwd(), 'src/api/users', '*.ts'),
+    // typescript or javascript
+    path.join(process.cwd(), 'src/api/auth', `*.${__filename.split('.').pop()}`),
+    path.join(process.cwd(), 'src/api/aws', `*.${__filename.split('.').pop()}`),
+    path.join(process.cwd(), 'src/api/feed', `*.${__filename.split('.').pop()}`),
+    path.join(process.cwd(), 'src/api/posts', `*.${__filename.split('.').pop()}`),
+    path.join(process.cwd(), 'src/api/social', `*.${__filename.split('.').pop()}`),
+    path.join(process.cwd(), 'src/api/users', `*.${__filename.split('.').pop()}`),
   ],
 };
 
