@@ -1,5 +1,3 @@
-# vigilant-cloud
-
 ## API
 developing
 
@@ -17,6 +15,3 @@ with the API release running in a separate window,
 take full advantage of hot reloading while building out the graphical user interface.
 
     code src/app
-
-
-
