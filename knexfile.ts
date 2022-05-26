@@ -9,18 +9,7 @@ try {
 // Update with your config settings.
 
 const config: { [key: string]: Knex.Config } = {
-  development: {
-    client: "pg",
-    connection: "postgresql://vigilant:cloud@127.0.0.1:5432/vigilant-cloud",
-    migrations: {
-      directory: "./src/data/migrations",
-      tableName: "migrations"
-    },
-    seeds: {
-      directory: "./src/data/seeds"
-    }
-  },
-
+  
   design: {
     client: 'sqlite3',
     connection: {
@@ -34,6 +23,18 @@ const config: { [key: string]: Knex.Config } = {
       directory: "./src/data/seeds"
     },
     useNullAsDefault: true
+  },
+
+  development: {
+    client: "pg",
+    connection: "postgresql://vigilant:cloud@127.0.0.1:5432/vigilant-cloud",
+    migrations: {
+      directory: "./src/data/migrations",
+      tableName: "migrations"
+    },
+    seeds: {
+      directory: "./src/data/seeds"
+    }
   },
 
   production: {
