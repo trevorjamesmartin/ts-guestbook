@@ -13,7 +13,10 @@ export default function (io: any) {
 
   io.on('connection', function (socket: Socket) {
     console.log(socket.data.username, '🔌', socket.id);
-
+    if (!socket.data.decodedToken) {
+      console.log('missing authority token')
+      return io.handleAuth();
+    }
     registerFeedHandler(io, socket);
     registerPostHandler(io, socket);
     registerSocialHandler(io, socket);

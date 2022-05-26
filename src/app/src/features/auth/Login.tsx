@@ -1,6 +1,6 @@
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import React, { useState, useEffect } from "react";
-import { BrowserRouter, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Form, FormGroup, Label, Input, Button, Spinner } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { loginAsync, selectors, Credentials } from './authSlice';
@@ -12,28 +12,21 @@ const initialState: Credentials = {
   password: ""
 }
 
-export function Login() {
+export function Login(params:any) {
   const navigate = useNavigate();
   const loggedIn = useAppSelector(selectLoggedIn);
   const status = useAppSelector(selectStatus);
   const message: string = useAppSelector(selectMessage) || ""
   const dispatch: ThunkDispatch<any, Credentials, any> = useAppDispatch();
   const [state, setState] = useState<Credentials>(initialState);
-  //@ts-ignore
-  useEffect(() => {
-    // cookies.remove('monkey');
-    // let c = document.cookie.match(/monkey/);
-    // console.log(c);
-  })
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (state.password.length > 0 && state.username.length > 0) {
       dispatch(loginAsync(state));
       setState(initialState);
       setTimeout(() => {
-        // Re-initiate the websocket connection; Now, authorized.
-        window.location.replace('/'); // is there a better to handle this ?
-        // navigate does not seem to work.
+        navigate('/');
+        window.location.reload();
       }, 1700);
     }
   }
