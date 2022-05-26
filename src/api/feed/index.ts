@@ -1,7 +1,7 @@
 import feedRouter from './feed-router';
 import { mainFeed } from "./feed-model";
 import { getPage } from '../common/util';
-
+import logger from '../common/logger';
 export { feedRouter }
 
 // *** io -> API ***
@@ -13,7 +13,7 @@ export default (io: any, socket: any) => {
   let decodedToken:any = socket.data.decodedToken;
   const getFeed = (params: any) => {
     let { page, limit } = params
-    console.log(GET_FEED);
+    logger.debug(GET_FEED);
     getPage(decodedToken, mainFeed, { page: page ? Number(page) : 1, limit: limit ? limit : 4, sortOrder: 'asc' })
       .then(result => {
         let page = result.pages[0];
@@ -24,7 +24,7 @@ export default (io: any, socket: any) => {
           socket.emit(event, args);
         }
       })
-      .catch(console.log)
+      .catch(logger.error)
   }
 
   socket.on(GET_FEED, getFeed);

@@ -1,5 +1,7 @@
 // import { Socket } from 'socket.io';
 
+import logger from "./logger";
+
 interface AuthMapItem {
   username: string;
   token: string;
@@ -79,7 +81,7 @@ class MapConnector {
   public addUser(v: AuthMapItem) {
     let r = this.getUser(v.username);
     if (r) {
-      console.log(v.username, ' exists... updating');
+      logger.debug(v.username, ' exists... updating');
       r.updateAuth(v);
     } else {
       this._authority[v.username] = new UserSpace(v);

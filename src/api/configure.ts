@@ -10,7 +10,7 @@ import ejs from 'ejs';
 // import enforcesSSL from 'express-enforces-ssl';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-
+import logger from './common/logger';
 
 const MAX_CONTENT_LENGTH_ACCEPTED = 8 ** 8;
 const PORT = process.env.PORT || undefined;
@@ -36,6 +36,11 @@ const options = {
       },
     },
     servers: [
+      process.env.NODE_ENV === "design" ?
+      {
+        url: `http://localhost${PORT ? ':' + PORT : ''}/api`,
+        description: "development server",
+      } :
       __filename.split('.').pop() === 'js' ?
       {
         url: `https://vigilant-cloud.herokuapp.com/api`,
@@ -76,6 +81,8 @@ const openapiSpecification = swaggerJsdoc(options);
 
 
 export default function configureServer(server: Express) {
+  logger.debug('configure server')
+
   server.use(corsMiddleware);
   server.options('*', corsMiddleware);
   server.engine('html', ejs.renderFile);
@@ -132,8 +139,11 @@ export default function configureServer(server: Express) {
         '127.0.0.1:3001',
         'localhost:8080',
         '127.0.0.1:8080',
+        '0.0.0.0:8080',
+        '0.0.0.0',
         'localhost:5000',
         '127.0.0.1:5000',
+        "172.17.0.2:8080"
       ]
     }));
 

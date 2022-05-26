@@ -1,3 +1,4 @@
+import logger from '../common/logger';
 import connectRouter from './connect-router';
 import friendsRouter from './friends-router';
 export {
@@ -7,7 +8,7 @@ export {
 
 export default (io:any, socket:any) => {
     const getRequests = (token:string) => {
-        console.log('read social requests:', token);
+        logger.debug('read social requests:', token);
     }
   
     socket.on("api:requests:read", getRequests);

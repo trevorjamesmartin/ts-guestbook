@@ -2,7 +2,7 @@ import { NextFunction } from 'express'
 import authRouter from './auth-router';
 import authMiddleware, { verifyToken } from './restricted-middleware';
 import { Socket } from 'socket.io';
-
+import logger from '../common/logger';
 export {
   authRouter, authMiddleware
 }
@@ -14,10 +14,10 @@ export default (socket: Socket, next: NextFunction) => {
     socket.data.decodedToken = decodedToken;
     socket.data.username = decodedToken.username;
     socket.data.user_id = decodedToken.user_id;
-    console.log("🔓 [Authorized]", decodedToken.username)
+    logger.info("🔓 [Authorized]", decodedToken.username)
     next();
   } else {
-    console.log(socket.data);
+    logger.info(socket.data);
     next(new Error("[💩Authorization Failed]"));
   }
 }

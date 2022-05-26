@@ -1,11 +1,13 @@
+import logger from './src/api/common/logger';
 try {
     require('dotenv').config();
 } catch {
-    console.log('Express [production mode]');
+    logger.info('Express [production mode]');
 }
 import app from './src/api/server';
 
 const PORT = process.env.PORT || 8080
+const HOST = process.env.HOST
 app.listen(process.env.PORT, function () {
-    console.log(`🟢 server listening at port ${PORT}`);
+    logger.info(`🟢 server listening at port http://${HOST}:${PORT}`);
 });

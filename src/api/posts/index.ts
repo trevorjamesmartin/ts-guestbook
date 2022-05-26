@@ -3,6 +3,7 @@ import postsModel from './posts-model';
 import userMap from '../common/maps';
 import { verifyToken } from '../auth/restricted-middleware';
 // import { getPage } from '../common/util';
+import logger from '../common/logger';
 export { postsRouter }
 
 // *** io -> API ***
@@ -20,21 +21,21 @@ export default (io: any, socket: any) => {
 
   const getThread = (params: any) => {
     const { id } = params;
-    console.log('getThread', params)
+    logger.debug('getThread', params)
     // getPage(decodedToken, postsModel, { id: Number(id) })
-    console.log(GET_THREAD, id);
+    logger.debug(GET_THREAD, id);
     // not paginating threads
     if (!id) {
-      console.log("id REQUIRED")
+      logger.debug("id REQUIRED")
       return
     }
 
     postsModel.findByThread(Number(id))
       .then(result => {
-        // console.log(result);
+        // logger.debug(result);
         socket.emit(RETURN_THREAD, result);
       })
-      .catch(console.log)
+      .catch(logger.debug)
   }
 
   socket.on(GET_THREAD, getThread);

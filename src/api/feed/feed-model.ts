@@ -1,6 +1,6 @@
 import postsModel from "../posts/posts-model";
 import connectModel from "../social/connect-model";
-
+import logger from '../common/logger';
 export {
     mainFeed
 }
@@ -34,7 +34,7 @@ async function mainFeed(decodedToken: any): Promise<Food | TokenError[]> {
         // this can happen due to a stale session,
         // a reconnected socket,
         // or (more often) when a server loses it's memory of UserSpace. 
-        console.log('ERROR DECODING TOKEN - mainFeed');
+        logger.info('ERROR DECODING TOKEN - mainFeed');
         return [{
             error: "ERROR DECODING TOKEN - mainFeed",
             response: { event: "token?" }

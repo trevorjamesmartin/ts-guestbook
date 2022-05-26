@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Profiles, { ProfileType } from './profile-model';
+import logger from '../common/logger';
 const router = Router();
 /**
  * @swagger
@@ -89,7 +90,7 @@ router.put('/', async (req:any, res) => {
         });
         res.status(200).json(result);
     } else {
-        console.log('error', profile)
+        logger.debug('error', profile)
         res.status(404);
     }
 })

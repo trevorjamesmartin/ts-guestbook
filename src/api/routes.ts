@@ -6,12 +6,14 @@ import { usersRouter, profileRouter } from './users'
 import { postsRouter } from './posts';
 import { connectRouter, friendsRouter } from './social';
 import { feedRouter } from './feed';
+import logger from './common/logger';
 
 import awsRouter from './aws/router'; // not exposed in swagger
 
 const REACTION = '../app/build';
 
 export default function(server:express.Express) {
+    logger.debug('configure routes');
     server.use('/api/auth', authRouter);
     server.use('/api', authMiddleware);
     server.use('/api/socket.io', function(_, __, next) {next()})

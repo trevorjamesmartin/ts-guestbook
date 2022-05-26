@@ -1,6 +1,10 @@
 import path from 'path';
 import fs from 'fs';
-
+try {
+    require('dotenv').config();
+} catch {
+    console.log("Node environment:", process.env.NODE_ENV)
+}
 // NODE
 const packageJson = require('../package.json');
 let packageDist = {...packageJson,
@@ -30,7 +34,9 @@ FROM node:17-alpine
 WORKDIR ${WORKDIR}
 COPY ${RELEASE_FILE} .
 ENV PASSWORD=${process.env.PASSWORD}
-
+ENV NODE_ENV=design
+ENV HOST=0.0.0.0
+ENV PORT=8080
 RUN tar zxvf ${RELEASE_FILE} \\
     && ${REMOVE_CONTENT} \\
     && rm ${RELEASE_FILE}    
@@ -38,6 +44,8 @@ RUN tar zxvf ${RELEASE_FILE} \\
 RUN apk add --no-cache --virtual .gyp python3 make g++ \\
     && npm install \\
     && mkdir ${WORKDIR}/db \\
+    && npx knex migrate:latest \\
+    && npx knex seed:run \\
     && apk del .gyp
 
 EXPOSE ${PORT}

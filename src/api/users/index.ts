@@ -6,6 +6,7 @@ export { usersRouter, profileRouter }
 import { getPage } from '../common/util';
 import Users from './users-model';
 import Profiles from './profile-model';
+import logger from '../common/logger';
 // *** io -> API ***
 
 const GET_USERNAMES = 'api:usernames';            // GET /api/users
@@ -24,7 +25,7 @@ export default (io: any, socket: any) => {
       .then(result => {
         socket.emit(RETURN_USERNAMES, result.pages.map(u => u.username))
       })
-      .catch(console.log)
+      .catch(logger.debug)
   }
 
   const withProfiles = (params: any) => {
@@ -35,7 +36,7 @@ export default (io: any, socket: any) => {
         page: page ? Number(page) : 1,
         limit: limit ? Number(limit) : 200
       }).then(result => socket.emit(RETURN_USERLIST, result))
-        .catch(console.log)
+        .catch(logger.debug)
     }
   }
 
@@ -43,11 +44,11 @@ export default (io: any, socket: any) => {
     if (decodedToken.subject) {
       Profiles.yourProfile(decodedToken.subject, decodedToken.username)
       .then(result => {
-        // console.log(result);
-        console.log('⇨ ', decodedToken.username, RETURN_PROFILE);
+        // logger.debug(result);
+        logger.debug('⇨ ', decodedToken.username, RETURN_PROFILE);
         socket.emit(RETURN_PROFILE, result);
       })
-      .catch(console.log);
+      .catch(logger.debug);
     }
   }
 

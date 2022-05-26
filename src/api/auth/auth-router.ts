@@ -3,7 +3,7 @@ import Users, { UserType } from '../users/users-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';
-
+import logger from '../common/logger';
 import userMap from '../common/maps';
 
 const router = Router();
@@ -86,7 +86,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.delete('/logout', (req, res) => {
-  console.log('logged out');
+  logger.info('logged out');
   res.status(200).send({ result: 'OK', message: 'Logged out' })
 });
 

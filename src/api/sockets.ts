@@ -7,14 +7,16 @@ import registerFeedHandler from './feed';
 import registerSocialHandler from './social';
 import registerUserHandler from './users';
 import registerExtraHandlers from './extras';
+import logger from './common/logger';
 
 export default function (io: any) {
+  logger.debug('configure sockets')
   io.use(handleAuth);
 
   io.on('connection', function (socket: Socket) {
-    console.log(socket.data.username, '🔌', socket.id);
+    logger.info(socket.data.username, '🔌', socket.id);
     if (!socket.data.decodedToken) {
-      console.log('missing authority token')
+      logger.info('missing authority token')
       return io.handleAuth();
     }
     registerFeedHandler(io, socket);
@@ -27,7 +29,7 @@ export default function (io: any) {
 
     socket.on('disconnect', () => {
       socket.broadcast.emit("message", `- ${socket.data.username}`);
-      console.log('- ', socket.id, 'disconnected');
+      logger.info('- ', socket.id, 'disconnected');
       socket.disconnect();
     });
 

@@ -2,6 +2,7 @@ import db from '../../data/dbConfig';
 import profileModel from '../users/profile-model';
 import friendsModel from './friends-model';
 import { timestamp } from '../common/util';
+import logger from '../common/logger';
 
 export interface RequestConnect {
     id: number;
@@ -77,7 +78,7 @@ async function rejectRequest(request_id: number, to_id: number) {
     // const [reject_id] = await createRequest(to_id, cr.from_id, false); // acknowledge rejection
     const acknowleged = await createRequest(to_id, cr.from_id, false); // acknowlege rejection
     if (!acknowleged) {
-        console.log('createRequest returned', acknowleged)
+        logger.debug('createRequest returned', acknowleged)
         return []
     }
     const [rejected] = acknowleged

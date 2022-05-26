@@ -1,42 +1,42 @@
 import userMap from '../common/maps';
-
+import logger from '../common/logger';
 export default (io:any, socket:any) => {
   const getThread = (token:string, thread_id:number) => {
-      console.log('get Thread:', thread_id, token);
+      logger.debug('get Thread:', thread_id, token);
   }
 
   socket.on("api:post", getThread);
   socket.on('message', (msg:string) => {
-    console.log('message: ', msg);
+    logger.debug('message: ', msg);
 
   });
   
   socket.on('log:data', () => {
-    console.log(socket.data)
+    logger.debug(socket.data)
   })
 
   socket.on('log:map', (named:string) => {
-    console.log(userMap.getUser(named));
+    logger.debug(userMap.getUser(named));
   })
 
   socket.on('log:maps', () => {
-    console.log(userMap)
+    logger.debug(userMap)
   })
 
   socket.on('chat', (...args: any[]) => {
-    console.log("CHAT")
-    // console.log(args)
+    logger.debug("CHAT")
+    // logger.debug(args)
     socket.emit('chat', args)
   });
 
   socket.on('find:map', () => {
     // userMap.
-    console.log('find map using socket.id, ', socket.id);
-    console.log(userMap.withSocketId(socket.id));
+    logger.debug('find map using socket.id, ', socket.id);
+    logger.debug(userMap.withSocketId(socket.id));
   })
 
   socket.on("ping", (count:any) => {
-    console.log("PONG", count);
+    logger.debug("PONG", count);
   })
 }
 

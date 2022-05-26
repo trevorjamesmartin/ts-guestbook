@@ -1,19 +1,20 @@
 import path from 'path';
 import type { Knex } from "knex";
+import logger from './src/api/common/logger'
 
 try {
   require('dotenv').config();
 } catch {
-  console.log('*Knex* [production mode]');
+  logger.info('*Knex* [production mode]');
 }
 // Update with your config settings.
 
 const config: { [key: string]: Knex.Config } = {
-  
+
   design: {
     client: 'sqlite3',
     connection: {
-      filename: path.join(process.cwd(), 'dev.sqlite3')
+      filename: path.join(process.cwd(), 'db', 'dev.sqlite3')
     },
     migrations: {
       directory: "./src/data/migrations",

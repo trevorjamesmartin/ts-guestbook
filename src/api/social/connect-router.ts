@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Connections, {RequestConnect} from './connect-model';
 import Profiles from '../users/profile-model';
+import logger from "../common/logger";
 /**
  * @swagger
  * components:
@@ -64,7 +65,7 @@ router.get('/', async (req:any, res) => {
 router.post('/', async (req:any, res) => {
     let {decodedToken} = req;
     let { username } = req.body;
-    console.log(req.body)
+    logger.debug(req.body)
     if (!username) {
         return res.status(404).json({message: 'no username provided'})
     }

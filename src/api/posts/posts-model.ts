@@ -1,6 +1,8 @@
 import db from '../../data/dbConfig';
 import { timestamp } from '../common/util';
 import usersModel from '../users/users-model';
+import logger from '../common/logger';
+
 export interface PostType {
     id: number;
     author_id: number;
@@ -64,7 +66,7 @@ async function findByLimited(filter: Partial<PostType>, limit: number): Promise<
 async function findByUsername(username: string): Promise<PostedMessage[]> {
     let u = await usersModel.userId(username);
     if (!u) {
-        console.log('no id found for user', username);
+        logger.info('no id found for user', username);
         return []
     }
     return await db("posts").where({ author_id: u.id })

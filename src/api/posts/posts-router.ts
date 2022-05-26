@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 
 import Posts, { PostType, PostedMessage } from './posts-model';
+import logger from '../common/logger';
 const router = Router();
 
 
@@ -77,13 +78,13 @@ router.post('/',
         let { decodedToken } = req;
         const { username, subject } = decodedToken;
         if (!username || !subject) {
-            console.log("ERROR", { username, subject })
+            logger.debug("ERROR", { username, subject })
             return;
         }
         let { content }: Partial<PostType> = req.body;
         if (!content) {
             let errorMessage = "ERROR: missing content."
-            console.log(errorMessage);
+            logger.debug(errorMessage);
             return res.status(400).send(errorMessage);
         }
         try {
@@ -94,7 +95,7 @@ router.post('/',
             }, 0, 0);
             return res.status(200).json(post);
         } catch (error) {
-            console.log(error);
+            logger.debug(error);
             return res.status(500).json(error);
         }
     });
@@ -200,14 +201,14 @@ router.post('/reply/:id',
         const { username, subject } = decodedToken;
 
         if (!username || !subject) {
-            console.log("ERROR", { username, subject })
+            logger.debug("ERROR", { username, subject })
             return;
         }
 
         let { content } = req.body;
         if (!content) {
             let errorMessage = "ERROR: missing content."
-            console.log(errorMessage);
+            logger.debug(errorMessage);
             return res.status(400).send(errorMessage);
         }
         let result: PostedMessage = await Posts.replyTo(id, req.body, subject);
@@ -242,7 +243,7 @@ router.get('/thread/:id', async (req: any, res) => {
     let { decodedToken } = req;
     const { username, subject } = decodedToken;
     if (!username || !subject || !thread_id) {
-        console.log("ERROR", { username, subject })
+        logger.debug("ERROR", { username, subject })
         return res.status(404).json([]);
     }
     let result: any = await Posts.findByThread(thread_id);

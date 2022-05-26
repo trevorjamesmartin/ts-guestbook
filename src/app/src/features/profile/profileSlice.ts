@@ -100,6 +100,28 @@ export const profileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
+        updateProfile: (state, action:PayloadAction<any>) => {
+            for (let fieldName of Object.keys(action.payload)) {
+                let value = action.payload[fieldName];
+                switch (fieldName) {
+                    case 'name':
+                        state.name = value;
+                        break;
+                    case 'avatar':
+                        state.avatar = value;
+                        break;
+                    case 'email':
+                        state.email = value;
+                        break;
+                    case 'dob':
+                        state.dob = value;
+                        break;
+                    default:
+                        console.log("no case defined for", { fieldName, value });
+                        break;
+                }
+            }   
+        },
         setField: (state, action: PayloadAction<any>) => {
             state.status = 'setField, pending';
             for (let fieldName of Object.keys(action.payload)) {
@@ -180,10 +202,11 @@ export const selectors = {
     selectProfile
 };
 
-const { clear, setField } = profileSlice.actions;
+const { clear, setField, updateProfile } = profileSlice.actions;
 export const actions = {
     clear,
-    setField
+    setField,
+    updateProfile
 };
 
 

@@ -2,12 +2,12 @@ import { actions as webSocketActions } from './socketSlice';
 import { actions as usersActions } from '../users/userSlice';
 import { actions as feedActions } from '../feed/feedSlice';
 import { actions as threadActions } from '../thread/threadSlice';
-import { setProfileAsync, actions as profileActions } from '../profile/profileSlice';
+import { actions as profileActions } from '../profile/profileSlice';
 const { setStatusConnected, setStatusDisconnected, updateChat } = webSocketActions;
 const { clear: clearFeed, update: updateFeed } = feedActions;
 const { updateUsers } = usersActions;
 const { updateListed } = threadActions;
-// const { setField } = profileActions;
+const { updateProfile } = profileActions;
 // TODO: specify events
 export interface AppEventsMap {
   [event: string]: (...args: any[]) => void;
@@ -75,7 +75,7 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
 
   socket.on("api:profile", (result:any) => {
     console.log('-> api:profile', result);
-    dispatch(setProfileAsync(result));
+    dispatch(updateProfile(result));
   })
 
 }
