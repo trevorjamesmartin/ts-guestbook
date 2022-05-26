@@ -46,6 +46,6 @@ export default (req: any, res: any, next: any) => {
             }
         });
     } else {
-        res.status(400).json({ message: "no credentials provided" })
+        res.status(403).json({ message: "You do not have necessary permissions for the resource" });
     }
 };

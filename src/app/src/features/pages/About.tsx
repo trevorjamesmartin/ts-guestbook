@@ -2,14 +2,14 @@ import React, { useEffect } from "react";
 import { Container, Label, NavLink, NavItem } from 'reactstrap';
 
 function About() {
-    return <>
+    return <Container>
         <Label>Why not?</Label>
-        <NavLink target="_blank" href="https://github.com/trevorjamesmartin/vigilant-cloud">
+        <NavLink target="_blank" href="/swagger">
             <NavItem>
-                Source Code
+                Open API 3.0 specification
             </NavItem>
         </NavLink>
-    </>
+    </Container>
 }
 
 export default About

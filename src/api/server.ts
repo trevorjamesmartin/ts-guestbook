@@ -6,13 +6,11 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { createAdapter } from "@socket.io/postgres-adapter";
 import { Pool, PoolConfig } from "pg";
-import userMap from './common/maps';
+
 const httpServer = http.createServer(configureRoutes(configureServer(express())));
 
-
-
 httpServer.on('upgrade', function (request: any, socket, head) {
-  console.log('upgrading to websocket');
+  console.log('upgrade 🕸️');
 });
 
 // TODO

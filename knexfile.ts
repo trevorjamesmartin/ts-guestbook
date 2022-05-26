@@ -1,4 +1,6 @@
+import path from 'path';
 import type { Knex } from "knex";
+
 try {
   require('dotenv').config();
 } catch {
@@ -17,6 +19,21 @@ const config: { [key: string]: Knex.Config } = {
     seeds: {
       directory: "./src/data/seeds"
     }
+  },
+
+  design: {
+    client: 'sqlite3',
+    connection: {
+      filename: path.join(process.cwd(), 'dev.sqlite3')
+    },
+    migrations: {
+      directory: "./src/data/migrations",
+      tableName: "migrations"
+    },
+    seeds: {
+      directory: "./src/data/seeds"
+    },
+    useNullAsDefault: true
   },
 
   production: {

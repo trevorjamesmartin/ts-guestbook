@@ -19,7 +19,7 @@ const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectStatus: selectSocketStatus, selectMessage } = socketSelectors;
 
 function Navigation(props: any) {
-  const { toggleRTC } = props;
+  const { toggleRTC, socket } = props;
   const [collapsed, setCollapsed] = useState(true);
   const [clockConfig, setClockConfig] = useState({
     military: false,
@@ -40,7 +40,7 @@ function Navigation(props: any) {
 
   useEffect(() => {
     if (authorized) {
-      dispatch(getProfileAsync())
+      dispatch(getProfileAsync({ socket }))
       dispatch(friendCheckAsync());
     };
     let stateofconnect = socketStatus === 'connected';
@@ -67,7 +67,7 @@ function Navigation(props: any) {
         />
       </DropdownToggle>
       <DropdownMenu>
-        {socketStatus === 'connected' ? (
+        {authorized ? (
           <>
             <DropdownItem>
               <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
@@ -121,7 +121,7 @@ function Navigation(props: any) {
       </DropdownToggle>
       <DropdownMenu>
         {
-          authorized && socketStatus === 'connected' ?
+          authorized ?
             <DropdownItem>
               <Link className='nav-link' to={'/app/test'}>
                 <NavItem active={isActive('/app/test')}>{window.location.protocol}</NavItem>

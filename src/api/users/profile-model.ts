@@ -18,7 +18,8 @@ export default {
     update,
     findByUsername,
     findByUserId,
-    addByUsername
+    addByUsername,
+    yourProfile
 }
 
 function byId(id:number):Promise<ProfileType>  {
@@ -79,4 +80,17 @@ function add(profile:Partial<ProfileType>):Promise<ProfileType> {
 
 function update(id:number, data:Partial<ProfileType>) {
     return db("profiles").where({ id }).update({...data, updated_at: timestamp() });
+}
+
+
+async function yourProfile(id?: number, username?:string) {
+    let params:any = {};
+    if (!id || !username) return;
+    if (id) params.user_id = id;
+    if (username) params.username = username;
+    return await db("profiles")
+    .join("users", "users.id", "=", "profiles.user_id")
+    .select("username", "name", "avatar", "email", "dob", "created_at")
+    .where(params)
+    .first();
 }

@@ -1,6 +1,4 @@
 import feedRouter from './feed-router';
-import userMap from '../common/maps';
-import { verifyToken } from '../auth/restricted-middleware';
 import { mainFeed } from "./feed-model";
 import { getPage } from '../common/util';
 
@@ -13,8 +11,6 @@ const RETURN_FEED = "api:feed-content"
 
 export default (io: any, socket: any) => {
   let decodedToken:any = socket.data.decodedToken;
-  let user = userMap.withSocketId(socket.id);
-  console.log(user);
   const getFeed = (params: any) => {
     let { page, limit } = params
     console.log(GET_FEED);

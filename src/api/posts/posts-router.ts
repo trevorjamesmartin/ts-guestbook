@@ -5,6 +5,35 @@ import Posts, { PostType, PostedMessage } from './posts-model';
 const router = Router();
 
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         content:
+ *           type: string
+ *           description: what's happening?
+ *           example: frisbee golf with Morpheus today?
+ */
+
+
+/**
+ * @swagger
+ * 
+ * /posts:
+ * 
+ *  get:
+ *    summary: your posts
+ *    tags:
+ *      - Posts
+ *    responses:
+ *      '200':
+ *        description: 'Will send `Authenticated`'
+ *      '403': 
+ *        description: 'You do not have necessary permissions for the resource'
+ */
 router.get('/', async (req: any, res: Response) => {
     let { decodedToken } = req;
     const username = decodedToken?.username;
@@ -15,7 +44,28 @@ router.get('/', async (req: any, res: Response) => {
     return res.status(200).json(posts);
 });
 
-
+/**
+ * @swagger
+ *
+ * /posts:
+ *   post:
+ *     summary: create a new post
+ *     tags:
+ *       - Posts
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         description: ok, created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ */
 router.post('/',
     body('content').isString(),
     body('content').isLength({ max: 254 }),
@@ -49,10 +99,41 @@ router.post('/',
         }
     });
 
+
+/**
+ * @swagger
+ *
+ * /posts/id/{id}:
+ *   put:
+ *     summary: edit post
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Id of post to edit/update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         description: ok, created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ */
 router.put('/id/:id',
     body('content').isString(),
     body('content').isLength({ max: 254 }),
     async (req: any, res) => {
+        // todo : add validation to other routes
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -77,7 +158,35 @@ router.put('/id/:id',
         let result = await Posts.update(id, data);
         return res.status(200).json(result);
     });
-
+/**
+ * @swagger
+ *
+ * /posts/reply/{id}:
+ *   post:
+ *     summary: reply to post
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Id of Original Post
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         description: ok, created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ */
 router.post('/reply/:id',
     body('content').isString(),
     body('content').isLength({ max: 254 }),
@@ -105,6 +214,28 @@ router.post('/reply/:id',
         return res.status(201).json(result);
     });
 
+/**
+ * @swagger
+ * 
+ * /posts/thread/{id}:
+ * 
+ *  get:
+ *    summary: list replies
+ *    tags:
+ *      - Posts
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        description: Id of Original Post
+ *        schema:
+ *          type: integer
+ *    responses:
+ *      '200':
+ *        description: 'Will send `Authenticated`'
+ *      '403': 
+ *        description: 'You do not have necessary permissions for the resource'
+ */
 router.get('/thread/:id', async (req: any, res) => {
     let id = req.params.id;
     let thread_id = Number(id);

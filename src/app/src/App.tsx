@@ -2,34 +2,23 @@ import React, { useEffect, useState } from 'react';
 import ErrorBoundary from './ErrorBoundary';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
-
 import { io, Socket } from "socket.io-client";
-
-import { Register } from './features/auth/Register';
-import { Login } from './features/auth/Login';
-import { Logout } from './features/auth/Logout';
-import { UserList } from './features/users/UserList';
-import { Thread } from './features/thread';
-import Pages from './features/pages';
-import About from './features/pages/About';
-import Profile from './features/profile/Profile';
-import Navigation from './features/menu/Navigation';
-import ConnectRequests from './features/social/Requests';
-
-import { selectors as authSelectors } from './features/auth/authSlice';
-import { selectors as socketSelectors } from './features/network/socketSlice';
-import { selectors as profileSelectors } from './features/profile/profileSlice';
+import { AppEventsMap } from './features/network/config';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
+import {
+  // components
+  About, ConnectRequests, Login, Logout, Navigation, 
+  Pages, Profile, SocketTest, Register,Thread, UserList,
+  // selectors
+  authSelectors, socketSelectors, profileSelectors, 
+  // io handler
+  handleIO
+} from './features';
 
-import handleIO, { AppEventsMap } from './features/network/config';
-import SocketTest from './features/network/SocketTest';
-
+// style
 import './App.css';
+
 const { selectToken } = authSelectors;
-
-
-// socket.disconnect();
-
 const { selectProfile } = profileSelectors;
 const { selectStatus: selectSocketStatus } = socketSelectors;
 
@@ -71,7 +60,7 @@ function App() {
 
   return (<ErrorBoundary>
     <div className='App'>
-      <Navigation toggleRTC={() => toggleRTC(!rtc)} />
+      <Navigation toggleRTC={() => toggleRTC(!rtc)} socket={connectIt} />
       <p>io: {ioStatus}</p>
     </div>
     <Container>
@@ -82,7 +71,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={<Pages.MainPage ws={connectIt} />} />
         <Route path="/app/users" element={<UserList socket={connectIt} />} />
-        <Route path="/app/profile" element={<Profile />} />
+        <Route path="/app/profile" element={<Profile socket={connectIt} />} />
         <Route path="/app/logout" element={<Logout socket={connectIt} />} />
         <Route path="/app/requests" element={<ConnectRequests />} />
         <Route path="/app/thread/:thread_id" element={<Thread socket={connectIt} />} />

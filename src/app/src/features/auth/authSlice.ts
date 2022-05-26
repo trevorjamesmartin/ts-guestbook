@@ -28,7 +28,10 @@ export const loginAsync = createAsyncThunk(
   async (data: Credentials, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await new api({ token, socket: data.socket }).post('/auth/login', data); // pending
+    const response = await new api({ 
+      token: undefined, 
+      socket: data.socket 
+    }).post('/api/auth/login', data); // pending
     return response.data; // fulfilled
   }
 );
@@ -38,7 +41,7 @@ export const logoutAsync = createAsyncThunk(
   async (_, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await new api(token).delete('/auth/logout'); // pending
+    const response = await new api({token}).delete('/api/auth/logout'); // pending
     return response.data; // fulfilled
   }
 );
@@ -48,7 +51,8 @@ export const registerAsync = createAsyncThunk(
   async (data: Credentials, thunkAPI) => {
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
-    const response = await new api(token).post('auth/register', data); // pending
+    const response = await new api({token: undefined }).post('/api/auth/register', data); // pending
+    console.log(response.data);
     return response.data; // fulfilled
   }
 );

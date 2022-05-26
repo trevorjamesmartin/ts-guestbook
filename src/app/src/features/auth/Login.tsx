@@ -27,7 +27,7 @@ export function Login() {
   })
   const handleSubmitForm = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    if (state.password.length > 4 && state.username.length > 0) {
+    if (state.password.length > 0 && state.username.length > 0) {
       dispatch(loginAsync(state));
       setState(initialState);
       setTimeout(() => {

@@ -21,7 +21,6 @@ fs.writeFileSync(filename, data);
 const WORKDIR="/opt/app";
 const RELEASE_FILE="dist.tar.gz";
 const REMOVE_CONTENT="mv dist/* . && rmdir dist";
-const ENV_PASSWORD="s3cr3tP4ssw0rd";
 const PORT=8080
 let dockerfile = path.join(process.cwd(), 'release', 'Dockerfile');
 
@@ -30,7 +29,7 @@ FROM node:17-alpine
 
 WORKDIR ${WORKDIR}
 COPY ${RELEASE_FILE} .
-ENV PASSWORD=${ENV_PASSWORD}
+ENV PASSWORD=${process.env.PASSWORD}
 
 RUN tar zxvf ${RELEASE_FILE} \\
     && ${REMOVE_CONTENT} \\

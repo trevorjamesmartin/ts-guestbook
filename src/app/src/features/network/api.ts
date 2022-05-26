@@ -96,8 +96,9 @@ class VigilantAPI extends Axios {
             let event = this.eventIO(urlPath);
             let args = this.eventIOparams(urlPath);
             // config should be loaded into args.
-            let {socket, ...params} = config;
+            let {socket, ...params} = config || {};
             switch (event) {
+                case "api:profile":
                 case "api:feed":
                 case "api:users:with-profiles":
                 case "api:thread":
@@ -106,7 +107,7 @@ class VigilantAPI extends Axios {
                     break;
 
                 default:
-                    console.log('[io] -> ', event);
+                    console.log('**[io] -> ', event);
                     this.io(event, undefined); // send without args (saftey)
                     break;
             }
@@ -134,10 +135,13 @@ class VigilantAPI extends Axios {
     }
 
     get<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R> {
-        const { params }: any = config;
+        console.log('GET', url, config)
+        const { params }: any = config || {};
         if (this.hasIO(url)) {
+            console.log('has io')
             return new Promise(() => this.socketAPI(url, params));
         } else {
+            console.log('no route defined')
             const resolved = this.dynamicURL(url, params);
             console.log('[GET]', resolved);
             return this.client.get(resolved, { params });
@@ -154,9 +158,11 @@ class VigilantAPI extends Axios {
         return this.client.options(url, config);
     };
     post<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
+        console.log('post', url, data, config)
         return this.client.post(url, data, config);
     };
     put<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
+        console.log('put', url, data, config)
         return this.client.put(url, data, config)
     };
     patch<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {

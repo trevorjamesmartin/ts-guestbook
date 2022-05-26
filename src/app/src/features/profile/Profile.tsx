@@ -6,18 +6,20 @@ import { Form, FormGroup, Label, Input, Button, Container } from 'reactstrap';
 const { setField } = profileActions;
 const { selectProfile } = profileSelectors;
 
-function Profile() {
+function Profile(props:any) {
+    const {socket} = props;
     const dispatch = useAppDispatch();
     const profile = useAppSelector(selectProfile);
     const [preview, setPreview] = useState();
 
     useEffect(() => {
-        dispatch(getProfileAsync());
+        console.log('[profile]')
+        dispatch(getProfileAsync({socket}));
     }, []);
 
     const handleUpdateProfile = (e: any) => {
         e.preventDefault();
-        dispatch(setProfileAsync(profile));
+        dispatch(setProfileAsync({socket}));
     }
 
     const handleChange = (e: any) => {

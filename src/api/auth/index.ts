@@ -12,9 +12,12 @@ export default (socket: Socket, next: NextFunction) => {
   let decodedToken: any = token ? verifyToken(token) : undefined;
   if (decodedToken) {
     socket.data.decodedToken = decodedToken;
-    console.log("[AUTHORIZED]", decodedToken.username)
+    socket.data.username = decodedToken.username;
+    socket.data.user_id = decodedToken.user_id;
+    console.log("🔓 [Authorized]", decodedToken.username)
     next();
   } else {
-    next(new Error("[...papers, please!]"));
+    console.log(socket.data);
+    next(new Error("[💩Authorization Failed]"));
   }
 }

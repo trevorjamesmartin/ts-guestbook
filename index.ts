@@ -7,5 +7,5 @@ import app from './src/api/server';
 
 const PORT = process.env.PORT || 8080
 app.listen(process.env.PORT, function () {
-    console.log(`-- listening on ${PORT}`);
+    console.log(`🟢 server listening at port ${PORT}`);
 });

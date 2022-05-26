@@ -1,3 +1,4 @@
+import path from 'path';
 import { Express, json } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -7,15 +8,69 @@ import bodyParser from 'body-parser';
 import hpp from 'hpp';
 import ejs from 'ejs';
 // import enforcesSSL from 'express-enforces-ssl';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 
 const MAX_CONTENT_LENGTH_ACCEPTED = 8 ** 8;
-
+const PORT = process.env.PORT || undefined;
 const corsMiddleware = cors({
   origin: true,
   credentials: true,
 });
+// swagger
+const options = {
+  swaggerDefinition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Conversation API",
+      version: "1.0.0",
+      description: "talk amongst yourselves",
+      license: {
+        name: "MIT",
+        url: "https://choosealicense.com/licenses/mit/"
+      },
+      contact: {
+        name: "source code",
+        url: "https://github.com/trevorjamesmartin/vigilant-cloud",
+      },
+    },
+    servers: [
+      {
+        url: `http://localhost${PORT ? ':' + PORT : ''}/api`,
+        description: "development server",
+      },
+      {
+        url: `https://vigilant-cloud.herokuapp.com/api`,
+        description: "Heroku App",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'apiKey',
+          name: 'Authorization',
+          in: 'header',
+        }
+      }
+    },
+    security: [{
+      bearerAuth: []
+    }]
+  },
+  apis: [
+    __filename,
+    path.join(process.cwd(), 'src/api/auth', '*.ts'),
+    path.join(process.cwd(), 'src/api/aws', '*.ts'),
+    path.join(process.cwd(), 'src/api/feed', '*.ts'),
+    path.join(process.cwd(), 'src/api/posts', '*.ts'),
+    path.join(process.cwd(), 'src/api/social', '*.ts'),
+    path.join(process.cwd(), 'src/api/users', '*.ts'),
+  ],
+};
 
+
+const openapiSpecification = swaggerJsdoc(options);
 
 
 export default function configureServer(server: Express) {
@@ -41,7 +96,7 @@ export default function configureServer(server: Express) {
         'Content-Security-Policy-Report-Only',
         (process.env.NODE_ENV !== "development" ?
 
-        "default-src 'self';\
+          "default-src 'self';\
         script-src 'report-sample' 'self';\
         style-src 'report-sample' 'self' https://fonts.googleapis.com;\
         object-src 'none';\
@@ -54,13 +109,13 @@ export default function configureServer(server: Express) {
         media-src 'self';\
         worker-src 'none';" :
 
-        "default-src http: https: wss:; \
+          "default-src http: https: wss:; \
         img-src 'self' data: https:; \
         script-src http: https: 'unsafe-inline'; \
         style-src http https: 'unsafe-inline'; \
         style-src-elem http: https: wss: ws:; \
         connect-src http: https: wss: ws:")
-        
+
       );
       next();
     })
@@ -79,5 +134,9 @@ export default function configureServer(server: Express) {
         '127.0.0.1:5000',
       ]
     }));
+
+  // openapi
+  server.use('/swagger', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+
   return server
 }
