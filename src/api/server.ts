@@ -7,11 +7,11 @@ import { Server } from 'socket.io';
 import { createAdapter } from "@socket.io/redis-adapter";
 import { createClient } from "redis";
 import logger from './common/logger';
-logger.debug('create server')
+logger.debug('express()')
 const httpServer = http.createServer(configureRoutes(configureServer(express())));
 
 httpServer.on('upgrade', function (request: any, socket, head) {
-  logger.debug('upgrade 🕸️')
+  logger.debug('🕸️ upgrade')
 });
 
 // TODO
