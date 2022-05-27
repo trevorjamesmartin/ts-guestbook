@@ -11,7 +11,17 @@ import logger from './common/logger';
 
 export default function (io: any) {
   logger.debug('configure sockets')
-  io.use(handleAuth);
+  io.use(handleAuth); // 1st authorize
+
+  io.use((socket: Socket, next: any) => {
+    // 2nd join
+    const { username } = socket.data.decodedToken;
+    if (username) {
+      socket.join("online-users");
+      logger.info(`${username} joined online-users`);
+    }
+    next();
+  });
 
   io.on('connection', function (socket: Socket) {
     logger.info(socket.data.username, '🔌', socket.id);
@@ -26,6 +36,8 @@ export default function (io: any) {
     registerExtraHandlers(io, socket);
 
     socket.broadcast.emit("message", `+ ${socket.data.username}`);
+    socket.to("online-users")
+    .emit('message', socket.data.username + "JOINED");
 
     socket.on('disconnect', () => {
       socket.broadcast.emit("message", `- ${socket.data.username}`);
