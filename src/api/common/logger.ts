@@ -1,18 +1,21 @@
 import path from 'path';
 import log4js from "log4js";
 log4js.configure({
-  appenders: { 
+  appenders: {
+    out: {
+      type: "stdout"
+    },
     api: { 
       type: "file", filename: path.join(process.cwd(), "db/api.log")
-    }
+    },
   },
   categories: { 
     default: { 
-      appenders: ["api"],
+      appenders: ["api", "out"],
       level: "info"
     },
     development: { 
-      appenders: ["api"], 
+      appenders: ["api", "out"], 
       level: "debug" 
     }
   }

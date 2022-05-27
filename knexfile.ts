@@ -11,7 +11,7 @@ try {
 
 const config: { [key: string]: Knex.Config } = {
 
-  design: {
+  docker: {
     client: 'sqlite3',
     connection: {
       filename: path.join(process.cwd(), 'db', 'dev.sqlite3')

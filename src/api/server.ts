@@ -41,9 +41,10 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
   },
   // allowEIO3: true
 });
-
+let redis_enabled = false;
 // REDIS ADAPTER
-if(process.env.NODE_ENV !== "design") {
+if(process.env.REDIS_URL) {
+  redis_enabled = true;
   logger.debug('create redis adapter');
   const pubClient = createClient({ url: process.env.REDIS_URL });
   pubClient.on('error', (err) => console.log('Redis Client Error [pub]', err));
@@ -55,7 +56,7 @@ if(process.env.NODE_ENV !== "design") {
   });
 }
 // POSTGRES ADAPTER
-if(process.env.NODE_ENV !== "design") {
+if(!redis_enabled && process.env.DATABASE_URL) {
   const {createAdapter} = require("@socket.io/postgres-adapter");
   const {Pool, PoolConfig} = require('pg');
   let pool;

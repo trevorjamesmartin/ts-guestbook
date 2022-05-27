@@ -11,6 +11,8 @@ import ejs from 'ejs';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import logger from './common/logger';
+import log4js from 'log4js';
+import favicon from 'static-favicon';
 
 const MAX_CONTENT_LENGTH_ACCEPTED = 8 ** 8;
 const PORT = process.env.PORT || undefined;
@@ -36,7 +38,7 @@ const options = {
       },
     },
     servers: [
-      process.env.NODE_ENV === "design" ?
+      process.env.NODE_ENV === "docker" ?
       {
         url: `http://localhost${PORT ? ':' + PORT : ''}/api`,
         description: "development server",
@@ -86,6 +88,7 @@ export default function configureServer(server: Express) {
   server.use(corsMiddleware);
   server.options('*', corsMiddleware);
   server.engine('html', ejs.renderFile);
+  server.use(favicon())
   // 1. parse body (sort)
   server.use(bodyParser.urlencoded({ extended: true }))
     // 2. http parameter pollution (guard)
@@ -149,6 +152,8 @@ export default function configureServer(server: Express) {
 
   // openapi
   server.use('/swagger', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+
+  server.use(log4js.connectLogger(log4js.getLogger("http"), { level: 'auto' }));
 
   return server
 }

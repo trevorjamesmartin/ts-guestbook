@@ -55,6 +55,7 @@
     "pg": "^8.7.3",
     "redis": "^4.1.0",
     "socket.io": "^4.5.0",
+    "static-favicon": "^2.0.0-alpha",
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-dist": "^4.11.1",
     "swagger-ui-express": "^4.4.0",
