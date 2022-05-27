@@ -116,6 +116,9 @@ export const profileSlice = createSlice({
                     case 'dob':
                         state.dob = value;
                         break;
+                    case 'username':
+                    case 'created_at':
+                        break;
                     default:
                         console.log("no case defined for", { fieldName, value });
                         break;
