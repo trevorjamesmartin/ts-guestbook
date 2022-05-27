@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import ErrorBoundary from './ErrorBoundary';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
@@ -7,10 +7,10 @@ import { AppEventsMap } from './features/network/config';
 import { useAppSelector, useAppDispatch } from './memory/hooks';
 import {
   // components
-  About, ConnectRequests, Login, Logout, Navigation, 
-  Pages, Profile, SocketTest, Register,Thread, UserList,
+  About, ConnectRequests, Login, Logout, Navigation,
+  Pages, Profile, SocketTest, Register, Thread, UserList,
   // selectors
-  authSelectors, socketSelectors, profileSelectors, 
+  authSelectors, socketSelectors, profileSelectors,
   // io handler
   handleIO
 } from './features';
@@ -34,19 +34,25 @@ function App() {
   const profile = useAppSelector(selectProfile);
   const token = useAppSelector(selectToken);
   const ioStatus = useAppSelector(selectSocketStatus);
+  const baseURL = process.env.REACT_APP_BASE_URL || window.location.origin;
+  
+  const resetIO = useCallback(() => {
+    localSocket?.disconnect();
+    let socket = io(baseURL, {
+      withCredentials: true,
+      auth: { token }
+    });
+    handleIO(socket, dispatch, profile, token, navigate);
+    setSocket(socket); // save localSocket
+  }, [localSocket, setSocket]);
 
   useEffect(() => {
     if (token && !localSocket) {
-      console.log('[io] create initial connection')
-      let socket = io(process.env.REACT_APP_BASE_URL || window.location.origin, {
-        withCredentials: true,
-        auth: { token }
-      });
-      handleIO(socket, dispatch, profile, token, navigate);
-      setSocket(socket); // save localSocket
+      console.log('[io] create initial connection');
+      resetIO();
       return
     }
-  }, [token]);
+  }, [token, resetIO]);
 
   useEffect(() => {
     if (rtc) {
@@ -66,16 +72,16 @@ function App() {
     <Container>
       <Routes>
         <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/app/test" element={<SocketTest socket={connectIt} />} />
+        <Route path="/login" element={<Login resetIO={resetIO} />} />
+        <Route path="/app/test" element={<SocketTest socket={localSocket} />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/app" element={<Pages.MainPage ws={connectIt} />} />
-        <Route path="/app/users" element={<UserList socket={connectIt} />} />
-        <Route path="/app/profile" element={<Profile socket={connectIt} />} />
-        <Route path="/app/logout" element={<Logout socket={connectIt} />} />
+        <Route path="/app" element={<Pages.MainPage ws={localSocket} />} />
+        <Route path="/app/users" element={<UserList socket={localSocket} />} />
+        <Route path="/app/profile" element={<Profile socket={localSocket} />} />
+        <Route path="/app/logout" element={<Logout socket={localSocket} />} />
         <Route path="/app/requests" element={<ConnectRequests />} />
-        <Route path="/app/thread/:thread_id" element={<Thread socket={connectIt} />} />
-        <Route path="/" element={<Pages.Welcome ws={connectIt} />} />
+        <Route path="/app/thread/:thread_id" element={<Thread socket={localSocket} />} />
+        <Route path="/" element={<Pages.Welcome ws={localSocket} />} />
       </Routes>
     </Container>
   </ErrorBoundary>)
