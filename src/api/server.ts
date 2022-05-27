@@ -22,6 +22,7 @@ interface SocketData {
   token: string|undefined;
   [key:string]:any;
 }
+logger.debug('🔌 attach socket io');
 
 const ioServer = new Server<Server, {}, {}, SocketData>(
   httpServer, {
@@ -41,18 +42,18 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
   },
   // allowEIO3: true
 });
+logger.debug('🛋  create room adapter');
 let redis_enabled = false;
 // REDIS ADAPTER
 if(process.env.REDIS_URL) {
   redis_enabled = true;
-  logger.debug('create redis adapter');
   const pubClient = createClient({ url: process.env.REDIS_URL });
   pubClient.on('error', (err) => console.log('Redis Client Error [pub]', err));
   const subClient = pubClient.duplicate();
   subClient.on('error', (err) => console.log('Redis Client Error [sub]', err));
-  logger.debug('connect redis adapter');
   Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
     ioServer.adapter(createAdapter(pubClient, subClient));
+    logger.debug('🔌  🛋  Redis 💡');
   });
 }
 // POSTGRES ADAPTER
@@ -70,7 +71,6 @@ if(!redis_enabled && process.env.DATABASE_URL) {
       user, password, host, database, port: Number(port)
     }
   }
-  logger.debug('create Postgres pool');
   pool = new Pool(getPoolConfig());
   pool.query(`
     CREATE TABLE IF NOT EXISTS socket_id_attachments (
@@ -79,8 +79,8 @@ if(!redis_enabled && process.env.DATABASE_URL) {
       payload     bytea
     );
   `);
-  logger.debug('create postgres pool adapter')
   ioServer.adapter(createAdapter(pool))
+  logger.debug('[Postgres adapter]');
 }
 export const io = configureSockets(ioServer);
 

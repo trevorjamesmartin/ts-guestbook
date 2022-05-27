@@ -83,7 +83,7 @@ const openapiSpecification = swaggerJsdoc(options);
 
 
 export default function configureServer(server: Express) {
-  logger.debug('configure server')
+  logger.debug('⚙ server');
 
   server.use(corsMiddleware);
   server.options('*', corsMiddleware);
@@ -154,6 +154,5 @@ export default function configureServer(server: Express) {
   server.use('/swagger', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
   server.use(log4js.connectLogger(log4js.getLogger("http"), { level: 'auto' }));
-
   return server
 }

@@ -13,7 +13,7 @@ import awsRouter from './aws/router'; // not exposed in swagger
 const REACTION = '../app/build';
 
 export default function(server:express.Express) {
-    logger.debug('configure routes');
+    logger.debug('🕸️  create routes');
     server.use('/api/auth', authRouter);
     server.use('/api', authMiddleware);
     server.use('/api/socket.io', function(_, __, next) {next()})

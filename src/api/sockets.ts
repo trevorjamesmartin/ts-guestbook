@@ -10,7 +10,7 @@ import registerExtraHandlers from './extras';
 import logger from './common/logger';
 
 export default function (io: any) {
-  logger.debug('configure sockets')
+  logger.debug('⚙ sockets')
   io.use(handleAuth); // 1st authorize
 
   io.use((socket: Socket, next: any) => {
