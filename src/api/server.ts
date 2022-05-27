@@ -4,8 +4,8 @@ import configureRoutes from './routes';
 import configureSockets from './sockets';
 import http from 'http';
 import { Server } from 'socket.io';
-  // import { createAdapter } from "@socket.io/postgres-adapter";
-  // import { Pool, PoolConfig } from "pg";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { createClient } from "redis";
 import logger from './common/logger';
 logger.debug('create server')
 const httpServer = http.createServer(configureRoutes(configureServer(express())));
@@ -42,8 +42,20 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
   // allowEIO3: true
 });
 
+// REDIS ADAPTER
 if(process.env.NODE_ENV !== "design") {
-  logger.debug('pg adapter - init')
+  logger.debug('create redis adapter');
+  const pubClient = createClient({ url: process.env.REDIS_URL });
+  pubClient.on('error', (err) => console.log('Redis Client Error [pub]', err));
+  const subClient = pubClient.duplicate();
+  subClient.on('error', (err) => console.log('Redis Client Error [sub]', err));
+  logger.debug('connect redis adapter');
+  Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+    ioServer.adapter(createAdapter(pubClient, subClient));
+  });
+}
+// POSTGRES ADAPTER
+if(process.env.NODE_ENV !== "design") {
   const {createAdapter} = require("@socket.io/postgres-adapter");
   const {Pool, PoolConfig} = require('pg');
   let pool;
@@ -57,6 +69,7 @@ if(process.env.NODE_ENV !== "design") {
       user, password, host, database, port: Number(port)
     }
   }
+  logger.debug('create Postgres pool');
   pool = new Pool(getPoolConfig());
   pool.query(`
     CREATE TABLE IF NOT EXISTS socket_id_attachments (
@@ -65,7 +78,7 @@ if(process.env.NODE_ENV !== "design") {
       payload     bytea
     );
   `);
-  logger.debug('create adapter (Postgres pool)');
+  logger.debug('create postgres pool adapter')
   ioServer.adapter(createAdapter(pool))
 }
 export const io = configureSockets(ioServer);
