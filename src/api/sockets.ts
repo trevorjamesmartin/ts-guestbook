@@ -11,10 +11,10 @@ import logger from './common/logger';
 
 export default function (io: any) {
   logger.debug('⚙ sockets')
-  io.use(handleAuth); // 1st authorize
+  io.use(handleAuth); // 1. authorize
 
   io.use((socket: Socket, next: any) => {
-    // 2nd join
+    // 2. join
     const { username } = socket.data.decodedToken;
     if (username) {
       socket.join("online-users");
@@ -23,16 +23,34 @@ export default function (io: any) {
     next();
   });
 
+  function inRoom(room:string) {
+    const rooms = io.of("/").adapter.rooms;
+    let result = [];
+    try {
+      for (let u of rooms.get(room)) {
+        let i = io.sockets.sockets.get(u);
+        if (i.data.username) {
+          result.push(i.data.username);
+        } else {
+          logger.error(`room ${room} is possibly corrupt`)
+        }
+      }
+    } catch {
+      return [];
+    }
+    return [...new Set(result)]
+  }
+
   io.on('connection', function (socket: Socket) {
     logger.info(socket.data.username, '🔌', socket.id);
+
     if (!socket.data.decodedToken) {
-      logger.info('missing authority token')
-      return io.handleAuth();
+      logger.info('authority required')
+      socket.disconnect();
+      return
     }
 
-    socket.on("private message", (anotherSocketId, msg) => {
-      socket.to(anotherSocketId).emit("private message", socket.id, msg);
-    });
+    // 3. register handlers
 
     registerFeedHandler(io, socket);
     registerPostHandler(io, socket);
@@ -40,22 +58,29 @@ export default function (io: any) {
     registerUserHandler(io, socket);
     registerExtraHandlers(io, socket);
 
-
     socket.to("online-users").emit(
       'joined:room', "online-users", socket.data.username
     );
+    // send list of online users
+    socket.to("online-users").emit("userlist", inRoom('online-users'));
+
+
+    socket.on("userlist", () => {
+      socket.emit("userlist", inRoom('online-users'));
+    })
 
     socket.on('disconnect', () => {
       socket.to("online-users").emit(
         'departed:room', "online-users", socket.data.username
       );
-  
+      socket.to("online-users").emit("userlist", inRoom('online-users'));
+
       socket.broadcast.emit("message", `- ${socket.data.username}`);
       logger.info('- ', socket.id, 'disconnected');
       socket.disconnect();
     });
 
-  })
+  });
 
   return io;
 }
