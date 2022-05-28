@@ -45,6 +45,9 @@ export const socketSlice = createSlice({
     reducers: {
         updateChat: (state: NetworkSocket, action: PayloadAction<any[]>) => {
             state.chat = [...state.chat, ...action.payload]
+        },
+        clearChat: (state) => {
+            state.chat = [];
         }
     },
     extraReducers: (builder) => {
@@ -63,7 +66,7 @@ export const socketSlice = createSlice({
 const selectMessage = (state: RootState) => <string | undefined>state.socket.message;
 const selectStatus = (state: RootState) => <string>state.socket.status;
 const selectChat = (state: RootState) => <any[]>state.socket.chat;
-const { updateChat } = socketSlice.actions;
+const { updateChat, clearChat } = socketSlice.actions;
 
 export const selectors = {
     selectMessage,
@@ -74,7 +77,8 @@ export const selectors = {
 export const actions = {
     setStatusConnected,
     setStatusDisconnected,
-    updateChat
+    updateChat,
+    clearChat
 }
 
 export default socketSlice.reducer;

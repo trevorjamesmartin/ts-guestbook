@@ -3,7 +3,7 @@ import { actions as usersActions } from '../users/userSlice';
 import { actions as feedActions } from '../feed/feedSlice';
 import { actions as threadActions } from '../thread/threadSlice';
 import { actions as profileActions } from '../profile/profileSlice';
-const { setStatusConnected, setStatusDisconnected, updateChat } = webSocketActions;
+const { setStatusConnected, setStatusDisconnected, updateChat, clearChat } = webSocketActions;
 const { clear: clearFeed, update: updateFeed } = feedActions;
 const { updateUsers } = usersActions;
 const { updateListed } = threadActions;
@@ -47,8 +47,28 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
     console.log('->', data);
   });
 
-  socket.on('chat', (...args: any[]) => {
-    dispatch(updateChat(args));
+  socket.on("joined:room", (room: string, username: string) => {
+    console.log(`+ ${username} joined ${room}`)
+  })
+
+  socket.on("departed:room", (room: string, username: string) => {
+    console.log(`- ${username} left ${room}`)
+  })
+
+  socket.on('chat', (...args:any[]) => {
+    let [msg,..._] = args;
+    console.log(msg);
+    switch (msg[0]) {
+      case '/clear':
+        console.log('clearing framebuffer');
+        dispatch(clearChat());
+        break;
+    
+      default:
+        dispatch(updateChat(args));
+        break;
+    }
+
     // dispatch
   })
 
@@ -77,5 +97,10 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
     console.log('-> api:profile', result);
     dispatch(updateProfile(result));
   })
+
+  socket.on("private message", (anotherSocketId:string, msg:any) => {
+    console.log(anotherSocketId, '->', msg);
+    // socket.to(anotherSocketId).emit("private message", socket.id, msg);
+  });
 
 }
