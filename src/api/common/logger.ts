@@ -3,7 +3,12 @@ import log4js from "log4js";
 log4js.configure({
   appenders: {
     out: {
-      type: "stdout"
+      type: "stdout",
+      layout: { 
+        type: 'pattern', 
+        // api[INFO]: message
+        pattern: '%[%c%]%[[%p]:%] %[ %m %] '
+      }
     },
     api: { 
       type: "file", filename: path.join(process.cwd(), "db/api.log")
