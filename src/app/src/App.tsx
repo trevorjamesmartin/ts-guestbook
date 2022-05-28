@@ -66,7 +66,7 @@ function App() {
 
   return (<ErrorBoundary>
     <div className='App'>
-      <Navigation toggleRTC={() => toggleRTC(!rtc)} socket={connectIt} />
+      <Navigation toggleRTC={() => toggleRTC(!rtc)} rtc={rtc} socket={connectIt} />
       <p>io: {ioStatus}</p>
     </div>
     <Container>

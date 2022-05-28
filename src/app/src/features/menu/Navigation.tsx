@@ -19,7 +19,7 @@ const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectStatus: selectSocketStatus, selectMessage } = socketSelectors;
 
 function Navigation(props: any) {
-  const { toggleRTC, socket } = props;
+  const { toggleRTC, socket, rtc } = props;
   const [collapsed, setCollapsed] = useState(true);
   const [clockConfig, setClockConfig] = useState({
     military: false,
@@ -47,7 +47,7 @@ function Navigation(props: any) {
     if (connection !== stateofconnect) {
       setConnection(!connection);
     }
-  }, [token, socketStatus]);
+  }, [token, socketStatus, rtc]);
 
   function profileMenu() {
     return <UncontrolledDropdown
@@ -133,7 +133,9 @@ function Navigation(props: any) {
             </DropdownItem>
         }
         <DropdownItem>
-          <Button onClick={toggleRTC}>rtc</Button>
+          <span onClick={toggleRTC}>rtc {rtc ? 
+          <i className="fa-solid fa-check"></i> :
+          ""}</span>
         </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
