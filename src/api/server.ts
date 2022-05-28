@@ -45,14 +45,21 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
 logger.debug('🛋  create room adapter');
 let redis_enabled = false;
 // REDIS ADAPTER
+function redisClient(tag:string) {
+  const client = createClient({ url: process.env.REDIS_URL });
+  client.on('error', err => logger.error(`[${tag}] client error`, err));
+  client.on('connect', () => logger.debug(`[${tag}] client connect`));
+  client.on('reconnecting', () => logger.debug(`[${tag}] client reconnecting`));
+  client.on('ready', () => logger.info(`[${tag}] client ready`));
+  return client;
+}
+
 if(process.env.REDIS_URL) {
   redis_enabled = true;
-  const pubClient = createClient({ url: process.env.REDIS_URL });
-  pubClient.on('error', (err) => console.log('Redis Client Error [pub]', err));
-  const subClient = pubClient.duplicate();
-  subClient.on('error', (err) => console.log('Redis Client Error [sub]', err));
-  Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-    ioServer.adapter(createAdapter(pubClient, subClient));
+  const pub = redisClient("publish");
+  const sub = redisClient("subscribe");
+  Promise.all([pub.connect(), sub.connect()]).then(() => {
+    ioServer.adapter(createAdapter(pub, sub));
     logger.debug('🔌  🛋  Redis 💡');
   });
 }
