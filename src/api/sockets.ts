@@ -29,17 +29,27 @@ export default function (io: any) {
       logger.info('missing authority token')
       return io.handleAuth();
     }
+
+    socket.on("private message", (anotherSocketId, msg) => {
+      socket.to(anotherSocketId).emit("private message", socket.id, msg);
+    });
+
     registerFeedHandler(io, socket);
     registerPostHandler(io, socket);
     registerSocialHandler(io, socket);
     registerUserHandler(io, socket);
     registerExtraHandlers(io, socket);
 
-    socket.broadcast.emit("message", `+ ${socket.data.username}`);
-    socket.to("online-users")
-    .emit('message', socket.data.username + "JOINED");
+
+    socket.to("online-users").emit(
+      'joined:room', "online-users", socket.data.username
+    );
 
     socket.on('disconnect', () => {
+      socket.to("online-users").emit(
+        'departed:room', "online-users", socket.data.username
+      );
+  
       socket.broadcast.emit("message", `- ${socket.data.username}`);
       logger.info('- ', socket.id, 'disconnected');
       socket.disconnect();
