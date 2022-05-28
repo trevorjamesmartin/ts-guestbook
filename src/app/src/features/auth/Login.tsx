@@ -54,7 +54,7 @@ export function Login(params:any) {
               setState({ ...state, password: e.target.value })
             }}></Input>
           </FormGroup>
-          <Button>Submit</Button>
+          <Button type="submit">Submit</Button>
         </Form>
       }
     </div>
