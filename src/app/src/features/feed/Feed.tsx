@@ -132,7 +132,7 @@ function Feed(props:any) {
             :
             <>
               <ul className="feedList">
-                {socialFeed?.pages.map((page: any) => FeedCard({
+                {socialFeed?.pages?.map((page: any) => FeedCard({
                     ...page,
                     profile,
                     replies: [
