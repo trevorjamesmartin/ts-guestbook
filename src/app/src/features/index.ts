@@ -9,6 +9,7 @@ import About from './pages/About';
 import Profile from './profile/Profile';
 import Navigation from './menu/Navigation';
 import ConnectRequests from './social/Requests';
+import Messenger from './social/Messenger';
 
 import { selectors as authSelectors } from './auth/authSlice';
 import { selectors as socketSelectors } from './network/socketSlice';
@@ -18,5 +19,5 @@ import SocketTest from './network/SocketTest';
 export {
   Register, Login, Logout, UserList,
   SocketTest, Thread, Pages, About, Profile, Navigation, ConnectRequests,
-  handleIO, authSelectors, socketSelectors, profileSelectors
+  Messenger, handleIO, authSelectors, socketSelectors, profileSelectors
 }

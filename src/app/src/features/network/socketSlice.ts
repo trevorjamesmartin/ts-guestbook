@@ -1,13 +1,17 @@
-import { createSlice, PayloadAction, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../memory/store';
-import { persistedStore } from '../../memory/persist';
+import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
+import { RootState } from '../../memory/store';
+// import { persistedStore } from '../../memory/persist';
 // import api from '../api';
+interface privateChats {
+    [key:string]: any[]
+}
 
 interface NetworkSocket {
     message: string | undefined;
     status: string;
     chat: any[];
     userlist: string[];
+    private: privateChats;
     [key: string]: any;
 }
 
@@ -15,70 +19,110 @@ const initialMessage: NetworkSocket = {
     message: undefined,
     status: 'disconnected',
     chat: [],
-    userlist: []
+    userlist: [],
+    private: {}
 }
 
 interface ioPayloadAction {
     payload: {
         text: string;
-        socket: any;
         createdAt: string;
     }
 }
 
-function socketPayload(socket: any, text: string): ioPayloadAction {
+function socketEmitPayload(socket: any, text: string): ioPayloadAction {
+    socket.emit(text);
     return {
         payload: {
             text,
-            socket,
             createdAt: new Date().toISOString()
         }
     }
 }
 
-const setStatusConnected = createAction("socket/connect", socketPayload);
-const setStatusDisconnected = createAction("socket/disconnect", socketPayload);
+const setStatusConnected = createAction("socket/connect", socketEmitPayload);
+const setStatusDisconnected = createAction("socket/disconnect", socketEmitPayload);
 
 export const socketSlice = createSlice({
     name: 'socket',
-    initialState: persistedStore?.socket || initialMessage,
+    initialState: initialMessage,
     reducers: {
+        echoPrivate: (state: NetworkSocket, action: PayloadAction<any[]>) => {
+            let [anotherUserName, msg] = action.payload;
+            if (!anotherUserName || !msg) {
+                console.log(action);
+                return
+            }
+            let message = "you 💬 " + msg;
+            if (!state.private[anotherUserName]) {
+                state.private[anotherUserName] = [message];
+            } else {
+                state.private[anotherUserName].push(message);
+            }
+        },
+        updatePrivate: (state: NetworkSocket, action: PayloadAction<any[]>) => {
+            let [anotherUserName, msg] = action.payload;
+            if (!anotherUserName || !msg) {
+                console.log(action);
+                return
+            }
+            let message = anotherUserName + " 💬 " + msg;
+            if (!state.private[anotherUserName]) {
+                state.private[anotherUserName] = [message];
+            } else {
+                state.private[anotherUserName].push(message);
+            }
+        },
         updateChat: (state: NetworkSocket, action: PayloadAction<any[]>) => {
-            state.chat = [...state.chat, ...action.payload]
+            let last = state.chat.slice(-1)[0];
+            let cur = action.payload[0]
+            if (last !== cur) {
+                // + new information
+                state.chat = [...state.chat, ...action.payload]
+            }
         },
         clearChat: (state) => {
             state.chat = [];
+        },
+        updateUserlist: (state: NetworkSocket, action: PayloadAction<string[]>) => {
+            state.userlist = action.payload;
         }
     },
     extraReducers: (builder) => {
 
         builder.addCase(setStatusConnected, (state: NetworkSocket, action: ioPayloadAction) => {
-            state.status = 'connected';
-            action.payload.socket.emit(action.payload.text);
+            state.status = action.payload.text;
         });
 
         builder.addCase(setStatusDisconnected, (state: NetworkSocket, action: ioPayloadAction) => {
-            state.status = 'disconnected';
-            action.payload.socket.emit(action.payload.text);
+            state.status = action.payload.text;
         })
     }
 });
 const selectMessage = (state: RootState) => <string | undefined>state.socket.message;
 const selectStatus = (state: RootState) => <string>state.socket.status;
 const selectChat = (state: RootState) => <any[]>state.socket.chat;
-const { updateChat, clearChat } = socketSlice.actions;
+const selectUserlist = (state:RootState) => <string[]>state.socket.userlist;
+const selectPrivate = (state:RootState) => <any>state.socket.private
+
+const { updatePrivate, updateChat, clearChat, updateUserlist, echoPrivate } = socketSlice.actions;
 
 export const selectors = {
     selectMessage,
     selectStatus,
-    selectChat
+    selectChat,
+    selectUserlist,
+    selectPrivate,
 }
 
 export const actions = {
+    echoPrivate,
     setStatusConnected,
     setStatusDisconnected,
+    clearChat,
     updateChat,
-    clearChat
+    updateUserlist,
+    updatePrivate
 }
 
 export default socketSlice.reducer;

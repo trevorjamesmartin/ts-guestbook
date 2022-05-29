@@ -9,6 +9,7 @@ import {
   // components
   About, ConnectRequests, Login, Logout, Navigation,
   Pages, Profile, SocketTest, Register, Thread, UserList,
+  Messenger,
   // selectors
   authSelectors, socketSelectors, profileSelectors,
   // io handler
@@ -72,10 +73,11 @@ function App() {
     <Container>
       <Routes>
         <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login resetIO={resetIO} />} />
+        <Route path="/login" element={<Login getSocket={() => localSocket} />} />
         <Route path="/app/test" element={<SocketTest socket={localSocket} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={<Pages.MainPage ws={localSocket} />} />
+        <Route path="/app/messenger/:username" element={<Messenger socket={localSocket} />} />
         <Route path="/app/users" element={<UserList socket={localSocket} />} />
         <Route path="/app/profile" element={<Profile socket={localSocket} />} />
         <Route path="/app/logout" element={<Logout socket={localSocket} />} />

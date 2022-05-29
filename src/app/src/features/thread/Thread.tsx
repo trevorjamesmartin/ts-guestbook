@@ -89,7 +89,9 @@ function Thread(props:any) {
         </Container>
         :
         // show replies
-        <ul className="threadList">{[...replies.map(ReplyCard)]}</ul>
+        <ul className="threadList">{[...replies.map((value, idx) => {
+          return <ReplyCard key={idx} {...value} />
+        })]}</ul>
     }
     <Form onSubmit={handleSubmitReply} >
       <div className="input-group mb-3">

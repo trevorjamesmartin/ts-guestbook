@@ -13,6 +13,9 @@ function MainPage({ ws, ...props }:propsWithWebSocket) {
     useEffect(() => {
         if (ws && !messageSent) {
             setMessageSent(true);
+            setTimeout(() => {
+                ws.emit('userlist');
+            }, 1700);
         };
     }, [ws, messageSent, dispatch, message, status]);
     return (<Feed socket={ws} />)

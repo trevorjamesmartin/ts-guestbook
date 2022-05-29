@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import { usersAsync, selectors } from './userSlice';
 import { selectors as friendSelectors, friendRequestAsync } from '../social/friendSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
+import { selectors as socketSelectors, actions as webSocketActions } from '../network/socketSlice';
 import { Card, CardImg, CardTitle, CardLink, Row, Col, Button, Container, CardBody, CardText, Label } from 'reactstrap';
+const selectAvailableUsers = socketSelectors.selectUserlist;
 const selectList = selectors.selectList;
 // const selectStatus = selectors.selectStatus;
 const { selectRequestsRecieved, selectFriendList } = friendSelectors;
@@ -12,8 +14,10 @@ const { selectProfile } = profileSelectors;
 // const LIMIT_RELOAD_USERS = 1000 * 15;
 
 const UserCard = (props: any) => {
-  const { data, dispatcher, isFriend, requestedConnect } = props;
-  return <Card key={data.username} className="userlist-card">
+  const {isOnline, data, dispatcher, isFriend, requestedConnect } = props;
+  useEffect(() => {    
+  }, [isOnline])
+  return <Card key={data.username} className={isOnline ? "userlist-card" : "userlist-card-offline"}>
     <Container className='userlist-body-wrap'>
       <CardBody className="d-flex flex-column align-items-center text-center">
         <CardImg
@@ -31,7 +35,10 @@ const UserCard = (props: any) => {
           {(!isFriend && !requestedConnect) ? <Button onClick={() => {
             dispatcher(friendRequestAsync(data));
           }}>add friend*</Button> :
-            <button className="btn btn-outline-primary">Message</button>}
+            isOnline ? 
+            <Link to={`/app/messenger/${data.username}`}>Message</Link> :
+            // <button className="btn btn-outline-primary">Message</button> : 
+            <span className='user-offline'>offline</span>}
           {requestedConnect && (<CardText className="p-requested">requested</CardText>)}
         </div>
       </CardBody>
@@ -41,6 +48,7 @@ const UserCard = (props: any) => {
 
 export function UserList(props:any) {
   const dispatch = useAppDispatch();
+  const availableUsers = useAppSelector(selectAvailableUsers);
   const socket = props?.socket;
   const userlist: any = useAppSelector(selectList);
   // const status = useAppSelector(selectStatus);
@@ -53,9 +61,11 @@ export function UserList(props:any) {
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-      dispatch(usersAsync({socket, page: searchParams.get('page')}));
+      dispatch(usersAsync({socket, page: searchParams.get('page')}));      
     }
-
+    setTimeout(() => {
+      socket?.emit('userlist');
+    }, 700);
   }, [userlist.pages, searchParams]);
   const page = !userlist.previous ? 1 : userlist.previous.page + 1;
 
@@ -89,7 +99,6 @@ export function UserList(props:any) {
         >⇨</Button>}
     </Container>
   }
-
   return (<>
     <Label>Who's who?</Label>
 
@@ -98,12 +107,14 @@ export function UserList(props:any) {
         if (profile.username === user.username) {
           return null
         };
+        const isOnline = availableUsers.includes(user.username);
         const isFriend = friendList.find((friend: any) => friend.username === user.username);
         const requestedConnect = friendRequests.find((req: any) => req.username === user.username);
         return <UserCard
           dispatcher={dispatch}
           requestedConnect={requestedConnect}
           isFriend={isFriend}
+          isOnline={isOnline}
           data={user}
           key={i}
         />

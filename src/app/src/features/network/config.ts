@@ -1,9 +1,10 @@
-import { actions as webSocketActions } from './socketSlice';
+import {selectors as webSocketSelectors, actions as webSocketActions } from './socketSlice';
 import { actions as usersActions } from '../users/userSlice';
 import { actions as feedActions } from '../feed/feedSlice';
 import { actions as threadActions } from '../thread/threadSlice';
 import { actions as profileActions } from '../profile/profileSlice';
-const { setStatusConnected, setStatusDisconnected, updateChat, clearChat } = webSocketActions;
+const { setStatusConnected, setStatusDisconnected, updateChat, clearChat, updateUserlist, updatePrivate } = webSocketActions;
+// const { selectPrivate } = webSocketSelectors;
 const { clear: clearFeed, update: updateFeed } = feedActions;
 const { updateUsers } = usersActions;
 const { updateListed } = threadActions;
@@ -21,14 +22,16 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
 
   socket.on("connect", () => {
     console.log("connected");
-    dispatch(setStatusConnected(socket, `hello:${profile.username}`));
+    dispatch(setStatusConnected(socket, 'connected'));
     // save to Redux
   });
 
   socket.on("token?", () => {
     console.log('server reported token error');
-    // let returnURL = window.location.toString();
-    // navigate(`/reclaim?returnTo=${returnURL.match(/reclaim/) ? '/app' : returnURL}`);
+    setTimeout(() =>
+      navigate('/logout'),
+      1700
+    );
   });
 
   socket.on("question", () => {
@@ -37,33 +40,34 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   })
 
   socket.on("disconnect", () => {
-    console.log("disconnected")
     // remove from Redux
-    dispatch(setStatusDisconnected(socket, `goodbye:${profile.username}`));
+    dispatch(setStatusDisconnected(socket, 'disconnected'));
   });
 
   socket.on("message", (data: any) => {
-    // decode the payload.
     console.log('->', data);
   });
 
   socket.on("joined:room", (room: string, username: string) => {
-    console.log(`+ ${username} joined ${room}`)
+    dispatch(updateChat([`   + ${username} joined ${room}`]));
+    
+    socket.to(room).emit('userlist');
   })
 
   socket.on("departed:room", (room: string, username: string) => {
-    console.log(`- ${username} left ${room}`)
+    dispatch(updateChat([`   - ${username} left ${room}`]));
+    socket.to(room).emit('userlist');
   })
 
-  socket.on('chat', (...args:any[]) => {
-    let [msg,..._] = args;
+  socket.on('chat', (...args: any[]) => {
+    let [msg, ..._] = args;
     console.log(msg);
     switch (msg[0]) {
       case '/clear':
         console.log('clearing framebuffer');
         dispatch(clearChat());
         break;
-    
+
       default:
         dispatch(updateChat(args));
         break;
@@ -93,14 +97,24 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
     dispatch(updateListed(result));
   })
 
-  socket.on("api:profile", (result:any) => {
+  socket.on("api:profile", (result: any) => {
     console.log('-> api:profile', result);
     dispatch(updateProfile(result));
   })
 
-  socket.on("private message", (anotherSocketId:string, msg:any) => {
-    console.log(anotherSocketId, '->', msg);
-    // socket.to(anotherSocketId).emit("private message", socket.id, msg);
+  socket.on("private:message", (anotherUserName: string, msg: any) => {
+    dispatch(updatePrivate([anotherUserName, msg]))
   });
+
+  socket.on("whos:online", (userNames: string[]) => {
+    dispatch(updateChat([
+      "(online): ",
+      userNames]))
+  });
+
+  socket.on("userlist", (userNames: string[]) => {
+    console.log('-> userlist')
+    dispatch(updateUserlist(userNames));
+  })
 
 }

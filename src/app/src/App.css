@@ -282,13 +282,25 @@ a {
 
 .userlist-card {
   min-width: 12rem;
+  max-width: 12rem;
 }
+
+.userlist-card-offline {
+  background-color: lightgray;
+  min-width: 12rem;
+  max-width: 12rem;
+}
+
 
 .userlist-card:hover {
   -webkit-box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
   box-shadow: 0 4px 15px rgba(128, 128, 128, 0.3);
   -webkit-transition: .5s;
   transition: .5s
+}
+
+.userlist-card .offline {
+  background-color: #343a40;
 }
 
 .blog-post.card {
@@ -441,4 +453,20 @@ a>span.app-clock {
   min-height: 42ch;
   color: rgba(18, 219, 25, .9);
   max-height: 42ch;
+}
+
+.user-offline {
+  font-style: italic;
+  color: grey;
+}
+
+.messenger {
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #343a40;
+  min-height: 42ch;
+  color: rgba(18, 219, 25, .9);
+  max-height: 42ch;
+  max-width: 80ch;
+  padding-left: 1ch;
 }

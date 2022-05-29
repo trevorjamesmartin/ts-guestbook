@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Input, } from 'reactstrap';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { selectors as webSocketSelectors } from '../network/socketSlice';
+import { actions as webSocketActions, selectors as webSocketSelectors } from '../network/socketSlice';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
+
+const { updateChat, clearChat } = webSocketActions;
 
 const { selectChat } = webSocketSelectors;
 
@@ -12,6 +14,13 @@ function SocketTest(props: any) {
   const chatLog = useAppSelector(selectChat);
   const socket: Socket<DefaultEventsMap, DefaultEventsMap> = props.socket;
   const defaultTo = 'message';
+  const [emitTo, setEmitTo] = useState({
+    event: 'private:message',
+    payload: {
+      username: '',
+      message: '',
+    },
+  })
   const [state, setState] = useState({
     event: '',
     payload: '',
@@ -70,6 +79,51 @@ function SocketTest(props: any) {
 
         <Button className='btn-secondary'>send</Button>
       </Form>
+
+
+      <Input
+        name="to"
+        type="text"
+        value={emitTo.payload.username}
+        onChange={(e) => {
+          e.preventDefault();
+          setEmitTo({
+            ...emitTo, payload: {
+              message: emitTo.payload.message,
+              username: e.target.value
+            }
+          })
+        }
+        }
+      />
+      <Input
+        name="msg"
+        type="textarea"
+        value={emitTo.payload.message}
+        onChange={(e) => {
+          e.preventDefault();
+          setEmitTo({
+            ...emitTo, payload: {
+              username: emitTo.payload.username,
+              message: e.target.value
+            }
+          })
+        }}
+      />
+      <Button onClick={(e) => {
+        e.preventDefault();
+        socket.emit(emitTo.event, emitTo.payload.username, emitTo.payload.message);
+        const message = `(you whispered) => ${emitTo.payload.username}, ` + emitTo.payload.message;
+        dispatch(updateChat([message]));
+        setEmitTo({
+          ...emitTo,
+          payload: {
+            ...emitTo.payload,
+            message: ''
+          }
+        });
+      }}>emit</Button>
+
     </Container>
   )
 }
