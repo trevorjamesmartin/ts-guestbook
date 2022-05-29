@@ -1,16 +1,59 @@
 import userMap from '../common/maps';
 import logger from '../common/logger';
 export default (io:any, socket:any) => {
-  const getThread = (token:string, thread_id:number) => {
-      logger.debug('get Thread:', thread_id, token);
+  // main namespace
+  const rooms = io.of("/").adapter.rooms;
+  const sids = io.of("/").adapter.sids;
+
+  function findUser(username:string) {
+    let keys = io.sockets.sockets.keys()
+    let result;
+    for (let u of keys) {
+      let i = io.sockets.sockets.get(u);
+      if (i.data.username === username) {
+        result = i;
+        break;
+      }
+    }
+    return result;
   }
 
-  socket.on("api:post", getThread);
-  socket.on('message', (msg:string) => {
-    logger.debug('message: ', msg);
+  function inRoom(room:string) {
+    let result = [];
+    for (let u of rooms.get(room)) {
+      let i = io.sockets.sockets.get(u);
+      if (i.data.username) {
+        result.push(i.data.username);
+      } else {
+        logger.error(`room ${room} is possibly corrupt`)
+      }
+    }
+    return [...new Set(result)]
+  }
 
+  socket.on('log:room', (room:string) => console.log(inRoom(room)));
+
+  socket.on('chat', (...args: any[]) => {
+    socket.emit('chat', args)
   });
+
+  socket.on("whos:online", () => {
+    socket.emit("whos:online", inRoom('online-users'))
+  })
+
+  socket.on("private:message", (username:string, msg:any) => {
+    const anotherUser = findUser(username);    
+    if (anotherUser?.id) {
+      socket.to(anotherUser.id).emit("private:message", socket.data.username, msg);
+    } else {
+      logger.info(`[private] ${socket.data.username} -> ${username} (NOT ONLINE)`);
+      socket.emit("private:message", "[system]", `${username} is not online.`)
+    }
+  })
+
   
+  // output to log
+
   socket.on('log:data', () => {
     logger.debug(socket.data)
   })
@@ -22,21 +65,6 @@ export default (io:any, socket:any) => {
   socket.on('log:maps', () => {
     logger.debug(userMap)
   })
-
-  socket.on('chat', (...args: any[]) => {
-    logger.debug("CHAT")
-    // logger.debug(args)
-    socket.emit('chat', args)
-  });
-
-  socket.on('find:map', () => {
-    // userMap.
-    logger.debug('find map using socket.id, ', socket.id);
-    logger.debug(userMap.withSocketId(socket.id));
-  })
-
-  socket.on("ping", (count:any) => {
-    logger.debug("PONG", count);
-  })
+  
 }
 
