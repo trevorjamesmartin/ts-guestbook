@@ -18,15 +18,18 @@ export const submitPostAsync = createAsyncThunk(
 export const replyPostAsync = createAsyncThunk(
     'posts/reply',
     async (params: any, thunkAPI) => {
-        const { id } = params;
+        const { id, socket } = params;
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
-        console.log(state)
         const { content } = state.thread.current;
-        const response = await new api({ token }).post(`/api/posts/reply/${id}`, {
-            content
-        });
-        return response.data;
+        if (!socket) {
+            const response = await new api({ token }).post(`/api/posts/reply/:id`, {
+                content,
+            }, { params: { id } });
+            return response.data;
+        }
+        socket.emit('api:reply', { id, content });
+        return []
     }
 );
 
@@ -43,9 +46,7 @@ export const getThreadAsync = createAsyncThunk(
             }
         }
         const apiClient = new api({ token, socket, socketPath });
-        const response:any = await apiClient.get('/api/posts/thread/:id', { params: { id } });
-        console.log({response})
-        // const response = await new api({ token }).get(`/api/posts/thread/${id}`);
+        const response: any = await apiClient.get('/api/posts/thread/:id', { params: { id } });
         return response.data;
     }
 );
@@ -63,6 +64,7 @@ export interface postsStore {
     current: BlogPost;
     listed: ListedPosts;
     pending: any[];
+    subscribed: any[]; // could be used as a history log
     status: string;
 }
 
@@ -75,6 +77,7 @@ const clearState: postsStore = {
     },
     listed: [],
     pending: [],
+    subscribed: [],
     status: ''
 };
 
@@ -87,7 +90,13 @@ export const postsSlice = createSlice({
         clear: (state) => {
             state = { ...clearState }
         },
-        updateListed: (state, action:PayloadAction<any[]>) => {
+        subscribe: (state, action: PayloadAction<any>) => {
+            state.subscribed.push(action.payload);
+        },
+        unsubscribe: (state, action: PayloadAction<any>) => {
+            state.subscribed = state.subscribed.filter((subcription) => subcription !== action.payload);
+        },
+        updateListed: (state, action: PayloadAction<any[]>) => {
             state.listed = action.payload;
         },
         setCurrent: (state, action: PayloadAction<Partial<BlogPost>>) => {
@@ -102,7 +111,7 @@ export const postsSlice = createSlice({
             }
             state.current = { ...state.current, ...action.payload };
         },
-        
+
     },
     extraReducers: (builder) => {
         builder.addCase(getThreadAsync.pending, (state) => {
@@ -136,6 +145,7 @@ export const postsSlice = createSlice({
                 state.current = clearState.current;
             })
             .addCase(replyPostAsync.rejected, (state, action: PayloadAction<any>) => {
+                console.log('rejected')
                 state.status = 'failed';
             })
     }
@@ -144,18 +154,22 @@ export const postsSlice = createSlice({
 const selectListed = (state: RootState) => state.thread.listed;
 const selectCurrent = (state: RootState) => state.thread.current;
 const selectStatus = (state: RootState) => state.thread.status;
+const selectSubscriptions = (state: RootState) => state.thread.subscribed;
 export const selectors = {
     selectListed,
     selectCurrent,
-    selectStatus
+    selectStatus,
+    selectSubscriptions
 };
 
-const { clear, setCurrent, updateListed } = postsSlice.actions;
+const { clear, setCurrent, updateListed, subscribe, unsubscribe } = postsSlice.actions;
 
 export const actions = {
     clear,
     setCurrent,
-    updateListed
+    updateListed,
+    subscribe,
+    unsubscribe
 }
 
 export default postsSlice.reducer;

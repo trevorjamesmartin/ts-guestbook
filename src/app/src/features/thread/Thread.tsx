@@ -7,34 +7,38 @@ import { Spinner, Card, Container, Row, CardImg, CardText, CardBody, Form, Input
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import ReplyCard from "../cards/ReplyCard";
 import dayjs from "dayjs";
-const { selectListed, selectCurrent, selectStatus } = postsSelectors;
-const { setCurrent } = postsActions;
+const { selectListed, selectCurrent, selectStatus, selectSubscriptions } = postsSelectors;
+const { setCurrent, subscribe } = postsActions;
 const { selectFeed } = feedSelectors;
 const { selectProfile } = profileSelectors;
 
 
-function Thread(props:any) {
+function Thread(props: any) {
   let { thread_id } = useParams();
   const dispatch = useAppDispatch();
-  const {socket} = props;
+  const { socket } = props;
   const status = useAppSelector(selectStatus);
   const replies = useAppSelector(selectListed);
   const socialFeed = useAppSelector(selectFeed);
   const profile = useAppSelector(selectProfile);
   const currentPost = useAppSelector(selectCurrent);
   const mainThread = socialFeed.pages.find((value: any) => value.id === Number(thread_id));
-  // const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     lastLoaded: 0,
   });
+
+  useEffect(() => {
+    dispatch(subscribe(thread_id));
+    setTimeout(() => {
+      if (socket) socket.emit('subscribe:room', `/thread/${thread_id}`);
+    }, 500);
+  }, [thread_id, socket])
+
   useEffect(() => {
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now() });
       dispatch(getThreadAsync({ id: Number(thread_id), socket }));
-      // setTimeout(() => {
-      //   setLoading(false);
-      // }, 500);
     }
   }, [replies.length])
   const posted_at = dayjs.utc(mainThread.posted_at).local().fromNow()
@@ -42,7 +46,7 @@ function Thread(props:any) {
   function handleSubmitReply(e: any) {
     e.preventDefault();
     if (mainThread) {
-      dispatch(replyPostAsync({ id: Number(thread_id) }));
+      dispatch(replyPostAsync({ id: Number(thread_id), socket }));
       setTimeout(() => {
         dispatch(getThreadAsync({ id: Number(thread_id), socket }));
       }, 500);

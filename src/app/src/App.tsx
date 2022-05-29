@@ -39,7 +39,7 @@ function App() {
   
   const resetIO = useCallback(() => {
     localSocket?.disconnect();
-    let socket = io(baseURL, {
+    let socket:Socket = io(baseURL, {
       withCredentials: true,
       auth: { token }
     });

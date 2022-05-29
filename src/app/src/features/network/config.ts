@@ -1,7 +1,7 @@
 import {selectors as webSocketSelectors, actions as webSocketActions } from './socketSlice';
 import { actions as usersActions } from '../users/userSlice';
 import { actions as feedActions } from '../feed/feedSlice';
-import { actions as threadActions } from '../thread/threadSlice';
+import { actions as threadActions, getThreadAsync } from '../thread/threadSlice';
 import { actions as profileActions } from '../profile/profileSlice';
 const { setStatusConnected, setStatusDisconnected, updateChat, clearChat, updateUserlist, updatePrivate } = webSocketActions;
 // const { selectPrivate } = webSocketSelectors;
@@ -50,13 +50,10 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
 
   socket.on("joined:room", (room: string, username: string) => {
     dispatch(updateChat([`   + ${username} joined ${room}`]));
-    
-    socket.to(room).emit('userlist');
   })
 
   socket.on("departed:room", (room: string, username: string) => {
     dispatch(updateChat([`   - ${username} left ${room}`]));
-    socket.to(room).emit('userlist');
   })
 
   socket.on('chat', (...args: any[]) => {
@@ -98,7 +95,7 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   })
 
   socket.on("api:profile", (result: any) => {
-    console.log('-> api:profile', result);
+    // console.log('-> api:profile', result);
     dispatch(updateProfile(result));
   })
 
@@ -119,6 +116,13 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
 
   socket.on("request:accepted", (anotherUsername:string, connect_id:number) => {
     console.log(anotherUsername, " accepted your friend request: ", connect_id);
+  })
+
+  socket.on("thread:updated", (thread_id:number, id:number) => {
+    let message = `/thread/${thread_id} has been updated, ${id}`;
+    console.log(message)
+    dispatch(updateChat([message]))
+    dispatch(getThreadAsync({ id: Number(thread_id), socket }));
   })
 
 }

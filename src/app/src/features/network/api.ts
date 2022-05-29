@@ -96,14 +96,20 @@ class VigilantAPI extends Axios {
             let event = this.eventIO(urlPath);
             let args = this.eventIOparams(urlPath);
             // config should be loaded into args.
-            let {socket, ...params} = config || {};
+            let { socket, ...params } = config || {};
             switch (event) {
                 case "api:profile":
                 case "api:feed":
                 case "api:users:with-profiles":
+                    console.log('[io] -> ', event, { ...args, ...params })
+                    this.io(event, { ...args, ...params }); // send io event 
+                    break;
+
                 case "api:thread":
-                    console.log('[io] -> ', event, {...args, ...params})
-                    this.io(event, {...args, ...params}); // send io event 
+                case "api:reply":
+                    // params aren't useful here.
+                    console.log('[io] -> ', event, args);
+                    this.io(event, args);
                     break;
 
                 default:
@@ -111,13 +117,16 @@ class VigilantAPI extends Axios {
                     this.io(event, undefined); // send without args (saftey)
                     break;
             }
-            return this.detour(); // return with status 42
+            return this.detour(42); // return with status 42
         }
         return this.detour(400);
     }
 
     private hasIO(urlPath: string): boolean {
         let connected = this.socket?.connected;
+        let hasPath = Object.keys(this?.socketPath || {})
+            .includes(urlPath);
+        console.log({ connected, hasPath, socketPath: this.socketPath })
         // switch to legacy when disconnected.
         return connected ? Object.keys(this?.socketPath || {}).includes(urlPath) : false;
     }
@@ -155,8 +164,14 @@ class VigilantAPI extends Axios {
         return this.client.options(url, config);
     };
     post<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
-        console.log('[POST]', url, data, config)
-        return this.client.post(url, data, config);
+        const { params }: any = config || {};
+        if (this.socket?.connected) {
+            return new Promise(() => this.socketAPI(url, params));
+        } else {
+            const resolved = this.dynamicURL(url, params);
+            console.log('[POST]', resolved, data);
+            return this.client.post(resolved, data);
+        }
     };
     put<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
         console.log('[PUT]', url, data, config)

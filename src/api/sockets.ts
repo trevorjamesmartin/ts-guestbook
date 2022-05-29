@@ -80,6 +80,18 @@ export default function (io: any) {
       socket.disconnect();
     });
 
+    socket.on('subscribe:room', (room:string) => {
+      logger.debug(socket.data.username + "subscribe " + room)
+      socket.to(room).emit("userlist", inRoom('online-users'));
+      socket.join(room);
+    });
+
+    socket.on('unsubscribe:room', (room:string) => {
+      logger.debug(socket.data.username + "unsubscribe " + room)
+      socket.to(room).emit("userlist", inRoom('online-users'));
+      socket.leave(room)
+    });
+
   });
 
   return io;
