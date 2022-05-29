@@ -38,9 +38,15 @@ export const friendCheckAsync = createAsyncThunk(
   }
 );
 
+interface acceptRequestParams {
+  connect_id: any;
+  [key:string]:any;
+}
+
 export const acceptFriendRequestAsync = createAsyncThunk(
   'friends/accept',
-  async (connect_id: number, thunkAPI) => {
+  async (params:acceptRequestParams, thunkAPI) => {
+    const {connect_id} = params;
     const state: any = thunkAPI.getState();
     const token = state?.auth?.token || undefined;
     const response =await new api({token}).post('/api/connect/accept', {
@@ -50,7 +56,6 @@ export const acceptFriendRequestAsync = createAsyncThunk(
       connect_id,
       data: response.data // fulfilled 
     }
-
     return result; // fulfilled
   }
 );

@@ -6,12 +6,13 @@ const { selectRequestsRecieved } = socialSelectors;
 
 const SocialRequest = (props: Partial<any>) => {
   const dispatch = useAppDispatch();
-  const { connect_id, username, name, avatar, email, dob } = props;
+  const { socket, connect_id, username, name, avatar, email, dob } = props;
   const handleAcceptConnect = (e: any) => {
     e.preventDefault();
-    dispatch(acceptFriendRequestAsync(connect_id));
+    dispatch(acceptFriendRequestAsync({ connect_id }));
     setTimeout(() => {
       dispatch(friendListAsync());
+      socket?.emit("request:accepted", username, connect_id)
     }, 500);
   }
   const handleRejectConnect = (e: any) => {
@@ -42,12 +43,13 @@ const SocialRequest = (props: Partial<any>) => {
   )
 }
 
-function ConnectRequests() {
+function ConnectRequests(params: any) {
+  const { socket } = params;
   const friendRequests = useAppSelector(selectRequestsRecieved);
   return (<Container className="connect-request-container">
-    {friendRequests[0] ? 
-      <ul>{friendRequests.map((fr: Partial<any>) => SocialRequest(fr))}</ul> :
-      <Label>No pending requests</Label>}  
-    </Container>)
+    {friendRequests[0] ?
+      <ul>{friendRequests.map((fr: Partial<any>) => SocialRequest({ ...fr, socket }))}</ul> :
+      <Label>No pending requests</Label>}
+  </Container>)
 }
 export default ConnectRequests;

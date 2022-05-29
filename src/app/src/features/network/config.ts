@@ -117,4 +117,8 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
     dispatch(updateUserlist(userNames));
   })
 
+  socket.on("request:accepted", (anotherUsername:string, connect_id:number) => {
+    console.log(anotherUsername, " accepted your friend request: ", connect_id);
+  })
+
 }
