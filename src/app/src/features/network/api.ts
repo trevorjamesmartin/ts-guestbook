@@ -123,12 +123,8 @@ class VigilantAPI extends Axios {
     }
 
     private hasIO(urlPath: string): boolean {
-        let connected = this.socket?.connected;
-        let hasPath = Object.keys(this?.socketPath || {})
-            .includes(urlPath);
-        console.log({ connected, hasPath, socketPath: this.socketPath })
         // switch to legacy when disconnected.
-        return connected ? Object.keys(this?.socketPath || {}).includes(urlPath) : false;
+        return this.socket?.connected ? Object.keys(this?.socketPath || {}).includes(urlPath) : false;
     }
 
     private dynamicURL(url: string, params?: any) {

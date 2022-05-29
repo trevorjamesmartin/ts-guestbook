@@ -5,12 +5,17 @@ import { persistedStore } from '../../memory/persist';
 
 export const submitPostAsync = createAsyncThunk(
     'posts/submit',
-    async (_, thunkAPI) => {
+    async (params: any, thunkAPI) => {
+        const { socket } = params;
         const state: any = thunkAPI.getState();
         const token = state?.auth?.token || undefined;
         const { content, id, tags, title } = state.thread.current;
-        const response = await new api({ token }).post('/api/posts', { content, id, tags, title });
-        return response.data;
+        if (!socket) {
+            const response = await new api({ token }).post('/api/posts', { content, id, tags, title });
+            return response.data;
+        }
+        socket.emit('api:shout', { content, id, tags, title });
+        return []
     }
 );
 

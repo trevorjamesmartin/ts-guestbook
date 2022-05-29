@@ -24,12 +24,12 @@ const { selectCurrent } = postsSelectors;
 const { clear: clearFeed } = feedActions;
 const { setCurrent } = postsActions;
 
-function Feed(props:any) {
+function Feed(props: any) {
   let [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const socket = props?.socket;
   const profile = useAppSelector(selectProfile);
-  const socialFeed:any = useAppSelector(selectFeed);
+  const socialFeed: any = useAppSelector(selectFeed);
   const token = useAppSelector(selectToken);
   const authorized = token && token.length > 4;
   const shoutOut: any = useRef();
@@ -55,20 +55,20 @@ function Feed(props:any) {
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
     if (socialFeed.status !== "pending") {
-      dispatch(submitPostAsync());
+      dispatch(submitPostAsync({ socket }));
       setTimeout(() => {
         dispatch(getFeedAsync({ socket, page: searchParams.get('page') }));
       }, 500);
     }
   }
 
-  const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let name: string = e.currentTarget.name;
     let value = e.target.value;
     dispatch(setCurrent({ [name]: value }));
   }
 
-  const turnPage = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const turnPage = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     switch (e.currentTarget.name) {
       case "previous":
@@ -133,12 +133,12 @@ function Feed(props:any) {
             <>
               <ul className="feedList">
                 {socialFeed?.pages?.map((page: any) => FeedCard({
-                    ...page,
-                    profile,
-                    replies: [
-                      ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === page.id),
-                    ]
-                  })) || []}
+                  ...page,
+                  profile,
+                  replies: [
+                    ...socialFeed?.pages?.filter((reply: any) => reply.parent_id === page.id),
+                  ]
+                })) || []}
               </ul>
               {Paginator()}
             </>

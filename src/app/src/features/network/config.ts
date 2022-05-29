@@ -125,4 +125,10 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
     dispatch(getThreadAsync({ id: Number(thread_id), socket }));
   })
 
+  socket.on("feed:updated", (username:string) => {
+    // TODO
+    // if username is a friend, refresh your feed or notify
+    console.log("feed updated by ", username)
+  })
+
 }

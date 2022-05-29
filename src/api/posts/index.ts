@@ -8,10 +8,13 @@ export { postsRouter }
 
 // *** io -> API ***
 const GET_THREAD = "api:thread"; // eq GET /api/posts/:id
-const POST_REPLY = "api:reply"; //  eq POST api/posts/reply/:id
+const POST_REPLY = "api:reply";  //  eq POST api/posts/reply/:id
+const POST_SHOUT = "api:shout";  // eq POST /api/posts'
 // *** API -> io ***
 const RETURN_THREAD = GET_THREAD;
 const UPDATED_THREAD = "thread:updated";
+
+
 
 export default (io: any, socket: any) => {
   let user = userMap.withSocketId(socket.id);
@@ -24,7 +27,6 @@ export default (io: any, socket: any) => {
   const getThread = (params: any) => {
     const { id } = params;
     logger.debug('getThread', params)
-    // getPage(decodedToken, postsModel, { id: Number(id) })
     logger.debug(GET_THREAD, id);
     // not paginating threads
     if (!id) {
@@ -34,7 +36,6 @@ export default (io: any, socket: any) => {
 
     postsModel.findByThread(Number(id))
       .then(result => {
-        // logger.debug(result);
         socket.emit(RETURN_THREAD, result);
       })
       .catch(logger.debug)
@@ -44,21 +45,31 @@ export default (io: any, socket: any) => {
     if (!params?.content || !params?.id) {
       return;
     }
-    console.log(socket.data)
-    console.log(params)
     let id = Number(params.id);
     let author_id = socket.data.decodedToken.subject;
     let body = { content: params.content };
     postsModel.replyTo(id, body, author_id)
-    .then((result) => {
-      let [data]:any = result
-      console.log(data?.id)
-      io.to(`/thread/${params.id}`).emit(UPDATED_THREAD, params.id, data?.id)
-    }).catch((reason) => logger.error(reason));
+      .then((result) => {
+        let [data]: any = result
+        io.to(`/thread/${params.id}`).emit(UPDATED_THREAD, params.id, data?.id)
+      }).catch((reason) => logger.error(reason));
   }
 
+  const postShout = async (params: any) => {
+    if (!params?.content) {
+      return;
+    }
+    let author_id = socket.data.decodedToken.subject;
+    let content = params.content;
+    let [posted]:any = await postsModel.add({ author_id, content }, 0, 0)
+    
+    console.log(posted);
+    io.to(`online-users`).emit("feed:updated", socket.data.decodedToken.username);
+  }
   socket.on(GET_THREAD, getThread);
 
   socket.on(POST_REPLY, postReply);
+
+  socket.on(POST_SHOUT, postShout);
 
 }
