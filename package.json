@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "start:dev": "npx nodemon -r dotenv/config -V --no-stdin index.ts",
+    "start:dev": "npx nodemon -r dotenv/config -V --no-stdin -w src index.ts",
     "create:db": "npx knex migrate:latest && npx knex seed:run",
     "build:client": "cd src/app;npm i && npm run build",
     "build": "npm run build:client",
