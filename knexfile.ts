@@ -11,6 +11,22 @@ try {
 
 const config: { [key: string]: Knex.Config } = {
 
+  demo: {
+    client: 'sqlite3',
+    connection: {
+      filename: path.join(process.cwd(), 'db', 'dev.sqlite3')
+    },
+    migrations: {
+      directory: "./src/data/migrations",
+      tableName: "migrations"
+    },
+    seeds: {
+      // TODO: update seeds for demo
+      directory: "./src/data/seeds"
+    },
+    useNullAsDefault: true
+  },
+
   docker: {
     client: 'sqlite3',
     connection: {
