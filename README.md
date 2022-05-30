@@ -4,7 +4,9 @@
 [Environment](ENVIRONMENT.md)
 
 
-## API
+## [API](src/api/README.md)
+
+
 developing
 
     npm install
@@ -16,7 +18,8 @@ building a release
     npm run clean
     npm run release
 
-## Client
+## [Client](src/app/README.md)
+
 with the API release running in a separate window,
 take full advantage of hot reloading while building out the graphical user interface.
 
