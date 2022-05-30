@@ -8,6 +8,6 @@ import app from './src/api/server';
 
 const PORT = process.env.PORT || 8080
 const HOST = process.env.HOST || "127.0.0.1"
-app.listen(process.env.PORT, function () {
+app.listen(PORT, function () {
     logger.info(`🟢 server listening at http://${HOST}:${PORT}`);
 });
