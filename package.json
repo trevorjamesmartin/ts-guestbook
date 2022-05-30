@@ -15,7 +15,7 @@
     "build:client": "cd src/app;npm i && npm run build",
     "build": "npm run build:client",
     "develop": "npm run build && npm run start:dev",
-    "example": "NODE_ENV=demo PORT=8080 npm run develop",
+    "example": "NODE_ENV=demo npm run develop",
     "precompile": "npm run build",
     "compile": "tsc",
     "release:scripts": "npx ts-node scripts/release-package.ts && rm -rf dist/scripts",
