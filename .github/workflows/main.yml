@@ -20,7 +20,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     environment: production
-
+    
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -31,22 +31,14 @@ jobs:
         run: curl https://cli-assets.heroku.com/install.sh | sh
       
       - name: upgrade Node to 17.9.0
-        run: |
-          curl -fsSL https://deb.nodesource.com/setup_17.x | sudo -E bash -
-          sudo apt-get install -y nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 17.9.0
+      - run: echo ${{ secrets.APP_NAME }} - building deployment release
+      - run: npm install
+      - run: npm run release
+      - run: echo ${{ secrets.APP_NAME }} - deploying to Heroku release
 
-#      - name: Download Node 17.9.0
-#        run: |
-#          curl -O https://nodejs.org/download/release/latest-v17.x/node-v17.9.0-linux-x64.tar.xz
-#          tar xf node-v17.9.0-linux-x64.tar.xz
-
-      - name: install dependencies & build release
-        run: |
-          echo ${{ secrets.APP_NAME }} - building deployment release
-          npm install
-          npm run release
-          echo ${{ secrets.APP_NAME }} - deploying to Heroku release
-          
       - name: deploy w/ Heroku cli
         run: |
           echo ${{ secrets.APP_NAME }} - deploying to Heroku release
