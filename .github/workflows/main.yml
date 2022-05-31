@@ -38,16 +38,16 @@ jobs:
       - name: install dependencies & build release
         run: |
           export PATH=node-v17.9.0-linux-x64/bin:$PATH
-          echo ${{ APP_NAME }} - building deployment release
+          echo ${{ secrets.APP_NAME }} - building deployment release
           npm install
           npm run release
-          echo ${{ APP_NAME }} - deploying to Heroku release
+          echo ${{ secrets.APP_NAME }} - deploying to Heroku release
           
       - name: deploy w/ Heroku cli
         run: |
-          echo ${{ APP_NAME }} - deploying to Heroku release
+          echo ${{ secrets.APP_NAME }} - deploying to Heroku release
           cd dist
-          heroku git:remote -a ${{ APP_NAME }}
+          heroku git:remote -a ${{ secrets.APP_NAME }}
           git add .
           git commit -am "Github CI - update"
           git push heroku master
