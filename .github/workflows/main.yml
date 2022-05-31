@@ -41,6 +41,7 @@ jobs:
           npm run build:client
           npm run compile
           echo ${{ secrets.APP_NAME }} - deploying to Heroku release
+          cd dist;git init
           cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:remote -a ${{ secrets.APP_NAME }}
           cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
           cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
