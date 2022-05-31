@@ -37,10 +37,9 @@ jobs:
 
       - name: install dependencies & build release
         run: |
-          export PATH=node-v17.9.0-linux-x64/bin:$PATH
           echo ${{ secrets.APP_NAME }} - building deployment release
-          npm install
-          npm run release
+          PATH=node-v17.9.0-linux-x64/bin:$PATH npm install
+          PATH=node-v17.9.0-linux-x64/bin:$PATH npm run release
           echo ${{ secrets.APP_NAME }} - deploying to Heroku release
           
       - name: deploy w/ Heroku cli
