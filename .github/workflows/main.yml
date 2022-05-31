@@ -29,17 +29,22 @@ jobs:
       # https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli
       - name: install the Heroku cli
         run: curl https://cli-assets.heroku.com/install.sh | sh
-
-      - name: Download Node 17.9.0
+      
+      - name: upgrade Node to 17.9.0
         run: |
-          curl -O https://nodejs.org/download/release/latest-v17.x/node-v17.9.0-linux-x64.tar.xz
-          tar xf node-v17.9.0-linux-x64.tar.xz
+          npm cache clean -f
+          npm install -g 17.9.0
+
+#      - name: Download Node 17.9.0
+#        run: |
+#          curl -O https://nodejs.org/download/release/latest-v17.x/node-v17.9.0-linux-x64.tar.xz
+#          tar xf node-v17.9.0-linux-x64.tar.xz
 
       - name: install dependencies & build release
         run: |
           echo ${{ secrets.APP_NAME }} - building deployment release
-          PATH=node-v17.9.0-linux-x64/bin:$PATH npm install
-          PATH=node-v17.9.0-linux-x64/bin:$PATH npm run release
+          npm install
+          npm run release
           echo ${{ secrets.APP_NAME }} - deploying to Heroku release
           
       - name: deploy w/ Heroku cli
