@@ -44,5 +44,5 @@ jobs:
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:remote -a ${{ secrets.APP_NAME }}
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku master
+          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku main
 
