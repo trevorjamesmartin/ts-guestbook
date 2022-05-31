@@ -36,15 +36,14 @@ jobs:
           node-version: 17.9.0
       - run: echo ${{ secrets.APP_NAME }} - building deployment release
       - run: npm install
-      - run: npm run release
+      - run: npm run build:client
+      - run: npm run compile      
       - run: echo ${{ secrets.APP_NAME }} - deploying to Heroku release
 
       - name: deploy w/ Heroku cli
-        run: |
-          echo ${{ secrets.APP_NAME }} - deploying to Heroku release
-          cd dist
-          heroku git:remote -a ${{ secrets.APP_NAME }}
-          git add .
-          git commit -am "Github CI - update"
-          git push heroku master
+      - run: echo ${{ secrets.APP_NAME }} - deploying to Heroku release
+      - run: cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:remote -a ${{ secrets.APP_NAME }}
+      - run: cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
+      - run: cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
+      - run: cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku master
 
