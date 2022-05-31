@@ -38,12 +38,11 @@ jobs:
       - run: |
           echo ${{ secrets.APP_NAME }} - building deployment release
           npm install
-          npm run build:client
-          npm run compile
+          npm run release
           echo ${{ secrets.APP_NAME }} - deploying to Heroku release
           cd dist;git init
-          cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:remote -a ${{ secrets.APP_NAME }}
-          cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
-          cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
-          cd dist;HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku master
+          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:remote -a ${{ secrets.APP_NAME }}
+          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
+          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
+          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku master
 
