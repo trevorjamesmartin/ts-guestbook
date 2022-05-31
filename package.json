@@ -12,7 +12,7 @@
     "start": "node index.js",
     "start:dev": "npx nodemon -r dotenv/config -V --no-stdin -w src index.ts",
     "create:db": "npx knex migrate:latest && npx knex seed:run",
-    "build:client": "cd src/app;npm i && npm run build",
+    "build:client": "cd src/app;npm i && CI=false npm run build",
     "build": "npm run build:client",
     "develop": "npm run build && npm run start:dev",
     "example": "NODE_ENV=demo npm run develop",
