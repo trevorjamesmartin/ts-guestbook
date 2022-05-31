@@ -37,7 +37,7 @@ jobs:
           node-version: 17.9.0
       - run: |
           echo clone heroku to dist
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:clone -a ${{ secrets.APP_NAME }} dist
+          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:clone -a ts-guestbook dist
           echo install and build release...
           npm install
           npm run clean
