@@ -30,26 +30,34 @@ jobs:
       - name: install the Heroku cli
         run: curl https://cli-assets.heroku.com/install.sh | sh
       
-      - name: upgrade Node to 17.9.0
+      - name: install dependencies
         uses: actions/setup-node@v3
         with:
           node-version: 17.9.0
-        env: 
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       - run: |
-          (ls /home/runner/.ssh >> /dev/null 2>&1 || mkdir -p /home/runner/.ssh)
-          (ls /home/runner/.ssh/known_hosts >> /dev/null 2>&1 || touch /home/runner/.ssh/known_hosts)
-          ssh-keyscan git.heroku.com >> /home/runner/.ssh/known_hosts
-          echo "${{secrets.SSH_KEY}}" > /home/runner/.ssh/github_actions
-          chmod 600 /home/runner/.ssh/github_actions
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub actions"
-          HEROKU_API_KEY=${secrets.HEROKU_API_KEY} heroku git:clone -a ts-guestbook dist
+          HEROKU_API_KEY=${secrets.HEROKU_API_KEY} heroku git:clone -a ${{secrets.HEROKU_APP_NAME}} dist
           npm install
           npm run clean
           npm run release
+          
+      - name: deploy
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: generate heroku netrc
+        run: |
+          cat > /home/runner/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+          EOF
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      - name: deploy to heroku
           cd dist
           git add .
           git commit -am "Github CI - update"
