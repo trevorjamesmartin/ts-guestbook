@@ -37,7 +37,7 @@ jobs:
         env: 
           MY_KEY: ${{secrets.HEROKU_API_KEY}}
       - run: |
-          HEROKU_API_KEY=${MY_KEY} git clone https://git.heroku.com/ts-guestbook.git dist
+          HEROKU_API_KEY=${MY_KEY} heroku git:clone -a ts-guestbook dist
           npm install
           npm run clean
           npm run release
