@@ -45,3 +45,15 @@ jobs:
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
           
+      - name: install dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 17.9.0
+      - run: |
+          npm install
+          npm run release
+        env:
+          HEROKU_NETRC_PASSWORD: ${{ secrets.HEROKU_NETRC_PASSWORD }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          
