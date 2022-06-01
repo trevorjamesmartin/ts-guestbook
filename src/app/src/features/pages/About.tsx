@@ -3,7 +3,7 @@ import { Container, Label, NavLink, NavItem } from 'reactstrap';
 
 function About() {
     return <Container>
-        <Label>Why not?</Label>
+        <Label>About this project</Label>
         <NavLink target="_blank" href="/swagger">
             <NavItem>
                 Open API 3.0 specification
