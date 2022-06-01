@@ -33,15 +33,16 @@ jobs:
       - name: upgrade Node to 17.9.0
         uses: actions/setup-node@v3
         with:
-          environment: production
           node-version: 17.9.0
+        env: 
+          HEROKU_API_KEY: ${{environment.HEROKU_API_KEY}}
       - run: |
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:clone -a ts-guestbook dist
+          heroku git:clone -a ts-guestbook dist
           npm install
           npm run clean
           npm run release
           cd dist
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku main
+          git add .
+          git commit -am "Github CI - update"
+          git push heroku main
 
