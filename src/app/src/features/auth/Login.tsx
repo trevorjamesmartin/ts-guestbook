@@ -15,7 +15,6 @@ const initialState: Credentials = {
 export function Login(params:any) {
   const navigate = useNavigate();
   const loggedIn = useAppSelector(selectLoggedIn);
-  const status = useAppSelector(selectStatus);
   const message: string = useAppSelector(selectMessage) || ""
   const dispatch: ThunkDispatch<any, Credentials, any> = useAppDispatch();
   const [state, setState] = useState<Credentials>(initialState);

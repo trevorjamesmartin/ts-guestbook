@@ -25,9 +25,7 @@ export const initialCreds: credStatus = {
 
 export const loginAsync = createAsyncThunk(
   'auth/login',
-  async (data: Credentials, thunkAPI) => {
-    const state: any = thunkAPI.getState();
-    const token = state?.auth?.token || undefined;
+  async (data: Credentials) => {
     const response = await new api({ 
       token: undefined, 
       socket: data.socket 
@@ -48,9 +46,7 @@ export const logoutAsync = createAsyncThunk(
 
 export const registerAsync = createAsyncThunk(
   'auth/register',
-  async (data: Credentials, thunkAPI) => {
-    const state: any = thunkAPI.getState();
-    const token = state?.auth?.token || undefined;
+  async (data: Credentials) => {
     const response = await new api({token: undefined }).post('/api/auth/register', data); // pending
     console.log(response.data);
     return response.data; // fulfilled
