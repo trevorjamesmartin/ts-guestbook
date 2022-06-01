@@ -36,6 +36,7 @@ jobs:
           node-version: 17.9.0
           
       - name: Add SSH Key
+      - uses: actions/checkout@v3
         env: 
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       - run: |
