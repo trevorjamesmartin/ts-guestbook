@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: 17.9.0
         env: 
-          HEROKU_API_KEY: ${{environment.HEROKU_API_KEY}}
+          HEROKU_API_KEY: ${{HEROKU_API_KEY}}
       - run: |
           heroku git:clone -a ts-guestbook dist
           npm install
