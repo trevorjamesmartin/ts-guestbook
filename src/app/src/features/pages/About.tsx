@@ -9,6 +9,11 @@ function About() {
                 Open API 3.0 specification
             </NavItem>
         </NavLink>
+        <NavLink target="_blank" href="https://github.com/trevorjamesmartin/ts-guestbook">
+            <NavItem>
+                source code
+            </NavItem>
+        </NavLink>
     </Container>
 }
 
