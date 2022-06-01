@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "ts-guestbook",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -31,7 +31,7 @@
     "deploy": "./scripts/build-javascript.sh && ./scripts/deploy-to-heroku.sh"
   },
   "keywords": [],
-  "author": "",
+  "author": "Trevor Martin",
   "license": "ISC",
   "dependencies": {
     "@socket.io/postgres-adapter": "^0.3.0",
