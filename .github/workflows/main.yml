@@ -58,6 +58,7 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
       - name: deploy to heroku
+        run: |
           cd dist
           git add .
           git commit -am "Github CI - update"
