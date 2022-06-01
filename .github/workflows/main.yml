@@ -57,3 +57,14 @@ jobs:
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
           
+      - name: deploy changes
+        run: |
+          cd dist
+          git add .
+          git commit -am "Github CLI - update"
+          git push heroku main
+        env:
+          HEROKU_NETRC_PASSWORD: ${{ secrets.HEROKU_NETRC_PASSWORD }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          
