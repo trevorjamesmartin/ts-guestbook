@@ -35,9 +35,9 @@ jobs:
         with:
           node-version: 17.9.0
         env: 
-          HEROKU_API_KEY: ${{HEROKU_API_KEY}}
+          MY_KEY: ${{secrets.HEROKU_API_KEY}}
       - run: |
-          heroku git:clone -a ts-guestbook dist
+          HEROKU_API_KEY=${MY_KEY} heroku git:clone -a ts-guestbook dist
           npm install
           npm run clean
           npm run release
@@ -45,4 +45,3 @@ jobs:
           git add .
           git commit -am "Github CI - update"
           git push heroku main
-
