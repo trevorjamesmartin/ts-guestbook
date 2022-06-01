@@ -28,7 +28,7 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
   httpServer, {
   cors: {
     origin: [
-      "https://vigilant-cloud.herokuapp.com",
+      "https://ts-guestbook.herokuapp.com",
       "http://localhost:8080",
       "http://localhost:3000",
       "http://localhost:5000",

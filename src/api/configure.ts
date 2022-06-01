@@ -34,7 +34,7 @@ const options = {
       },
       contact: {
         name: "source code",
-        url: "https://github.com/trevorjamesmartin/vigilant-cloud",
+        url: "https://github.com/trevorjamesmartin/ts-guestbook",
       },
     },
     servers: [
@@ -45,7 +45,7 @@ const options = {
       } :
       __filename.split('.').pop() === 'js' ?
       {
-        url: `https://vigilant-cloud.herokuapp.com/api`,
+        url: `https://ts-guestbook.herokuapp.com/api`,
         description: "Heroku App",
       } :
       {
@@ -135,7 +135,7 @@ export default function configureServer(server: Express) {
     // origins
     .use(hostValidation({
       hosts: [
-        'vigilant-cloud.herokuapp.com',
+        'ts-guestbook.herokuapp.com',
         '127.0.0.1:3000',
         'localhost:3000',
         'localhost:3001',

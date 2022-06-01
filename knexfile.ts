@@ -44,7 +44,7 @@ const config: { [key: string]: Knex.Config } = {
 
   development: {
     client: "pg",
-    connection: "postgresql://vigilant:cloud@127.0.0.1:5432/vigilant-cloud",
+    connection: "postgresql://vigilant:cloud@127.0.0.1:5432/ts-guestbook",
     migrations: {
       directory: "./src/data/migrations",
       tableName: "migrations"

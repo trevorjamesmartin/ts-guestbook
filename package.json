@@ -23,9 +23,9 @@
     "package": "tar czvf dist.tar.gz dist/* && mkdir -p release && mv dist.tar.gz release",
     "clean": "rm -rf dist/* >> /dev/null 2>&1;rm dist.tar.gz >> /dev/null 2>&1;rm release/* >> /dev/null 2>&1",
     "release": "npm run compile && npm run package",
-    "contain": "cd release;docker build . -t vigilant-cloud",
-    "start:container": "docker run -v $(pwd)/db:/opt/app/db -p 8080:8080 -d vigilant-cloud",
-    "stop:container": "docker ps|grep vigilant-cloud|awk '{print $1}' | xargs docker stop",
+    "contain": "cd release;docker build . -t ts-guestbook",
+    "start:container": "docker run -v $(pwd)/db:/opt/app/db -p 8080:8080 -d ts-guestbook",
+    "stop:container": "docker ps|grep ts-guestbook|awk '{print $1}' | xargs docker stop",
     "build:container": "npm run clean && npm run release && npm run contain",
     "dockerize": "npm run stop:container >> /dev/null 2>&1;npm run build:container && npm run start:container",
     "deploy": "./scripts/build-javascript.sh && ./scripts/deploy-to-heroku.sh"

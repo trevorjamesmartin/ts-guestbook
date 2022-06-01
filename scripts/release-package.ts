@@ -8,7 +8,7 @@ try {
 // NODE
 const packageJson = require('../package.json');
 let packageDist = {...packageJson,
-    "name" : "vigilant-cloud",
+    "name" : "ts-guestbook",
     "scripts": {
         "start": "node index.js",
         "build": "npm install"
