@@ -25,11 +25,11 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
+      # Heroku - install
       - name: install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
-
-      - name: generate heroku netrc
+      # Heroku - configure
+      - name: install credentials / origin
         run: |
           cat > /home/runner/.netrc <<EOF
             machine api.heroku.com
@@ -44,19 +44,16 @@ jobs:
           HEROKU_NETRC_PASSWORD: ${{ secrets.HEROKU_NETRC_PASSWORD }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          
-      - name: install dependencies
+      # Make Javascript
+      - name: install dependencies & build
         uses: actions/setup-node@v3
         with:
           node-version: 17.9.0
       - run: |
           npm install
+          npm run clean
           npm run release
-        env:
-          HEROKU_NETRC_PASSWORD: ${{ secrets.HEROKU_NETRC_PASSWORD }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          
+      # Deploy Javascript
       - name: deploy changes
         run: |
           cd dist
