@@ -16,7 +16,6 @@ const initialState: any = {
 export function Register() {
   const navigate = useNavigate();
   const loggedIn = useAppSelector(selectLoggedIn);
-  const status = useAppSelector(selectStatus);
   const message:string = useAppSelector(selectMessage) || ""
   const dispatch:ThunkDispatch<any, Credentials, any> = useAppDispatch();
   const [state, setState] = useState<any>({...initialState, password1: ''});
