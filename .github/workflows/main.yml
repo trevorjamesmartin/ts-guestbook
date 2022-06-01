@@ -39,32 +39,3 @@ jobs:
         env:
           HEROKU_NETRC_PASSWORD: ${{ secrets.HEROKU_NETRC_PASSWORD }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-
-      # https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli
-      - name: install the Heroku cli
-        run: curl https://cli-assets.heroku.com/install.sh | sh
-      
-      - name: install dependencies
-        uses: actions/setup-node@v3
-        with:
-          node-version: 17.9.0
-      - run: |
-          heroku git:clone -a $HEROKU_APP_NAME dist
-          npm install
-          npm run clean
-          npm run release
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          
-      - name: deploy
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
-      - name: deploy to heroku
-        run: |
-          cd dist
-          git add .
-          git commit -am "Github CI - update"
-          git push heroku main
