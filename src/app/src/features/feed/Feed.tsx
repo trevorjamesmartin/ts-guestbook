@@ -25,7 +25,7 @@ const { clear: clearFeed } = feedActions;
 const { setCurrent } = postsActions;
 
 function Feed(props: any) {
-  let [searchParams, setSearchParams] = useSearchParams();
+  let [searchParams,] = useSearchParams();
   const navigate = useNavigate();
   const socket = props?.socket;
   const profile = useAppSelector(selectProfile);

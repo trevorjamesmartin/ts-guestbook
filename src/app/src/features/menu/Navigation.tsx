@@ -11,7 +11,7 @@ import { selectors as socketSelectors } from '../network/socketSlice';
 // local component
 import Clock from './Clock';
 // bootstrap components
-import { Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle, Button } from 'reactstrap';
+import { Nav, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle, Button } from 'reactstrap';
 
 const { selectToken, selectStatus: selectAuthStatus, selectLoggedIn } = authSelectors;
 const { selectProfile } = profileSelectors;
