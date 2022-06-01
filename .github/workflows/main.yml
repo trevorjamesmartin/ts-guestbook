@@ -31,13 +31,13 @@ jobs:
           cat > /home/runner/.netrc <<EOF
             machine api.heroku.com
               login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
+              password $HEROKU_NETRC_PASSWORD
             machine git.heroku.com
               login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
+              password $HEROKU_NETRC_PASSWORD
           EOF
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_NETRC_PASSWORD: ${{ secrets.HEROKU_NETRC_PASSWORD }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
 
       # https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli
