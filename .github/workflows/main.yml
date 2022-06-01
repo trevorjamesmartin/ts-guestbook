@@ -35,10 +35,13 @@ jobs:
         with:
           node-version: 17.9.0
       - run: |
-          HEROKU_API_KEY=${secrets.HEROKU_API_KEY} heroku git:clone -a ${{secrets.HEROKU_APP_NAME}} dist
+          heroku git:clone -a $HEROKU_APP_NAME dist
           npm install
           npm run clean
           npm run release
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
           
       - name: deploy
         uses: actions/checkout@v3
