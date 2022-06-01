@@ -11,7 +11,7 @@ function About() {
         </NavLink>
         <NavLink target="_blank" href="https://github.com/trevorjamesmartin/ts-guestbook">
             <NavItem>
-                source code
+                Open source code
             </NavItem>
         </NavLink>
     </Container>
