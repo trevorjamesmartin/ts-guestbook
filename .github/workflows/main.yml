@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: 17.9.0
       - run: |
-          heroku git:clone -a $HEROKU_APP_NAME dist
+          heroku git:clone -a ts-node dist
           npm install
           npm run clean
           npm run release
