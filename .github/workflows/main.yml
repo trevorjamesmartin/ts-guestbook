@@ -37,7 +37,7 @@ jobs:
         env: 
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       - run: |
-          mkdir /home/runner/.ssh
+          mkdir -p /home/runner/.ssh
           ssh-keyscan git.heroku.com >> /home/runner/.ssh/known_hosts
           echo "${{secrets.SSH_KEY}}" > /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
