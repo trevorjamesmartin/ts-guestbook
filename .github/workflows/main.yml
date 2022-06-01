@@ -36,15 +36,11 @@ jobs:
           environment: production
           node-version: 17.9.0
       - run: |
-          echo clone heroku to dist
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:clone -a ts-guestbook dist
-          echo install and build release...
           npm install
           npm run clean
           npm run release
-          echo ${{ secrets.APP_NAME }} - deploying to Heroku release
           cd dist
-          HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} heroku git:remote -a ${{ secrets.APP_NAME }}
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git add .
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git commit -am "Github CI - update"
           HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }} git push heroku main
