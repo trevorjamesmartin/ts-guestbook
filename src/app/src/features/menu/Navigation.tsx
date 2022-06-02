@@ -121,7 +121,7 @@ function Navigation(props: any) {
       </DropdownToggle>
       <DropdownMenu>
         {
-          authorized ?
+          authorized && socketStatus === 'connected' ?
             <DropdownItem>
               <Link className='nav-link' to={'/app/test'}>
                 <NavItem active={isActive('/app/test')}>{window.location.protocol}</NavItem>
