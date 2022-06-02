@@ -1,0 +1,107 @@
+  [
+  {
+    "name": "The Oracle",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/oracle-avatar.jpeg",
+    "email": "oracle@delphi.org",
+    "username": "oracle",
+    "password": "oracle"
+  },
+  {
+    "name": "Morpheus",
+    "email": "root@localhost",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/morpheus-avatar.jpeg",
+    "username": "morpheus",
+    "password": "morpheus"
+  },
+  {
+    "name": "Trinity",
+    "email": "trinity@whiterabbit.com",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/trinity-avatar.jpeg",
+    "username": "trinity",
+    "password": "trinity"
+  },
+  {
+    "name": "Apoc",
+    "email": "apoc@lypse.com",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/apoc0-avatar.jpeg",
+    "username": "apoc0",
+    "password": "apoc0"
+  },
+  {
+    "name": "Agent Brown",
+    "email": "abrown@local.gov",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/abrown-avatar.jpeg",
+    "username": "abrown",
+    "password": "abrown"
+  },
+  {
+    "name": "Agent Jones",
+    "email": "ajones@infowars.gov",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/ajones-avatar.jpeg",
+    "username": "ajones",
+    "password": "ajones"
+  },
+  {
+    "name": "Choi",
+    "email": "choi@aol.com",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/choi-avatar.jpeg",
+    "username": "choi",
+    "password": "choi"
+  },
+  {
+    "name": "Dujour",
+    "email": "dujour@163.com",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/dujour-avatar.jpeg",
+    "username": "dujour",
+    "password": "dujour"
+  },
+  {
+    "name": "Cypher",
+    "email": "cypher@mozilla.org",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/cypher-avatar.jpeg",
+    "username": "cypher",
+    "password": "cypher"
+  },
+  {
+    "name": "Dozer",
+    "email": "dozer@earth.net",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/dozer-avatar.jpeg",
+    "username": "dozer",
+    "password": "dozer"
+  },
+  {
+    "name": "Mouse",
+    "email": "mouse@home.com",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/mouse-avatar.jpeg",
+    "username": "mouse",
+    "password": "mouse"
+  },
+  {
+    "name": "Rhineheart",
+    "email": "rhineheart@local.gov",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/rhineheart-avatar.jpeg",
+    "username": "rhineheart",
+    "password": "rhineheart"
+  },
+  {
+    "name": "Smith",
+    "email": "smith@local.net",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/smith-avatar.jpeg",
+    "username": "smith",
+    "password": "smith"
+  },
+  {
+    "name": "Tank",
+    "email": "tank@nebuch.net",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/tank-avatar.jpeg",
+    "username": "tank",
+    "password": "tank"
+  },
+  {
+    "name": "Thomas A. Anderson",
+    "avatar": "https://vigilant-s3.s3.amazonaws.com/neo2022-avatar.jpeg",
+    "email": "neo@earth.net",
+    "username": "neo2022",
+    "password": "trinity"
+  }
+]
