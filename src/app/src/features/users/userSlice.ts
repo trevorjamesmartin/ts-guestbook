@@ -21,8 +21,11 @@ export const usersAsync = createAsyncThunk(
     const token = state?.auth?.token;
     const { protocol, pathname, host } = window.location;
     let searchString = '';
-    const { page } = params;
-    let pageParams = !page ? { page: 1, limit: 9 } : { page, limit: 9 };
+    const { page, limit } = params;
+    // let pageParams = !page ? { page: 1, limit: limit || 9 } : { page, limit: limit || 9 };
+    let pageParams:{page?:string|number, limit?:string|number} = {};
+    pageParams.page = page ? page : 1;
+    pageParams.limit = limit ? limit : 9;
     const socketPath = {
       '/api/users': {
         event: 'api:usernames'
@@ -32,6 +35,8 @@ export const usersAsync = createAsyncThunk(
         params: pageParams
       }
     };
+    console.log(params)
+    console.log(pageParams)
     const apiClient = new api({ token, socket: params.socket, socketPath })
     let response: any = await apiClient.get('/api/users/with-profiles', { params: pageParams });
     if (page > 1 && response.status === 200) {

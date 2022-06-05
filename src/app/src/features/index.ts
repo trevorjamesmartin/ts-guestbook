@@ -1,7 +1,9 @@
 import { Register } from './auth/Register';
 import { Login } from './auth/Login';
 import { Logout } from './auth/Logout';
-import { UserList } from './users/UserList';
+import UserList from './users/UserList';
+import UserCarousel from './users/UserCarousel';
+import UserView from './users/UserView';
 import { Thread } from './thread';
 
 import Pages from './pages';
@@ -17,7 +19,7 @@ import { selectors as profileSelectors } from './profile/profileSlice';
 import handleIO from './network/config';
 import SocketTest from './network/SocketTest';
 export {
-  Register, Login, Logout, UserList,
+  Register, Login, Logout, UserList, UserCarousel, UserView,
   SocketTest, Thread, Pages, About, Profile, Navigation, ConnectRequests,
   Messenger, handleIO, authSelectors, socketSelectors, profileSelectors
 }

@@ -13,7 +13,7 @@ const { selectRequestsRecieved, selectFriendList } = friendSelectors;
 const { selectProfile } = profileSelectors;
 // const LIMIT_RELOAD_USERS = 1000 * 15;
 
-const UserCard = (props: any) => {
+export const UserCard = (props: any) => {
   const {isOnline, data, dispatcher, isFriend, requestedConnect } = props;
   useEffect(() => {    
   }, [isOnline])
@@ -46,7 +46,7 @@ const UserCard = (props: any) => {
   </Card>
 }
 
-export function UserList(props:any) {
+export default function UserList(props:any) {
   const dispatch = useAppDispatch();
   const availableUsers = useAppSelector(selectAvailableUsers);
   const socket = props?.socket;

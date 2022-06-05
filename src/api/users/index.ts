@@ -1,7 +1,7 @@
 import usersRouter from './users-router';
 import profileRouter from './profile-router';
-
-export { usersRouter, profileRouter }
+import settingsRouter from './settings-router';
+export { usersRouter, profileRouter, settingsRouter }
 
 import { getPage } from '../common/util';
 import Users from './users-model';
