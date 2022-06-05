@@ -8,7 +8,7 @@ import { useAppSelector, useAppDispatch } from './memory/hooks';
 import {
   // components
   About, ConnectRequests, Login, Logout, Navigation,
-  Pages, Profile, SocketTest, Register, Thread, UserList,
+  Pages, Profile, SocketTest, Register, Thread, UserView, /*UserList, UserCarousel,*/
   Messenger,
   // selectors
   authSelectors, socketSelectors, profileSelectors,
@@ -78,7 +78,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={<Pages.MainPage ws={localSocket} />} />
         <Route path="/app/messenger/:username" element={<Messenger socket={localSocket} />} />
-        <Route path="/app/users" element={<UserList socket={localSocket} />} />
+        <Route path="/app/users" element={<UserView socket={localSocket} />} />
         <Route path="/app/profile" element={<Profile socket={localSocket} />} />
         <Route path="/app/logout" element={<Logout socket={localSocket} />} />
         <Route path="/app/requests" element={<ConnectRequests socket={localSocket} />} />

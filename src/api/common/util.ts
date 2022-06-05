@@ -11,7 +11,7 @@ function descending(y: any, x: any) {
     return x.id - y.id
 }
 
-export interface Paginated { next: { page: number; limit: number; } | undefined, previous: { page: number; limit: number; } | undefined, pages: any[] }
+export interface Paginated { total: number, next: { page: number; limit: number; } | undefined, previous: { page: number; limit: number; } | undefined, pages: any[] }
 
 export interface pageOptions {
     page?: number;
@@ -30,17 +30,18 @@ export async function getPage(decodedToken: string, model: any, options: pageOpt
             ordered = descending;
             break;
     }
-    
+
     let results = (await model(decodedToken)).sort(ordered);
     let page = Number(options.page) || 1;
     let limit = Number(options.limit) || 4;
     const startIndex: number = (page - 1) * limit;
     const endIndex: number = page * limit;
-    
-    const paginated: Paginated = { 
-        next: undefined, 
-        previous: undefined, 
-        pages: [] 
+
+    const paginated: Paginated = {
+        next: undefined,
+        previous: undefined,
+        pages: [],
+        total: Math.ceil(results.length / limit)
     };
 
     if (endIndex < results.length) {
@@ -61,7 +62,7 @@ export async function getPage(decodedToken: string, model: any, options: pageOpt
     return paginated
 }
 
-export function paginate(model: any, order?: "asc"|"desc") {
+export function paginate(model: any, order?: "asc" | "desc") {
     return async (req: any, res: any, next: any) => {
         let { decodedToken } = req;
         let results: any;

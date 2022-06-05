@@ -2,10 +2,11 @@ import path from 'path';
 import express from 'express';
 
 import { authRouter, authMiddleware } from './auth'
-import { usersRouter, profileRouter } from './users'
+import { usersRouter, profileRouter, settingsRouter } from './users'
 import { postsRouter } from './posts';
 import { connectRouter, friendsRouter } from './social';
 import { feedRouter } from './feed';
+
 import logger from './common/logger';
 
 import awsRouter from './aws/router'; // not exposed in swagger
@@ -24,6 +25,7 @@ export default function(server:express.Express) {
     server.use('/api/friends', friendsRouter);
     server.use('/api/feed', feedRouter);
     server.use('/api/aws', awsRouter);
+    server.use('/api/settings', settingsRouter);
     server.use('/socket.io', function(_, __, next) {next()});
     server.use('/', express.static(path.join(__dirname, REACTION)));
     server.get("*", (_, res) => {

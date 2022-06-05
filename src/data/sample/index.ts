@@ -1,4 +1,31 @@
-  [
+const Users = require('../../api/users/users-model').default;
+const Profile = require('../../api/users/profile-model').default;
+const Posts = require('../../api/posts/posts-model').default;
+
+const { hashSync } = require('bcryptjs');
+
+// "This is your last chance. After this, there is no turning back. You take the blue pill - the story ends, you wake up in your bed and believe whatever you want to believe. You take the red pill - you stay in Wonderland and I show you how deep the rabbit-hole goes.",
+export const quotes:any = {
+  morpheus: [
+    "There is a difference between knowing the path and walking the path."
+  ],
+  trinity: [
+    "The Matrix Cannot Tell You Who You Are."
+  ],
+  oracle: [
+    "You didn't come here to make the choice. You've already made it. You're here to try to understand why you made it."
+  ]
+}
+
+export interface account {
+  name: string;
+  avatar: string;
+  email: string;
+  username: string;
+  password: string;
+}
+
+export const accounts: account[] = [
   {
     "name": "The Oracle",
     "avatar": "https://vigilant-s3.s3.amazonaws.com/oracle-avatar.jpeg",
@@ -104,4 +131,42 @@
     "username": "neo2022",
     "password": "trinity"
   }
-]
+];
+
+
+let AccountMap:any = {};
+
+export async function createAccounts(): Promise<string[]> {
+  let created: any[] = [];
+  for (let u of accounts) {
+    let password = String(hashSync(u.password, 13));
+    let username = u.username;
+    // add user account
+    let profile = await Users.add({ username, password });
+    // update profile
+    await Profile.update(profile.id, {
+      name: u.name,
+      avatar: u.avatar,
+      email: u.email
+    });
+    AccountMap[username] = profile.user_id;
+    console.log(` + ${username}`);
+    created.push(username);
+  }
+  return created;
+}
+async function init() {
+  let result = await createAccounts();
+  console.log('created', result.length, 'accounts');
+  for (let username of Object.keys(quotes)) {
+    // post a message
+    let author_id = AccountMap[username];
+    console.log('posting as ', username, author_id);
+    for (let content of quotes[username]) {
+      console.log(content);
+      await Posts.add({ content, author_id });
+    }
+  }
+}
+
+init().then(() => process.exit());
