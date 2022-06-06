@@ -8,6 +8,9 @@ import registerSocialHandler from './social';
 import registerUserHandler from './users';
 import registerExtraHandlers from './extras';
 import logger from './common/logger';
+import { createClient } from 'redis';
+const client = createClient();
+const subscriber = client.duplicate();
 
 export default function (io: any) {
   logger.debug('⚙ sockets')
@@ -23,7 +26,15 @@ export default function (io: any) {
     next();
   });
 
-  function inRoom(room:string) {
+  (async () => {
+    await subscriber.connect();
+    await subscriber.subscribe(`${process.env.REDIS_KEY}/var/log`, (message: string) =>
+      io.to(process.env.LUMBERJACKS).emit(process.env.LOG, message));
+    await subscriber.subscribe(`${process.env.REDIS_KEY}/var/log/debug`, (message: string) =>
+      io.to(`${process.env.LUMBERJACKS}:debug`).emit(process.env.LOG_DEBUG, message))
+  })();
+
+  function inRoom(room: string) {
     const rooms = io.of("/").adapter.rooms;
     let result = [];
     try {
@@ -80,13 +91,13 @@ export default function (io: any) {
       socket.disconnect();
     });
 
-    socket.on('subscribe:room', (room:string) => {
+    socket.on('subscribe:room', (room: string) => {
       logger.debug(socket.data.username + "subscribe " + room)
       socket.to(room).emit("userlist", inRoom('online-users'));
       socket.join(room);
     });
 
-    socket.on('unsubscribe:room', (room:string) => {
+    socket.on('unsubscribe:room', (room: string) => {
       logger.debug(socket.data.username + "unsubscribe " + room)
       socket.to(room).emit("userlist", inRoom('online-users'));
       socket.leave(room)

@@ -131,4 +131,11 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
     console.log("feed updated by ", username)
   })
 
+  socket.on("stream:log-info", (message:string) => {
+    dispatch(updateChat([message]));
+  })
+  socket.on("stream:log-debug", (message:string) => {
+    dispatch(updateChat([message]));
+  })
+
 }

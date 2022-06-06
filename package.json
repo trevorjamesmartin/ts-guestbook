@@ -34,6 +34,7 @@
   "author": "Trevor Martin",
   "license": "MIT",
   "dependencies": {
+    "@log4js-node/redis": "^1.0.0",
     "@socket.io/postgres-adapter": "^0.3.0",
     "@socket.io/redis-adapter": "^7.2.0",
     "@vscode/sqlite3": "^5.0.8",
