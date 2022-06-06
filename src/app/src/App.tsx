@@ -26,7 +26,7 @@ const { selectStatus: selectSocketStatus } = socketSelectors;
 function App() {
   const [localSocket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
   // Real Time Connection?, (toggle)
-  const [rtc, toggleRTC] = useState(true); // start connected.
+  const [rtc, setRTC] = useState(true); // start connected.
   const connectIt = rtc && localSocket;
   // Router
   const navigate = useNavigate();
@@ -67,8 +67,7 @@ function App() {
 
   return (<ErrorBoundary>
     <div className='App'>
-      <Navigation toggleRTC={() => toggleRTC(!rtc)} rtc={rtc} socket={connectIt} />
-      <p>io: {ioStatus}</p>
+      <Navigation toggleRTC={() => console.log('...')} rtc={rtc} socket={connectIt} />
     </div>
     <Container>
       <Routes>

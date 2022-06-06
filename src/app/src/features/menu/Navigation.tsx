@@ -36,7 +36,7 @@ function Navigation(props: any) {
   const friendList = useAppSelector(selectFriendList);
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const authorized = token && token.length > 4;
-  const [connection, setConnection] = useState(socketStatus === 'connected');
+  const [connection, setConnection] = useState<boolean>(socketStatus === 'connected');
 
   useEffect(() => {
     if (authorized) {
@@ -112,16 +112,11 @@ function Navigation(props: any) {
       inNavbar
     >
       <DropdownToggle nav>
-        {socketStatus === 'connected' ?
-          <i className="fa-regular fa-face-smile"></i> :
-          <i className="fa-regular fa-face-meh"></i>
-        }
-
-
+      <i className="fa-solid fa-glasses"></i>
       </DropdownToggle>
       <DropdownMenu>
         {
-          authorized && socketStatus === 'connected' ?
+          authorized && rtc ?
             <DropdownItem>
               <Link className='nav-link' to={'/app/test'}>
                 <NavItem active={isActive('/app/test')}>{window.location.protocol}</NavItem>
@@ -133,9 +128,9 @@ function Navigation(props: any) {
             </DropdownItem>
         }
         <DropdownItem>
-          <span onClick={toggleRTC}>rtc {rtc ? 
+          <span>{rtc ? 
           <i className="fa-solid fa-check"></i> :
-          ""}</span>
+          ""} RTC</span>
         </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
@@ -196,18 +191,29 @@ function Navigation(props: any) {
     light
   >
     <Link to="/">
-      <NavbarBrand>🧭</NavbarBrand>
+      <NavbarBrand>
+      <img
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src = "/user.png";
+          }}
+          src={'/logo192.png'}
+          width='32px'
+          height='32px'
+          alt={profile.name}
+        />
+      </NavbarBrand>
     </Link>
     <NavbarToggler onClick={toggleNavbar} />
     <Collapse navbar isOpen={!collapsed}>
       {authorized ? onlineNav() : offlineNav()}
       <Nav className="align-items-center">
-        {<NavItem active={isActive('/app/profile')}>
+        {authorized ? <NavItem active={isActive('/app/profile')}>
           {profileMenu()}
-        </NavItem>}
-        <NavItem>
+        </NavItem>:""}
+        {authorized ? <NavItem>
           {connectionMenu()}
-        </NavItem>
+        </NavItem>: ""}
         <UncontrolledDropdown
           inNavbar
         >
@@ -224,8 +230,6 @@ function Navigation(props: any) {
             </NavItem>
           </DropdownMenu>
         </UncontrolledDropdown>
-
-
       </Nav>
     </Collapse >
   </Navbar >

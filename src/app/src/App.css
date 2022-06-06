@@ -208,7 +208,7 @@ a {
 
 
 .navatar {
-  border-radius: 90%;
+  border-radius: 50%;
 }
 
 .avatar-thumb {
@@ -219,7 +219,7 @@ a {
 .reply-avatar {
   width: 2.5rem;
   margin-right: 1rem;
-  border-radius: 100%;
+  border-radius: 50%;
 }
 
 .shout-out-avatar {
@@ -228,13 +228,13 @@ a {
   /* margin: 0.4rem; */
   margin-left: 1rem;
   /* margin-right: 1rem; */
-  border-radius: 100%;
+  border-radius: 50%;
 }
 
 .profile-image-limited {
   /* margin-right: 1rem; */
   width: 7rem;
-  border-radius: 100%;
+  border-radius: 50%;
   border: #343a40 2px solid;
 }
 
@@ -396,7 +396,7 @@ a>span.app-clock {
 
 .paginator {
   margin: 1rem;
-  border-radius: 100%;
+  border-radius: 50%;
 }
 
 .threadList {
