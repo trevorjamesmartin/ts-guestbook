@@ -195,7 +195,9 @@ function Navigation(props: any) {
     expand="md"
     light
   >
-    <NavbarBrand>🧭</NavbarBrand>
+    <Link to="/">
+      <NavbarBrand>🧭</NavbarBrand>
+    </Link>
     <NavbarToggler onClick={toggleNavbar} />
     <Collapse navbar isOpen={!collapsed}>
       {authorized ? onlineNav() : offlineNav()}
