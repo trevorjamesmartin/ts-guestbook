@@ -524,3 +524,70 @@ a>span.app-clock {
   min-height: 27rem;
   min-width: 25rem;
 }
+
+.about-img {
+  border-radius: 50%;
+  max-width: 60%;
+  border:rgba(0, 0, 0, .1) 1px solid;
+  margin-right: 1rem;
+  /* max-width: 50%; */
+  -webkit-box-shadow: 0 2px 7px rgba(64, 64, 64, 0.3);
+  box-shadow: 0 2px 7px rgba(64, 64, 64, 0.3);
+}
+.about-img-div {
+  display: flex;
+  flex-flow: row-reverse;
+  align-items: center;
+}
+
+.about-img-div-r {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.about-text {
+  font-size: large;
+  letter-spacing: 1px;
+  font-weight: 300;
+}
+.about-text-center {
+  font-size: larger;
+  letter-spacing: 1px;
+  font-weight: 300;
+  font-style: italic;
+}
+.sign-up-link {
+  border: 1px solid grey;
+  padding: 1ch 5rem 1ch 5rem;
+  border-radius: 3.14rem; 
+  background-color: #309CED;
+  color: white;
+}
+
+.sign-up-link:hover {
+  text-decoration: none !important;
+  color: white;
+  background-color: #0e89e8;
+}
+
+.sign-in-link {
+  background-color: white;
+  border: 1px solid grey;
+  padding: 1ch 5rem 1ch 5rem;
+  border-radius: 3.14rem;
+}
+
+.sign-in-up-div {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.signed-up-already {
+  font-weight: bold;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.sign-in-link:hover {
+  background-color: whitesmoke;
+}

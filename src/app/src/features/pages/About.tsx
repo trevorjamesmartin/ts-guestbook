@@ -2,9 +2,11 @@ import React, { useEffect } from "react";
 import { Container, Label, NavLink, NavItem } from 'reactstrap';
 
 function About() {
+    const baseURL = process.env.REACT_APP_BASE_URL || window.location.origin;
+
     return <Container>
         <Label>About this project</Label>
-        <NavLink target="_blank" href="/swagger">
+        <NavLink target="_blank" href={`${baseURL}/swagger`}>
             <NavItem>
                 Open API 3.0 specification
             </NavItem>
