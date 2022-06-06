@@ -65,6 +65,16 @@ export default (io:any, socket:any) => {
   socket.on('log:maps', () => {
     logger.debug(userMap)
   })
-  
+
+  socket.on('join:lumberjacks', () => {
+    logger.info(socket.data.username, 'joined lumberjacks')
+    socket.join(process.env.LUMBERJACKS);
+  })
+  socket.on('join:lumberjacks:dev', () => {
+    logger.info(socket.data.username, 'joined lumberjacks:dev')
+    socket.join(`${process.env.LUMBERJACKS}:debug`);
+  })
+  socket.on('leave:lumberjacks', () => socket.leave(process.env.LUMBERJACKS));
+  socket.on('leave:lumberjacks:dev', () => socket.leave(`${process.env.LUMBERJACKS}:debug`));
 }
 
