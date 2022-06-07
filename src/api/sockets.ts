@@ -9,7 +9,7 @@ import registerUserHandler from './users';
 import registerExtraHandlers from './extras';
 import logger from './common/logger';
 import { createClient } from 'redis';
-const client = createClient();
+const client = createClient({ url: process.env.REDIS_URL });
 const subscriber = client.duplicate();
 
 export default function (io: any) {
