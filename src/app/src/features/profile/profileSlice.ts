@@ -56,7 +56,6 @@ export const setProfileAsync = createAsyncThunk(
         const { socket } = params;
         const token = socket?.auth?.token || state?.auth?.token;
         const { name, email, dob, avatar, username } = state.profile;
-        console.log(token);
         const apiClient = new api({ token }); // legacy mode
         // * upload to s3
         let fileType = 'image/jpeg';

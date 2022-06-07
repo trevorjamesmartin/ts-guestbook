@@ -35,8 +35,8 @@ export const usersAsync = createAsyncThunk(
         params: pageParams
       }
     };
-    console.log(params)
-    console.log(pageParams)
+    // console.log(params)
+    // console.log(pageParams)
     const apiClient = new api({ token, socket: params.socket, socketPath })
     let response: any = await apiClient.get('/api/users/with-profiles', { params: pageParams });
     if (page > 1 && response.status === 200) {

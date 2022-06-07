@@ -18,7 +18,7 @@ export interface AppEventsMap {
 export default function (socket: any, dispatch: any, profile: any, token: any, navigate: any) {
   // socket events are declared within the component, 
   // a hook from App (main) dispatches the update event. 
-  console.log('[io] register handlers')
+  // console.log('[io] register handlers')
 
   socket.on("connect", () => {
     console.log("connected");
@@ -45,7 +45,7 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   });
 
   socket.on("message", (data: any) => {
-    console.log('->', data);
+    dispatch(updateChat(['->', data]));
   });
 
   socket.on("joined:room", (room: string, username: string) => {
@@ -58,10 +58,10 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
 
   socket.on('chat', (...args: any[]) => {
     let [msg, ..._] = args;
-    console.log(msg);
+    // console.log(msg);
     switch (msg[0]) {
       case '/clear':
-        console.log('clearing framebuffer');
+        // console.log('clearing framebuffer');
         dispatch(clearChat());
         break;
 
@@ -110,7 +110,7 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   });
 
   socket.on("userlist", (userNames: string[]) => {
-    console.log('-> userlist')
+    // console.log('-> userlist')
     dispatch(updateUserlist(userNames));
   })
 
@@ -120,7 +120,6 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
 
   socket.on("thread:updated", (thread_id:number, id:number) => {
     let message = `/thread/${thread_id} has been updated, ${id}`;
-    console.log(message)
     dispatch(updateChat([message]))
     dispatch(getThreadAsync({ id: Number(thread_id), socket }));
   })
@@ -128,8 +127,8 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   socket.on("feed:updated", (username:string) => {
     // TODO
     // if username is a friend, refresh your feed or notify
-    console.log("feed updated by ", username)
-  })
+    dispatch(updateChat(["[feed updated by]", username]))
+  });
 
   socket.on("stream:log-info", (message:string) => {
     dispatch(updateChat([message]));

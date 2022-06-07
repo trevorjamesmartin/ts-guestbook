@@ -20,8 +20,7 @@ export default (io: any, socket: any) => {
             }
             return result;
         } catch (error) {
-            //
-            console.log(error)
+            logger.error(error)
         }
     }
     const getRequests = (token: string) => {

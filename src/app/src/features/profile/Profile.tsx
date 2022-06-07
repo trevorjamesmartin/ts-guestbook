@@ -13,7 +13,6 @@ function Profile(props:any) {
     const [preview, setPreview] = useState();
 
     useEffect(() => {
-        console.log('[profile]')
         dispatch(getProfileAsync({socket}));
     }, []);
 

@@ -49,7 +49,7 @@ function App() {
 
   useEffect(() => {
     if (token && !localSocket) {
-      console.log('[io] create initial connection');
+      // console.log('[io] create initial connection');
       resetIO();
       return
     }
@@ -57,17 +57,17 @@ function App() {
 
   useEffect(() => {
     if (rtc) {
-      console.log('(connect)')
+      // console.log('(connect)')
       localSocket?.connect();
     } else {
-      console.log('(disconnect)')
+      // console.log('(disconnect)')
       localSocket?.disconnect();
     }
   }, [rtc])
 
   return (<ErrorBoundary>
     <div className='App'>
-      <Navigation toggleRTC={() => console.log('...')} rtc={rtc} socket={connectIt} />
+      <Navigation toggleRTC={() => {}} rtc={rtc} socket={connectIt} />
     </div>
     <Container>
       <Routes>

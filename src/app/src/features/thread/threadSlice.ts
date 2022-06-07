@@ -129,7 +129,6 @@ export const postsSlice = createSlice({
             .addCase(getThreadAsync.rejected, (state, action: PayloadAction<any>) => {
                 state.status = 'failed'
                 state.listed = [];
-                console.log(action)
             });
         builder.addCase(submitPostAsync.pending, (state) => {
             state.status = 'pending';

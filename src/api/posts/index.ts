@@ -61,9 +61,7 @@ export default (io: any, socket: any) => {
     }
     let author_id = socket.data.decodedToken.subject;
     let content = params.content;
-    let [posted]:any = await postsModel.add({ author_id, content }, 0, 0)
-    
-    console.log(posted);
+    await postsModel.add({ author_id, content }, 0, 0)
     io.to(`online-users`).emit("feed:updated", socket.data.decodedToken.username);
   }
   socket.on(GET_THREAD, getThread);
