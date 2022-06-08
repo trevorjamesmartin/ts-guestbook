@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
-import Users, { UserType } from '../users/users-model';
+import Users from '../users/users-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
 import { generateToken } from './restricted-middleware';
 import logger from '../common/logger';
 import userMap from '../common/maps';
-
+import { UserType } from '../common/types';
 const router = Router();
 
 router.get('/', (req, res) => {

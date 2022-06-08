@@ -6,6 +6,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { createAdapter } from "@socket.io/redis-adapter";
 import { createClient } from "redis";
+import { SocketData } from './common/types';
 import logger from './common/logger';
 logger.debug('express()')
 const httpServer = http.createServer(configureRoutes(configureServer(express())));
@@ -17,11 +18,7 @@ httpServer.on('upgrade', function (request: any, socket, head) {
 // TODO
 // https://socket.io/docs/v4/typescript/#types-for-the-server  
 
-interface SocketData {
-  username: string|undefined;
-  token: string|undefined;
-  [key:string]:any;
-}
+
 logger.debug('🔌 attach socket io');
 
 const ioServer = new Server<Server, {}, {}, SocketData>(
@@ -45,7 +42,7 @@ const ioServer = new Server<Server, {}, {}, SocketData>(
 logger.debug('🛋  create room adapter');
 let redis_enabled = false;
 // REDIS ADAPTER
-function redisClient(tag:string) {
+function redisClient(tag: string) {
   const client = createClient({ url: process.env.REDIS_URL });
   client.on('error', err => logger.error(`[${tag}] client error`, err));
   client.on('connect', () => logger.debug(`[${tag}] client connect`));
@@ -54,7 +51,7 @@ function redisClient(tag:string) {
   return client;
 }
 
-if(process.env.REDIS_URL) {
+if (process.env.REDIS_URL) {
   redis_enabled = true;
   const pub = redisClient("publish");
   const sub = redisClient("subscribe");
@@ -64,11 +61,11 @@ if(process.env.REDIS_URL) {
   });
 }
 // POSTGRES ADAPTER
-if(!redis_enabled && process.env.DATABASE_URL) {
-  const {createAdapter} = require("@socket.io/postgres-adapter");
-  const {Pool, PoolConfig} = require('pg');
+if (!redis_enabled && process.env.DATABASE_URL) {
+  const { createAdapter } = require("@socket.io/postgres-adapter");
+  const { Pool, PoolConfig } = require('pg');
   let pool;
-  function getPoolConfig():typeof PoolConfig {
+  function getPoolConfig(): typeof PoolConfig {
     let url: string = process.env.DATABASE_URL || '';
     let [_, b, c, d] = url?.split(':');
     let [__, user] = b?.split('//');

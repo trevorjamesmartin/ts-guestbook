@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-
-import Posts, { PostType, PostedMessage } from './posts-model';
+import Posts from './posts-model';
 import logger from '../common/logger';
+import  { PostType, PostedMessage } from '../common/types';
 const router = Router();
 
 

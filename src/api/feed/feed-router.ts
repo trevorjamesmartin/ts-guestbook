@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { paginate, Paginated } from '../common/util';
+import { paginate } from '../common/util';
+import { Paginated } from "../common/types";
 import { mainFeed } from "./feed-model";
 const router = Router();
 

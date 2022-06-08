@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import Profiles, { ProfileType } from './profile-model';
+import Profiles from './profile-model';
+import  { ProfileType } from '../common/types';
 import logger from '../common/logger';
 const router = Router();
 /**

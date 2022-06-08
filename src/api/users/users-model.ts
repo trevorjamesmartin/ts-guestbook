@@ -1,11 +1,6 @@
 import db from '../../data/dbConfig';
+import { UserType } from '../common/types';
 
-export interface UserType {
-    id: number | undefined;
-    username: string;
-    password: string;
-    created_at: any;
-}
 
 export default {
     add,
