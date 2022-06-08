@@ -1,19 +1,9 @@
 import db from '../../data/dbConfig';
 import { timestamp } from '../common/util';
+import { PostType, PostedMessage } from '../common/types';
 import usersModel from '../users/users-model';
 import logger from '../common/logger';
 
-export interface PostType {
-    id: number;
-    author_id: number;
-    title: string;
-    tags: string;
-    content: JSON;
-    posted_at: any;
-    thread_id: number;
-    parent_id: number;
-    created_at: any;
-}
 
 export default {
     findBy,
@@ -27,7 +17,6 @@ export default {
 }
 
 
-export type PostedMessage = Required<PostType>
 
 async function replyTo(parent_id: number, post: Partial<PostType>, author_id: number): Promise<PostedMessage> {
     const op = await byId(Number(parent_id));
@@ -86,7 +75,7 @@ async function findByThread(thread_id: number): Promise<any[]> {
             username: 'users.username',
             parent_id: 'posts.parent_id',
             posted_at: 'posts.posted_at',
-            thread_id: 'posts.thread_id',            
+            thread_id: 'posts.thread_id',
         })
         .where({ thread_id });
 

@@ -1,12 +1,8 @@
-// import { Socket } from 'socket.io';
-
+import { AuthMapItem } from './types';
 import logger from "./logger";
 
-interface AuthMapItem {
-  username: string;
-  token: string;
-  uid: string;
-  loggedIn: boolean;
+interface UserMap {
+  [username: string]: UserSpace
 }
 
 class UserSpace {
@@ -63,10 +59,6 @@ class UserSpace {
 
 }
 
-interface UserMap {
-  [username: string]: UserSpace
-}
-
 class MapConnector {
   private _authority: UserMap;
 
@@ -98,8 +90,8 @@ class MapConnector {
    */
   public withSocketId(socketId: string) {
     let username = Object.keys(this._authority)
-    .filter(username => this._authority[username].socketId === socketId)[0];
-    if(username) {
+      .filter(username => this._authority[username].socketId === socketId)[0];
+    if (username) {
       return this.getUser(username);
     }
   }

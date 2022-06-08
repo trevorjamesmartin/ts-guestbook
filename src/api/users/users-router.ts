@@ -1,6 +1,7 @@
 import { Router } from "express";
-import Users, { UserType } from './users-model';
-import { paginate, Paginated } from '../common/util';
+import Users from './users-model';
+import { paginate } from '../common/util';
+import { Paginated, UserType } from "../common/types";
 /**
  * @swagger
  * tags:

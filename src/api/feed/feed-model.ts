@@ -1,34 +1,13 @@
 import postsModel from "../posts/posts-model";
 import connectModel from "../social/connect-model";
 import logger from '../common/logger';
+import { ModelOptions, Food, TokenError, DecodedToken } from "../common/types";
+
 export {
     mainFeed
 }
 
-interface Food {
-    id: number;
-    author_id: number;
-    title: string;
-    tags: string;
-    content: JSON;
-    posted_at: any;
-    parent_id: number;
-    thread_id: number;
-    created_at: any;
-    username: any;
-    avatar: any;
-    name: any;
-}
-
-interface TokenError {
-    error: string;
-    response: {
-        event: string;
-        [key:string]:any;
-    }
-}
-
-async function mainFeed(decodedToken: any): Promise<Food | TokenError[]> {
+async function mainFeed(decodedToken: DecodedToken, __?: ModelOptions): Promise<Food | TokenError[]> {
     let author_id = decodedToken?.subject;
     if (!author_id) {
         // this can happen due to a stale session,

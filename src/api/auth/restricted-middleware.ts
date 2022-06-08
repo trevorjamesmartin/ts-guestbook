@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { UserType } from '../users/users-model';
+import { UserType, DecodedToken } from '../common/types';
 const JWT_SECRET = process.env.JWT_SECRET || "dont tread on me";
 /**
  * sign the user (payload) into a JSON Web Token
@@ -36,12 +36,12 @@ export const verifyToken = (authorization:string) => {
 export default (req: any, res: any, next: any) => {
     const { authorization } = req.headers;
     if (authorization) {
-        jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: any) => {
+        jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: DecodedToken|any) => {
             if (err) {
                 res.status(401).json({ message: "invalid credentials" });
             } else {
-                req.decodedToken = decodedToken;
-                res.decodedToken = decodedToken;
+                const decoded : DecodedToken = decodedToken;
+                req.decodedToken = decoded;
                 next();
             }
         });

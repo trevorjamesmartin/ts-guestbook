@@ -1,3 +1,5 @@
+import { DecodedToken, Paginated, ModelOptions } from './types';
+
 export function timestamp() {
     let [d, t] = (new Date()).toISOString().split('T')
     return `${d} ${t.split('.')[0]}`;
@@ -11,15 +13,9 @@ function descending(y: any, x: any) {
     return x.id - y.id
 }
 
-export interface Paginated { total: number, next: { page: number; limit: number; } | undefined, previous: { page: number; limit: number; } | undefined, pages: any[] }
 
-export interface pageOptions {
-    page?: number;
-    limit?: number;
-    sortOrder?: "asc" | "desc";
-}
 
-export async function getPage(decodedToken: string, model: any, options: pageOptions) {
+export async function getPage(decodedToken: DecodedToken, model: any, options: ModelOptions) {
     let ordered;
     switch (options.sortOrder) {
         case "asc":
@@ -30,7 +26,11 @@ export async function getPage(decodedToken: string, model: any, options: pageOpt
             ordered = descending;
             break;
     }
-
+    // TODO: define a standard model to include variable options.
+    // these options will specify
+    // + sort order
+    // + range
+    // + ...
     let results = (await model(decodedToken)).sort(ordered);
     let page = Number(options.page) || 1;
     let limit = Number(options.limit) || 4;

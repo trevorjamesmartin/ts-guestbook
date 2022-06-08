@@ -2,16 +2,10 @@ import db from '../../data/dbConfig';
 import profileModel from '../users/profile-model';
 import friendsModel from './friends-model';
 import { timestamp } from '../common/util';
+import { RequestConnect } from '../common/types';
 import logger from '../common/logger';
 
-export interface RequestConnect {
-    id: number;
-    from_id: number;
-    to_id: number;
-    accepted: boolean;
-    created_at: any;
-    updated_at: any;
-}
+
 
 export default {
     byId,

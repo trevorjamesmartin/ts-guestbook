@@ -1,13 +1,5 @@
 import db from '../../data/dbConfig';
-
-export interface Friend {
-    id: number;
-    req_from: number;
-    req_to: number;
-    created_at: any;
-    updated_at: any;
-    weight: number;
-}
+import { Friend } from '../common/types';
 
 export default {
     byId,

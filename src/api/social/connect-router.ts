@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Connections, {RequestConnect} from './connect-model';
+import Connections from './connect-model';
 import Profiles from '../users/profile-model';
 import logger from "../common/logger";
 /**
