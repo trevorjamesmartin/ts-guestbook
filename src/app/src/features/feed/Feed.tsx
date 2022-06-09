@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../memory/hooks";
 import dayjs from 'dayjs';
@@ -36,21 +36,27 @@ function Feed(props: any) {
   const dispatch = useAppDispatch();
   const currentPost: BlogPost = useAppSelector(selectCurrent);
   const [state, setState] = useState({ lastLoaded: 0, page: searchParams.get('page') });
+  const page = !socialFeed.previous ? 1 : socialFeed.previous.page + 1;
+
+  const redirectVisitor = useCallback(() => {
+    dispatch(clearFeed());
+    navigate('/login');
+  }, [dispatch, navigate]);
+
+  const refreshFeed = useCallback(() => {
+    setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
+    dispatch(getFeedAsync({ socket, page: searchParams.get('page'), limit: searchParams.get('limit') }));
+  }, [setState, dispatch, searchParams, socket]);
 
   useEffect(() => {
     const delta = (Date.now() - state.lastLoaded);
     if (!authorized) {
-      dispatch(clearFeed());
-      navigate('/login')
-      return
+      return redirectVisitor();
     }
     if (delta > 15000) {
-      setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-      dispatch(getFeedAsync({ socket, page: searchParams.get('page'), limit: searchParams.get('limit') }));
+      refreshFeed();
     }
-  }, [socialFeed.pages, searchParams]);
-
-  const page = !socialFeed.previous ? 1 : socialFeed.previous.page + 1;
+  }, [redirectVisitor, refreshFeed, authorized, state.lastLoaded]);
 
   const handleSubmitForm = (e: any) => {
     e.preventDefault();

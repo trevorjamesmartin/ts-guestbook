@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../network/api';
 import { RootState } from '../../memory/store'
 import { persistedStore } from '../../memory/persist';

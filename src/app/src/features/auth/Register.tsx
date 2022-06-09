@@ -6,7 +6,7 @@ import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { registerAsync, selectors, Credentials } from './authSlice';
 
-const { selectLoggedIn, selectStatus, selectMessage } = selectors;
+const { selectLoggedIn, selectMessage } = selectors;
 
 const initialState: any = {
   username: "",

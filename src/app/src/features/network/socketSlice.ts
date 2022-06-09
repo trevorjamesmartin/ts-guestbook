@@ -99,11 +99,11 @@ export const socketSlice = createSlice({
         })
     }
 });
-const selectMessage = (state: RootState) => <string | undefined>state.socket.message;
-const selectStatus = (state: RootState) => <string>state.socket.status;
-const selectChat = (state: RootState) => <any[]>state.socket.chat;
-const selectUserlist = (state:RootState) => <string[]>state.socket.userlist;
-const selectPrivate = (state:RootState) => <any>state.socket.private
+const selectMessage = (state: RootState) => state.socket.message;
+const selectStatus = (state: RootState) => state.socket.status;
+const selectChat = (state: RootState) => state.socket.chat;
+const selectUserlist = (state:RootState) => state.socket.userlist;
+const selectPrivate = (state:RootState) => state.socket.private
 
 const { updatePrivate, updateChat, clearChat, updateUserlist, echoPrivate } = socketSlice.actions;
 

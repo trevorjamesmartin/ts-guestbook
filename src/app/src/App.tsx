@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ErrorBoundary from './ErrorBoundary';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Container } from 'reactstrap';
 import { io, Socket } from "socket.io-client";
 import { AppEventsMap } from './features/network/config';
@@ -11,7 +11,7 @@ import {
   Pages, Profile, SocketTest, Register, Thread, UserView, /*UserList, UserCarousel,*/
   Messenger,
   // selectors
-  authSelectors, socketSelectors, profileSelectors,
+  authSelectors, profileSelectors, // socketSelectors, 
   // io handler
   handleIO
 } from './features';
@@ -21,12 +21,12 @@ import './App.css';
 
 const { selectToken } = authSelectors;
 const { selectProfile } = profileSelectors;
-const { selectStatus: selectSocketStatus } = socketSelectors;
+// const { selectStatus: selectSocketStatus } = socketSelectors;
 
 function App() {
   const [localSocket, setSocket] = useState<Socket<AppEventsMap, AppEventsMap> | undefined>(undefined);
   // Real Time Connection?, (toggle)
-  const [rtc, setRTC] = useState(true); // start connected.
+  const [rtc,] = useState(true); // start connected.
   const connectIt = rtc && localSocket;
   // Router
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ function App() {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectProfile);
   const token = useAppSelector(selectToken);
-  const ioStatus = useAppSelector(selectSocketStatus);
+  // const ioStatus = useAppSelector(selectSocketStatus);
   const baseURL = process.env.REACT_APP_BASE_URL || window.location.origin;
   
   const resetIO = useCallback(() => {
@@ -45,25 +45,19 @@ function App() {
     });
     handleIO(socket, dispatch, profile, token, navigate);
     setSocket(socket); // save localSocket
-  }, [localSocket, setSocket]);
+  }, [localSocket, setSocket, baseURL, dispatch, navigate, profile, token]);
 
   useEffect(() => {
     if (token && !localSocket) {
-      // console.log('[io] create initial connection');
       resetIO();
       return
     }
-  }, [token, resetIO]);
-
-  useEffect(() => {
     if (rtc) {
-      // console.log('(connect)')
       localSocket?.connect();
     } else {
-      // console.log('(disconnect)')
       localSocket?.disconnect();
     }
-  }, [rtc])
+  }, [rtc, token, resetIO, localSocket]);
 
   return (<ErrorBoundary>
     <div className='App'>

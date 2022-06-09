@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { selectors as webSocketSelectors, actions as webSocketActions } from '../network/socketSlice'
 import { useParams } from 'react-router-dom'
 import { Container, Form, Input, Button } from 'reactstrap';

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Spinner, Carousel, CarouselItem, CarouselControl, Card, CardBody, CardImg, CardText, CardTitle } from 'reactstrap';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
-import { selectors as friendSelectors, friendRequestAsync } from '../social/friendSlice';
+// import { selectors as friendSelectors } from '../social/friendSlice';
 
 import { usersAsync, selectors as userSelectors } from './userSlice';
 
-import { Link, useSearchParams } from 'react-router-dom';
-import { selectors as socketSelectors, actions as webSocketActions } from '../network/socketSlice';
-const { selectFriendList, selectRequestsRecieved } = friendSelectors;
-const selectAvailableUsers = socketSelectors.selectUserlist;
+import { useSearchParams } from 'react-router-dom';
+// import { selectors as socketSelectors } from '../network/socketSlice';
+// const { selectFriendList, selectRequestsRecieved } = friendSelectors;
+// const selectAvailableUsers = socketSelectors.selectUserlist;
 
 const { selectList } = userSelectors;
 
@@ -16,9 +16,9 @@ export default function UserCarousel(params: any) {
   const socket = params.socket;
   const [searchParams,] = useSearchParams();
   const dispatch = useAppDispatch();
-  const friendList = useAppSelector(selectFriendList);
-  const friendRequests = useAppSelector(selectRequestsRecieved);
-  const availableUsers = useAppSelector(selectAvailableUsers);
+  // const friendList = useAppSelector(selectFriendList);
+  // const friendRequests = useAppSelector(selectRequestsRecieved);
+  // const availableUsers = useAppSelector(selectAvailableUsers);
 
   const userlist: any = useAppSelector(selectList);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -27,17 +27,21 @@ export default function UserCarousel(params: any) {
     lastLoaded: 0,
     page: searchParams.get('page')
   });
-  const [current, setCurrent] = useState<any>(undefined);
+  const [current,] = useState<any>(undefined);
   const [showSpinner, setShowSpinner] = useState(false);
-  const status = userlist?.status;
-  useEffect(() => {
-    setShowSpinner(true);
+
+  const bulkRefresh = useCallback(() => {
     const lastLoaded = Date.now();
     const page = searchParams.get('page');
-    const delta = (lastLoaded - state.lastLoaded);
+    setState({ lastLoaded, page });
+    dispatch(usersAsync({ socket, page, limit: 200 }));
+  }, [dispatch, searchParams, socket]);
+
+  useEffect(() => {
+    setShowSpinner(true);
+    const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
-      setState({ lastLoaded, page });
-      dispatch(usersAsync({ socket, page, limit: 200 }));
+      bulkRefresh();
     }
     const ulist = userlist?.pages ? userlist.pages.map((u: any, i: number) => {
       return {
@@ -46,10 +50,10 @@ export default function UserCarousel(params: any) {
         key: i + 1,
         src: u.avatar
       }
-    }) : []
+    }) : [];
     setItems(ulist);
     setShowSpinner(false);
-  }, [userlist.pages, searchParams]);
+  }, [userlist.pages, searchParams, bulkRefresh, state.lastLoaded]);
 
   const handleNext = () => {
     let nextPage = (activeIndex + 1) % userlist.pages.length;
@@ -122,9 +126,9 @@ export default function UserCarousel(params: any) {
     previous={handlePrev}
   >
     {items?.map((u: any, i: number) => {
-      const requestedConnect = friendRequests.find((req: any) => req.username === u.username);
-      const isOnline = availableUsers.includes(u.username);
-      const isFriend = friendList.find((friend: any) => friend.username === u.username);
+      // const requestedConnect = friendRequests.find((req: any) => req.username === u.username);
+      // const isOnline = availableUsers.includes(u.username);
+      // const isFriend = friendList.find((friend: any) => friend.username === u.username);
       return <CarouselItem
         key={i}
         onExited={function noRefCheck() { }}

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../network/api';
 // import axios from 'axios';
 import { RootState } from '../../memory/store'
@@ -28,7 +28,7 @@ export async function uploadToS3(file: string, signedRequest: string) {
     let match = /^data:(.*);base64,(.*)$/.exec(file);
     if (match == null) {
         // not base64 encoded ?
-        throw 'Could not parse result'; // should not happen
+        throw Error('Could not parse result'); // should not happen
     }
     // Split into two parts
     const parts = file.split(';base64,');

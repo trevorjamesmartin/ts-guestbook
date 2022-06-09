@@ -4,8 +4,8 @@ import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import { usersAsync, selectors } from './userSlice';
 import { selectors as friendSelectors, friendRequestAsync } from '../social/friendSlice';
 import { selectors as profileSelectors } from '../profile/profileSlice';
-import { selectors as socketSelectors, actions as webSocketActions } from '../network/socketSlice';
-import { Card, CardImg, CardTitle, CardLink, Row, Col, Button, Container, CardBody, CardText, Label } from 'reactstrap';
+import { selectors as socketSelectors } from '../network/socketSlice';
+import { Card, CardImg, CardTitle, Button, Container, CardBody, CardText, Label } from 'reactstrap';
 const selectAvailableUsers = socketSelectors.selectUserlist;
 const selectList = selectors.selectList;
 // const selectStatus = selectors.selectStatus;
@@ -55,7 +55,7 @@ export default function UserList(props:any) {
   const friendList = useAppSelector(selectFriendList);
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const profile = useAppSelector(selectProfile);
-  let [searchParams, setSearchParams] = useSearchParams();
+  let [searchParams,] = useSearchParams();
   const [state, setState] = useState({ lastLoaded: 0, page: searchParams.get('page') });
   useEffect(() => {
     const delta = (Date.now() - state.lastLoaded);
@@ -66,7 +66,7 @@ export default function UserList(props:any) {
     setTimeout(() => {
       socket?.emit('userlist');
     }, 700);
-  }, [userlist.pages, searchParams]);
+  }, [userlist.pages, searchParams, dispatch, socket, state.lastLoaded]);
   const page = !userlist.previous ? 1 : userlist.previous.page + 1;
 
   const nextPage = (e: any) => {
