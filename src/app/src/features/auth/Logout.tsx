@@ -22,10 +22,10 @@ export function Logout(props: any) {
         setTimeout(() => {
             navigate('/');
         }, 500); // reload to trigger a websocket connection
-    }, [])
+    }, [dispatch, message, navigate, socket]);
 
     useEffect(() => {
         goodbye();
-    }, []);
+    }, [goodbye]);
     return (<h4>GoodBye</h4>)
 }

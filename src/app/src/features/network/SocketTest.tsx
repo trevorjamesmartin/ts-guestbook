@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Form, Button, Input, } from 'reactstrap';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { actions as webSocketActions, selectors as webSocketSelectors } from '../network/socketSlice';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 
-const { updateChat, clearChat } = webSocketActions;
+const { updateChat } = webSocketActions;
 
 const { selectChat } = webSocketSelectors;
 

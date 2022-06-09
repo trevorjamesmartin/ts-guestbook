@@ -1,6 +1,8 @@
 import Welcome from "./Welcome";
 import MainPage from "./Main";
 
-export default {
+const Pages = {
     MainPage, Welcome
 }
+
+export default Pages;

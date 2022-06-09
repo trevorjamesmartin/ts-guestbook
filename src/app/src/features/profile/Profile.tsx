@@ -14,7 +14,7 @@ function Profile(props:any) {
 
     useEffect(() => {
         dispatch(getProfileAsync({socket}));
-    }, []);
+    }, [dispatch, socket]);
 
     const handleUpdateProfile = (e: any) => {
         e.preventDefault();
@@ -29,7 +29,7 @@ function Profile(props:any) {
     function onFileLoaded(event: any) {
         var match = /^data:(.*);base64,(.*)$/.exec(event.target.result);
         if (match == null) {
-            throw 'Could not parse result'; // should not happen
+            throw Error('Could not parse result'); // should not happen
         }
         const imgElement = document.createElement("img");
         imgElement.src = event.target.result;
@@ -66,7 +66,7 @@ function Profile(props:any) {
         <Form onSubmit={handleUpdateProfile}>
             <Label for="preview-image">Avatar</Label>
             <FormGroup>
-                <img className='preview-image' src={preview || profile.avatar || '/user.png'}
+                <img alt="Profile" className='preview-image' src={preview || profile.avatar || '/user.png'}
                     onError={({ currentTarget }) => {
                         currentTarget.onerror = null; // prevents looping
                         currentTarget.src = "/user.png";

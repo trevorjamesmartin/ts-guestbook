@@ -1,11 +1,10 @@
-import {selectors as webSocketSelectors, actions as webSocketActions } from './socketSlice';
+import { actions as webSocketActions } from './socketSlice';
 import { actions as usersActions } from '../users/userSlice';
 import { actions as feedActions } from '../feed/feedSlice';
 import { actions as threadActions, getThreadAsync } from '../thread/threadSlice';
 import { actions as profileActions } from '../profile/profileSlice';
 const { setStatusConnected, setStatusDisconnected, updateChat, clearChat, updateUserlist, updatePrivate } = webSocketActions;
-// const { selectPrivate } = webSocketSelectors;
-const { clear: clearFeed, update: updateFeed } = feedActions;
+const { update: updateFeed } = feedActions;
 const { updateUsers } = usersActions;
 const { updateListed } = threadActions;
 const { updateProfile } = profileActions;
@@ -14,8 +13,7 @@ export interface AppEventsMap {
   [event: string]: (...args: any[]) => void;
 }
 
-
-export default function (socket: any, dispatch: any, profile: any, token: any, navigate: any) {
+function ConfigureSocketEvents(socket: any, dispatch: any, profile: any, token: any, navigate: any) {
   // socket events are declared within the component, 
   // a hook from App (main) dispatches the update event. 
   // console.log('[io] register handlers')
@@ -57,7 +55,7 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   })
 
   socket.on('chat', (...args: any[]) => {
-    let [msg, ..._] = args;
+    let [msg,] = args;
     // console.log(msg);
     switch (msg[0]) {
       case '/clear':
@@ -138,3 +136,5 @@ export default function (socket: any, dispatch: any, profile: any, token: any, n
   })
 
 }
+
+export default ConfigureSocketEvents;

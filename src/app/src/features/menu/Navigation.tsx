@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from 'react-router-dom';
 
 // local memory
@@ -11,43 +11,47 @@ import { selectors as socketSelectors } from '../network/socketSlice';
 // local component
 import Clock from './Clock';
 // bootstrap components
-import { Nav, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle, Button } from 'reactstrap';
+import { Nav, NavItem, Navbar, NavbarBrand, NavbarToggler, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 
-const { selectToken, selectStatus: selectAuthStatus, selectLoggedIn } = authSelectors;
+const { selectToken } = authSelectors;
 const { selectProfile } = profileSelectors;
-const { selectRequestsRecieved, selectFriendList } = friendSelectors;
-const { selectStatus: selectSocketStatus, selectMessage } = socketSelectors;
+const { selectRequestsRecieved } = friendSelectors;
+const { selectStatus: selectSocketStatus } = socketSelectors;
 
 function Navigation(props: any) {
-  const { toggleRTC, socket, rtc } = props;
+  const { socket, rtc } = props;
   const [collapsed, setCollapsed] = useState(true);
   const [clockConfig, setClockConfig] = useState({
     military: false,
     seconds: false,
   })
   const dispatch = useAppDispatch();
-  const authStatus: string = useAppSelector(selectAuthStatus);
-  const loggedIn: boolean = useAppSelector(selectLoggedIn);
+  // const authStatus: string = useAppSelector(selectAuthStatus);
+  // const loggedIn: boolean = useAppSelector(selectLoggedIn);
   const socketStatus: string = useAppSelector(selectSocketStatus);
-  const message = useAppSelector(selectMessage);
+  // const message = useAppSelector(selectMessage);
   const toggleNavbar = () => setCollapsed(!collapsed);
   const token = useAppSelector(selectToken);
   const profile = useAppSelector(selectProfile);
-  const friendList = useAppSelector(selectFriendList);
+  // const friendList = useAppSelector(selectFriendList);
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const authorized = token && token.length > 4;
   const [connection, setConnection] = useState<boolean>(socketStatus === 'connected');
 
+  const refresh = useCallback(() => {
+    dispatch(getProfileAsync({ socket }))
+    dispatch(friendCheckAsync());
+  }, [dispatch, socket]);
+
   useEffect(() => {
     if (authorized) {
-      dispatch(getProfileAsync({ socket }))
-      dispatch(friendCheckAsync());
+      refresh();
     };
     let stateofconnect = socketStatus === 'connected';
     if (connection !== stateofconnect) {
       setConnection(!connection);
     }
-  }, [token, socketStatus, rtc]);
+  }, [token, socketStatus, rtc, refresh, authorized, connection]);
 
   function profileMenu() {
     return <UncontrolledDropdown

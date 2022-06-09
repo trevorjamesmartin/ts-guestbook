@@ -14,7 +14,7 @@ function Welcome({ ws, ...props }: propsWithWebSocket) {
         setTimeout(() => {
             (loggedIn) ? navigate('/app') : setShowLanding(true);
         }, 500);
-    }, [ws])
+    }, [ws, loggedIn, navigate])
     return (<Container>
         {!showLanding ? <Delay timeout={2000} /> : <>
             <div>

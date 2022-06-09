@@ -6,7 +6,7 @@ const { selectRequestsRecieved } = socialSelectors;
 
 const SocialRequest = (props: Partial<any>) => {
   const dispatch = useAppDispatch();
-  const { socket, connect_id, username, name, avatar, email, dob } = props;
+  const { socket, connect_id, username, name, avatar, email } = props;
   const handleAcceptConnect = (e: any) => {
     e.preventDefault();
     dispatch(acceptFriendRequestAsync({ connect_id }));

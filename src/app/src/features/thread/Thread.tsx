@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { selectors as postsSelectors, getThreadAsync, replyPostAsync, actions as postsActions } from './threadSlice';
 import { selectors as feedSelectors } from '../feed/feedSlice';
@@ -7,7 +7,7 @@ import { Spinner, Card, Container, Row, CardImg, CardText, CardBody, Form, Input
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import ReplyCard from "../cards/ReplyCard";
 import dayjs from "dayjs";
-const { selectListed, selectCurrent, selectStatus, selectSubscriptions } = postsSelectors;
+const { selectListed, selectCurrent, selectStatus } = postsSelectors;
 const { setCurrent, subscribe } = postsActions;
 const { selectFeed } = feedSelectors;
 const { selectProfile } = profileSelectors;
@@ -27,20 +27,29 @@ function Thread(props: any) {
     lastLoaded: 0,
   });
 
-  useEffect(() => {
+  const subscribeToThis = useCallback(() => {
     dispatch(subscribe(thread_id));
     setTimeout(() => {
       if (socket) socket.emit('subscribe:room', `/thread/${thread_id}`);
     }, 500);
-  }, [thread_id, socket])
+  }, [dispatch, socket, thread_id])
 
   useEffect(() => {
+    subscribeToThis();
+  }, [subscribeToThis, thread_id, socket])
+
+  const refreshThread = useCallback(() => {
     const delta = (Date.now() - state.lastLoaded);
     if (delta > 15000) {
       setState({ lastLoaded: Date.now() });
       dispatch(getThreadAsync({ id: Number(thread_id), socket }));
     }
-  }, [replies.length])
+  }, [state.lastLoaded, thread_id, socket, dispatch]);
+
+  useEffect(() => {
+    refreshThread();
+  }, [replies.length, refreshThread])
+
   const posted_at = dayjs.utc(mainThread.posted_at).local().fromNow()
 
   function handleSubmitReply(e: any) {

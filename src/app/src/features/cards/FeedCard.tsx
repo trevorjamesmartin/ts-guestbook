@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Container, Row, CardImg, CardText, CardBody, Col } from 'reactstrap';
 
-export default (props: any) => {
+const FeedCard = (props: any) => {
   const profile = props.profile;
   const replies = props.replies;
   const findAvatar = () => {
@@ -38,9 +38,10 @@ export default (props: any) => {
             <Col />
             <Col />
           </Row>
-          {replies.length > 0 && `replies: ${replies.length}` || 'reply'}
+          {replies.length > 0 ? `replies: ${replies.length}` : 'reply'}
         </Container>
       </Card>
     </Link>
   )
 }
+export default FeedCard;
