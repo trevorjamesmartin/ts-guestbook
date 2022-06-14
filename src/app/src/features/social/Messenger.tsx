@@ -27,20 +27,21 @@ function Messenger(props: any) {
     setChat(e.target.value);
   }
 
-  return <Container>
-    <h4>private chat with {toUsername}</h4>
+  return <div className='messenger-wrapper'>
     <pre className='messenger'>
       {thisChat?.join('\n')}
     </pre>
     <Form onSubmit={sendMessage}>
       <Input
+        className='messenger-input'
         type="text"
         onChange={handleChange}
         value={chat}
+        placeholder="say something"
       />
-      <Button type="submit">enter</Button>
+      <Button type="submit">send</Button>
     </Form>
-  </Container>
+  </div>
 }
 
 export default Messenger;
