@@ -64,7 +64,7 @@ export const profileSlice = createSlice({
     clear: (state) => {
       state = clearState;
     },
-    update: (state, action:PayloadAction<Paginated>) => {
+    update: (state, action: PayloadAction<Paginated>) => {
       state.status = 'ok';
       state.pages = action.payload.pages;
       state.next = action.payload.next;
@@ -77,10 +77,12 @@ export const profileSlice = createSlice({
     })
       .addCase(getFeedAsync.fulfilled, (state, action: PayloadAction<Paginated>) => {
         state.status = 'ok';
-        if (action.payload.pages.length > 0) {
+        if (action.payload?.pages?.length > 0) {
           state.pages = action.payload.pages;
           state.previous = action.payload.previous;
           state.next = action.payload.next;
+        } else {
+          console.log(action.payload)
         }
       })
       .addCase(getFeedAsync.rejected, (state, action: PayloadAction<any>) => {
@@ -89,6 +91,11 @@ export const profileSlice = createSlice({
         state.previous = undefined;
         state.next = undefined;
         state.status = "failed"
+        setTimeout(() => {
+          console.log('logging out...')
+          window.location.replace('/app/logout');
+        }, 1700);
+        
       })
 
 
