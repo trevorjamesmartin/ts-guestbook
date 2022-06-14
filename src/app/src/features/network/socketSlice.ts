@@ -31,7 +31,16 @@ interface ioPayloadAction {
 }
 
 function socketEmitPayload(socket: any, text: string): ioPayloadAction {
+    // if text is undefined, return blank
+    if (!text) return {
+        payload: {
+            text: "",
+            createdAt: ""
+        }
+    }
+
     socket.emit(text);
+    
     return {
         payload: {
             text,
