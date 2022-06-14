@@ -160,7 +160,7 @@ function Navigation(props: any) {
           About
         </NavItem>
       </Link>
-      {friendRequests[0] && <Link className='nav-link' to='/app/requests'>
+      {friendRequests && friendRequests[0] && <Link className='nav-link' to='/app/requests'>
         <NavItem active={isActive('/app/requests')}>
           {`Requests (${friendRequests.length}) `}
         </NavItem>
