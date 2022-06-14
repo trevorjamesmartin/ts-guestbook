@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../memory/hooks';
 import { usersAsync, selectors } from './userSlice';
 import { selectors as friendSelectors, friendRequestAsync } from '../social/friendSlice';
@@ -14,10 +14,14 @@ const { selectProfile } = profileSelectors;
 // const LIMIT_RELOAD_USERS = 1000 * 15;
 
 export const UserCard = (props: any) => {
-  const {isOnline, data, dispatcher, isFriend, requestedConnect } = props;
-  useEffect(() => {    
+  const { selected, isOnline, data, dispatcher, isFriend, requestedConnect, onClick } = props;
+  useEffect(() => {
   }, [isOnline])
-  return <Card key={data.username} className={isOnline ? "userlist-card" : "userlist-card-offline"}>
+  return <Card
+    onClick={onClick}
+    key={data.username}
+    className={`${isOnline ? "userlist-card" : "userlist-card-offline"}${selected ? "-selected" : ""}`}
+  >
     <Container className='userlist-body-wrap'>
       <CardBody className="d-flex flex-column align-items-center text-center">
         <CardImg
@@ -35,10 +39,10 @@ export const UserCard = (props: any) => {
           {(!isFriend && !requestedConnect) ? <Button onClick={() => {
             dispatcher(friendRequestAsync(data));
           }}>add friend*</Button> :
-            isOnline ? 
-            <Link to={`/app/messenger/${data.username}`}>Message</Link> :
-            // <button className="btn btn-outline-primary">Message</button> : 
-            <span className='user-offline'>offline</span>}
+            isOnline ?
+              <Link to={`/app/users/${data.username}?msg=${String(Date.now())}`}>Message</Link> :
+              // <button className="btn btn-outline-primary">Message</button> : 
+              <span className='user-offline'>offline</span>}
           {requestedConnect && (<CardText className="p-requested">requested</CardText>)}
         </div>
       </CardBody>
@@ -46,7 +50,9 @@ export const UserCard = (props: any) => {
   </Card>
 }
 
-export default function UserList(props:any) {
+export default function UserList(props: any) {
+  const navigate = useNavigate();
+  const [clicked, setClicked] = useState<string>();
   const dispatch = useAppDispatch();
   const availableUsers = useAppSelector(selectAvailableUsers);
   const socket = props?.socket;
@@ -55,34 +61,33 @@ export default function UserList(props:any) {
   const friendList = useAppSelector(selectFriendList);
   const friendRequests = useAppSelector(selectRequestsRecieved);
   const profile = useAppSelector(selectProfile);
-  let [searchParams,] = useSearchParams();
-  const [state, setState] = useState({ lastLoaded: 0, page: searchParams.get('page') });
-  useEffect(() => {
-    const delta = (Date.now() - state.lastLoaded);
-    if (delta > 15000) {
-      setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-      dispatch(usersAsync({socket, page: searchParams.get('page')}));      
-    }
-    setTimeout(() => {
-      socket?.emit('userlist');
-    }, 700);
-  }, [userlist.pages, searchParams, dispatch, socket, state.lastLoaded]);
+  const [searchParams, setSearchParams] = useSearchParams({});
+
   const page = !userlist.previous ? 1 : userlist.previous.page + 1;
+
+  const refreshPage = useCallback(async () => {
+    const n = searchParams.get('page');
+    await dispatch(usersAsync({ socket, page: n }));
+  }, [searchParams]);
+
+  useEffect(() => {
+    refreshPage();
+  }, [refreshPage]);
+
 
   const nextPage = (e: any) => {
     e.preventDefault();
     switch (e.currentTarget.name) {
       case 'next':
-        searchParams.set('page', userlist.next.page);
+        setSearchParams({ page: userlist.next.page })
         break;
       case 'previous':
-        searchParams.set('page', userlist.previous.page);
-        break;      
+        setSearchParams({ page: userlist.previous.page })
+        break;
       default:
         return
     }
-    setState({ lastLoaded: Date.now(), page: searchParams.get('page') });
-    dispatch(usersAsync({socket, page: searchParams.get('page')}));
+    dispatch(usersAsync({ socket, page: searchParams.get('page') }));
   };
   function Paginator() {
     return <Container className="paginator flex align-items-center text-center" hidden={!(userlist.next || userlist.previous)} >
@@ -117,6 +122,15 @@ export default function UserList(props:any) {
           isOnline={isOnline}
           data={user}
           key={i}
+          selected={clicked === user.username}
+          onClick={async (e: any) => {
+            e.preventDefault();
+            if (clicked === user.username) {
+              navigate(`/app/users/${user.username}`);
+            }
+            setClicked(user.username);
+            console.log(user.username);
+          }}
         />
       })}
 
