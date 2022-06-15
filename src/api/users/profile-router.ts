@@ -83,8 +83,17 @@ router.put('/', async (req:any, res) => {
     let {decodedToken} = req;
     const username = decodedToken?.username;
     if (!username) return res.status(403).json({error: 'user undefined'});
-    let { name, avatar, email, dob } = req.body;
+    let { name, avatar, email, dob:strDOB } = req.body;
     let id:number = Number(decodedToken.subject);
+    let dob:Date|undefined;
+    if (strDOB) {
+        // try to convert the string
+        try {
+            dob = new Date(strDOB);
+        } catch(error:any) {
+            dob = undefined;
+        }
+    }
     if (id > 0){
         let result = await Profiles.update(id, 
             { name, avatar, email, dob 

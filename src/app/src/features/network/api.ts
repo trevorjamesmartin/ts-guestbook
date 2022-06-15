@@ -170,8 +170,14 @@ class VigilantAPI extends Axios {
         }
     };
     put<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
-        console.log('[PUT]', url, data, config)
-        return this.client.put(url, data, config)
+        const { params }: any = config || {};
+        if (this.socket?.connected) {
+            return new Promise(() => this.socketAPI(url, params));
+        } else {
+            const resolved = this.dynamicURL(url, params);
+            console.log('[PUT]', resolved, data);
+            return this.client.put(resolved, data);
+        }
     };
     patch<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
         return this.client.patch(url, data, config);
