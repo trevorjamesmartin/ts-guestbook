@@ -14,7 +14,7 @@ function Delay(props: any) {
   const profile = useAppSelector(selectProfile);
 
   const startDelay = useCallback(() => {
-    setWaiting(Date.now());      
+    setWaiting(Date.now());
     setTimeout(() => {
       setWaiting(0);
     }, Number(timeout));
@@ -27,17 +27,15 @@ function Delay(props: any) {
   }, [waiting, startDelay])
 
   return (
-    <Container className='flex column align-items-center text-center'>
-      <Row xs="1">
-        <Col>
-          <img alt="profile" className="profile-image-limited"
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null; // prevents looping
-              currentTarget.src = "/user.png";
-            }}
-            src={profile.avatar} />
-        </Col>
-      </Row>
+    <Container className='flex column align-items-center text-center delay-render'>
+      <div className='row'>
+        <img alt="profile" className="profile-image-limited"
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src = "/user.png";
+          }}
+          src={profile.avatar || "/user.png"} />
+      </div>
       <Row xs="1">
         <Col>
           <p>{status}</p>
