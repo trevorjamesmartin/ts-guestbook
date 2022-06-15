@@ -57,19 +57,27 @@ export const setProfileAsync = createAsyncThunk(
         const token = socket?.auth?.token || state?.auth?.token;
         const { name, email, dob, avatar, username } = state.profile;
         const apiClient = new api({ token }); // legacy mode
-        // * upload to s3
-        let fileType = 'image/jpeg';
-        const getSigned = await apiClient.get(`/api/aws/sign-s3?file-name=${username}-avatar.jpeg&file-type=${fileType}`);
-        const { signedURL } = getSigned.data;
-        await uploadToS3(avatar, signedURL);
-        let imageURL = signedURL.split('?')[0];
-        // ** update profile with s3 URL
-        const updatedProfile = {
-            name,
-            avatar: imageURL,
-            email,
-            dob
-        };
+        let updatedProfile:any;
+        if (/^data:(.*);base64,(.*)$/.exec(avatar)) {
+            // * upload to s3
+            const imageType  = avatar.split(';base64,')[0].split(':')[1];
+            // Hold the content type
+            const getSigned = await apiClient.get(`/api/aws/sign-s3?file-name=${username}-avatar.jpeg&file-type=${imageType}`);
+            const { signedURL } = getSigned.data;
+            await uploadToS3(avatar, signedURL);
+            let imageURL = signedURL.split('?')[0];            
+            updatedProfile = {
+                name,
+                avatar: imageURL,
+                email,
+                dob
+            };
+        } else {
+            updatedProfile = {
+                name, email, dob
+            };
+        }
+        // ** update profile
         await apiClient.put('/api/profile', updatedProfile); // pending
         return updatedProfile; // fulfilled
     }
