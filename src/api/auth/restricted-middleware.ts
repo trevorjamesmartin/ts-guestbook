@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { UserType, DecodedToken } from '../common/types';
 const JWT_SECRET = process.env.JWT_SECRET || "dont tread on me";
 /**
@@ -18,7 +19,7 @@ export function generateToken(user: UserType) {
 }
 
 // io handler 
-export const verifyToken = (authorization:string) => {
+export const verifyToken = (authorization: string) => {
     if (!authorization) return false
     return jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: any) => {
         if (err) {
@@ -29,6 +30,22 @@ export const verifyToken = (authorization:string) => {
     });
 }
 
+// password encryption
+export const encryptString = (plaintext: string | undefined): string|undefined => {
+    if (plaintext) {
+        return String(bcrypt.hashSync(plaintext, 13));
+    }
+    return undefined;
+}
+
+// password validation
+export const validateString = (password: string, hash: string): boolean => {
+    if (password && hash) {
+        return bcrypt.compareSync(password, hash);
+    }
+    return false
+}
+
 /**
  * verify authorization for a given route, 
  * using a secret or a public key to decode a provided token.
@@ -36,11 +53,11 @@ export const verifyToken = (authorization:string) => {
 export default (req: any, res: any, next: any) => {
     const { authorization } = req.headers;
     if (authorization) {
-        jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: DecodedToken|any) => {
+        jwt.verify(authorization, JWT_SECRET, (err: any, decodedToken: DecodedToken | any) => {
             if (err) {
                 res.status(401).json({ message: "invalid credentials" });
             } else {
-                const decoded : DecodedToken = decodedToken;
+                const decoded: DecodedToken = decodedToken;
                 req.decodedToken = decoded;
                 next();
             }

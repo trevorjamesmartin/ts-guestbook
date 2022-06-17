@@ -65,6 +65,14 @@ async function setSettings(user_id: number, config: JSON) {
         .update({ config })
 }
 
+export async function updatePassword(user_id: number, newPassword: string) {
+    let u = findById(user_id);
+    if (!u || !newPassword) return;
+    return await db('users')
+        .where({ id: user_id })
+        .update({ password: newPassword });
+}
+
 export const yourSettings = {
     get: getSettings,
     set: setSettings

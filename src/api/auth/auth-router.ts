@@ -1,8 +1,7 @@
-import bcrypt from 'bcryptjs';
 import Users from '../users/users-model';
 import { Router } from 'express';
 import { v4 } from 'uuid';
-import { generateToken } from './restricted-middleware';
+import { generateToken, encryptString, validateString } from './restricted-middleware';
 import logger from '../common/logger';
 import userMap from '../common/maps';
 import { UserType } from '../common/types';
@@ -68,7 +67,7 @@ router.post('/login', async (req, res) => {
   if (!user) {
     return res.status(404).json({ message });
   }
-  if (bcrypt.compareSync(req.body.password, user.password)) {
+  if (validateString(req.body.password, user.password)) {
     const token = generateToken(user);
     const uid = v4();
     userMap.addUser({
@@ -113,10 +112,8 @@ router.delete('/logout', (req, res) => {
  *               type: array
  */
 router.post('/register', async (req, res) => {
-  const password: string | undefined = req.body.password
-    ? String(bcrypt.hashSync(req.body.password, 13))
-    : undefined;
-  const username: string = req.body.username ? req.body.username : undefined;
+  const password: string | undefined = encryptString(req.body.password);
+  const username: string = req.body.username;
   const formError = [username, password].includes(undefined);
   if (formError) {
     return res.status(400).json({ error: "form error" });
