@@ -236,6 +236,7 @@ a {
   border-radius: 50%;
 }
 
+.settings-frame,
 .profile-image-frame {
   display: flex;
   flex-flow: column;
@@ -363,8 +364,17 @@ li {
 }
 
 .nav-link {
+  color: rgba(64, 64, 64, 0.7);
+  cursor: pointer;
+}
+
+li.nav-link.nav-item {
   color: rgba(64, 64, 64, 0.7)
 }
+
+/* li.nav-link.nav-item.active {
+  color: rgba(64, 64, 64, 1)
+} */
 
 a>.active {
   color: rgba(64, 64, 64, 0.7)
