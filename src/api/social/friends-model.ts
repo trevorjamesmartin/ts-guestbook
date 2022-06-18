@@ -13,7 +13,7 @@ export default {
 
 async function remove(id: number): Promise<any> {
     const record = await db("friends").where({ id }).first();
-    await db("friends").where({ id }).delete();
+    await db("friends").where({ id }).del();
     return record;
 }
 

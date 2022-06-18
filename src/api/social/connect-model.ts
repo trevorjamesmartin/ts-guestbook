@@ -13,7 +13,7 @@ export default {
     acceptRequest,
     createRequest,
     rejectRequest,
-    connectedTo
+    connectedTo,
 }
 
 function byId(id: number): Promise<RequestConnect> {
@@ -26,7 +26,7 @@ async function findBy(filter: Partial<RequestConnect>): Promise<RequestConnect[]
     return await db("request-connect").where(filter);
 }
 
-async function existingRecord(request_id1:number, request_id2:number) {
+async function existingRecord(request_id1: number, request_id2: number) {
     // check for existing record (from)
     let from_to = await friendsModel.findBy({
         req_from: request_id1,
@@ -96,7 +96,7 @@ async function createRequest(from_id: number, to_id: number, accepted: boolean) 
                 accepted
             });
         if (updated) {
-            return [{id}]
+            return [{ id }]
         }
         return []
     }
@@ -125,6 +125,20 @@ const withProfiles = async (rcList: RequestConnect[]) => {
     return friends;
 }
 
+const withoutIds = async (rcList: RequestConnect[]) => {
+    let result: any[] = [];
+    for (let r of rcList) {
+        let profile = await profileModel.findByUserId(r.from_id);
+        // cleanlist
+        result = [...result, {
+            username: profile.username,
+            name: profile.name,
+            avatar: profile.avatar,
+        }];
+    }
+    return result;
+}
+
 async function connectedTo(target_id: number): Promise<any> {
     const toTarget = await db("request-connect").where({ to_id: target_id });
     const fromTarget = await db("request-connect").where({ from_id: target_id });
@@ -134,5 +148,20 @@ async function connectedTo(target_id: number): Promise<any> {
     return {
         friends: await withProfiles(connections),
         requests: await withProfiles(pending)
+    }
+}
+
+export async function severTies(target_id: number): Promise<any> {
+    const toTarget = await db("request-connect").where({ to_id: target_id });
+    const fromTarget = await db("request-connect").where({ from_id: target_id });
+    const findMatch = (to_id: number) => fromTarget.filter((c: RequestConnect) => c.to_id === to_id)[0];
+    const pending = toTarget.filter(({ from_id, accepted }: RequestConnect) => !accepted || !(findMatch(from_id)?.accepted));
+    const connections = toTarget.filter(({ from_id, accepted }: RequestConnect) => accepted && findMatch(from_id)?.accepted);
+    await db("request-connect").where({ to_id: target_id }).del();
+    await db("request-connect").where({ from_id: target_id }).del();
+    return {
+        deleted: true,
+        friends: await withoutIds(connections),
+        requests: await withoutIds(pending)
     }
 }
