@@ -52,7 +52,7 @@ function PublicProfile(props: any) {
   }
 
   return <Container>
-    <Button onClick={() => navigate(-1)}>Back</Button>
+    <Button onClick={() => navigate(-1)}><i className="fa-solid fa-chevron-left"></i> Back</Button>
     {waiting ? <Spinner /> :
       <div className='profile-image-frame'>
         <img alt={username} className='avatar-image' src={state?.avatar || '/user.png'}
