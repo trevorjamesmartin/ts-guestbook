@@ -10,9 +10,18 @@ const FeedCard = (props: any) => {
     if (props.avatar) {
       return props.avatar;
     }
-    return profile.avatar || "/user.png";
+    if (props.author_id === profile.user_id) {
+      return profile?.avatar || "/user.png";
+    }
+    return "/user.png";
   }
   const posted_at = dayjs.utc(props.posted_at).local().fromNow()
+  const findUsername = () => {
+    if (props.author_id === profile.user_id) {
+      return `${profile.username} (you)`
+    }
+    return props.username
+  }
   return (
     <Link key={props.id} className="clickable-card" to={`/app/thread/${props.id}`}>
       <Card key={props.id} className="blog-post">
@@ -24,7 +33,7 @@ const FeedCard = (props: any) => {
                 currentTarget.src = "/user.png";
               }}
               src={findAvatar()} className="shout-out-avatar" />
-            <CardText className="shouter-username">@{props.username || "You"}</CardText>
+            <CardText className="shouter-username">@{findUsername()}</CardText>
             <CardText className="shouter-timestamp">{posted_at}</CardText>
           </Row>
           <Row xs="1">

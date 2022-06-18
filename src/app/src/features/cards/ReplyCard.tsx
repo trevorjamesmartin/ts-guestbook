@@ -3,15 +3,31 @@ import React from 'react';
 import { Container, CardImg } from 'reactstrap';
 
 function ThreadReply(props: any) {
+  const profile = props.profile;
+  const findUsername = () => {
+    if (props.author_id === profile.user_id) {
+      return `${profile.username} (you)`
+    }
+    return props.username
+  }
+  const findAvatar = () => {
+    if (props.avatar) {
+      return props.avatar;
+    }
+    if (props.author_id === profile.user_id) {
+      return profile.avatar || "/user.png";
+    }
+    return "/user.png";
+  }
   return <Container className='d-flex flex-row'>
     <div>
       <CardImg
-        alt={props.username}
+        alt={findUsername()}
         onError={({ currentTarget }) => {
           currentTarget.onerror = null; // prevents looping
           currentTarget.src = "/user.png";
         }}
-        src={props?.avatar ? props.avatar : '/user.png'} className="reply-avatar"
+        src={findAvatar()} className="reply-avatar"
       />
     </div>
     <div>
