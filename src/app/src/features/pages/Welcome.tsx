@@ -18,7 +18,7 @@ function Welcome({ ws, ...props }: propsWithWebSocket) {
     return (<Container>
         {!showLanding ? <Delay timeout={2000} /> : <>
             <div>
-                <h1>Meow now</h1>
+                <h1>Yo,</h1>
                 <br />
                 <h4>Join Guestbook today.</h4>
                 <div className="sign-in-up-div">
