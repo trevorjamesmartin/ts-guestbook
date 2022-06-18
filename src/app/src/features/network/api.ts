@@ -5,7 +5,8 @@ import { Socket } from 'socket.io-client';
 interface socketpath {
     [key: string]: {
         event: string;
-        params?: any
+        params?: any;
+        data?: any;
     };
 }
 
@@ -16,7 +17,7 @@ interface construct {
     socketPath?: socketpath
 }
 
-class VigilantAPI extends Axios {
+class API extends Axios {
     defaults;
     interceptors;
     private socket;
@@ -91,7 +92,7 @@ class VigilantAPI extends Axios {
         }
     }
 
-    private socketAPI(urlPath: string, config: any) {
+    private socketAPI(urlPath: string, config: any, data?: any) {
         if (this.socket) {
             let event = this.eventIO(urlPath);
             let args = this.eventIOparams(urlPath);
@@ -107,9 +108,8 @@ class VigilantAPI extends Axios {
 
                 case "api:thread":
                 case "api:reply":
-                    // params aren't useful here.
-                    console.log('[io] -> ', event, args);
-                    this.io(event, args);
+                    console.log('[io] -> ', event, {...args });
+                    this.io(event, {...args, ...data});
                     break;
 
                 default:
@@ -162,7 +162,7 @@ class VigilantAPI extends Axios {
     post<T = any, R = AxiosResponse<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<R> {
         const { params }: any = config || {};
         if (this.socket?.connected) {
-            return new Promise(() => this.socketAPI(url, params));
+            return new Promise(() => this.socketAPI(url, params, data));
         } else {
             const resolved = this.dynamicURL(url, params);
             console.log('[POST]', resolved, data);
@@ -184,4 +184,4 @@ class VigilantAPI extends Axios {
     };
 }
 
-export default VigilantAPI
+export default API

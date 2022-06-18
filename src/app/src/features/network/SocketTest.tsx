@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Input, } from 'reactstrap';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -10,6 +11,7 @@ const { updateChat } = webSocketActions;
 const { selectChat } = webSocketSelectors;
 
 function SocketTest(props: any) {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const chatLog = useAppSelector(selectChat);
   const socket: Socket<DefaultEventsMap, DefaultEventsMap> = props.socket;
@@ -54,6 +56,8 @@ function SocketTest(props: any) {
 
   return (
     <Container>
+      <Button onClick={() => navigate(-1)}><i className="fa-solid fa-chevron-left"></i> Back</Button>
+
       <pre className='socket-event'>
         {outState.join('\n')}
       </pre>
