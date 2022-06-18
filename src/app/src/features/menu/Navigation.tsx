@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // local memory
 import { selectors as authSelectors } from '../auth/authSlice'
@@ -20,6 +20,7 @@ const { selectStatus: selectSocketStatus } = socketSelectors;
 
 function Navigation(props: any) {
   const { socket, rtc } = props;
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(true);
   const [clockConfig, setClockConfig] = useState({
     military: false,
@@ -58,49 +59,46 @@ function Navigation(props: any) {
       inNavbar
     >
       <DropdownToggle nav>
-        <img
-          onError={({ currentTarget }) => {
-            currentTarget.onerror = null; // prevents looping
-            currentTarget.src = "/user.png";
-          }}
-          className="navatar"
-          src={profile.avatar || '/user.png'}
-          width='32px'
-          height='32px'
-          alt={profile.name}
-        />
+        <i className="fa-solid fa-gear"></i>
       </DropdownToggle>
       <DropdownMenu>
         {authorized ? (
           <>
             <DropdownItem>
-              <Link className='nav-link' to={authorized ? '/app/profile' : '/login'}>
-                <NavItem active={isActive('/app/profile')}>
-                  Profile
-                </NavItem>
-              </Link>
+              <NavItem
+                active={isActive('/app/profile')}
+                className='nav-link'
+                onClick={() => {
+                  navigate(authorized ? '/app/profile' : '/login')
+                }}
+              >
+                Profile
+              </NavItem>
             </DropdownItem>
-            <DropdownItem disabled>
-              <Link className='nav-link' to="#">
+            <DropdownItem>
+              <NavItem
+                active={isActive('/app/settings')}
+                className='nav-link'
+                onClick={() => navigate(authorized ? '/app/settings' : '/login')}>
                 Settings
-              </Link>
+              </NavItem>
             </DropdownItem>
             <DropdownItem divider />
             <DropdownItem>
-              <NavItem>
-                <Link className='nav-link' to='/app/logout'>
-                  Logout
-                </Link>
+              <NavItem
+                className="nav-link"
+                onClick={() => navigate('/app/logout')}>
+                Logout
               </NavItem>
             </DropdownItem>
           </>
         ) : (
           <>
             <DropdownItem>
-              <NavItem>
-                <Link className='nav-link' to='/about'>
-                  About
-                </Link>
+              <NavItem
+                className="nav-link"
+                onClick={() => navigate('/about')}>
+                About
               </NavItem>
             </DropdownItem>
           </>
@@ -116,25 +114,29 @@ function Navigation(props: any) {
       inNavbar
     >
       <DropdownToggle nav>
-      <i className="fa-solid fa-glasses"></i>
+        <i className="fa-solid fa-glasses"></i>
       </DropdownToggle>
       <DropdownMenu>
         {
           authorized && rtc ?
             <DropdownItem>
-              <Link className='nav-link' to={'/app/test'}>
-                <NavItem active={isActive('/app/test')}>{window.location.protocol}</NavItem>
-                <NavItem active={isActive('/app/test')}>(test io)</NavItem>
-              </Link>
+              <NavItem
+                active={isActive('/app/test')}
+                onClick={() => navigate('/app/test')}
+              >{window.location.protocol}</NavItem>
+              <NavItem
+                active={isActive('/app/test')}
+                onClick={() => navigate('/app/test')}
+              >(test io)</NavItem>
             </ DropdownItem>
             : <DropdownItem>
               <NavItem>{window.location.protocol}</NavItem>
             </DropdownItem>
         }
         <DropdownItem>
-          <span>{rtc ? 
-          <i className="fa-solid fa-check"></i> :
-          ""} RTC</span>
+          <span>{rtc ?
+            <i className="fa-solid fa-check"></i> :
+            ""} RTC</span>
         </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
@@ -145,26 +147,32 @@ function Navigation(props: any) {
       className="me-auto align-items-center"
       navbar
     >
-      <Link className='nav-link' to={authorized ? '/app' : '/'}>
-        <NavItem active={isActive('/app')}>
-          App
-        </NavItem>
-      </Link>
-      <Link className='nav-link' to='/app/users'>
-        <NavItem active={isActive('/app/users')}>
-          Directory
-        </NavItem>
-      </Link>
-      <Link className='nav-link' to='/about'>
-        <NavItem active={isActive('/about')}>
-          About
-        </NavItem>
-      </Link>
-      {friendRequests && friendRequests[0] && <Link className='nav-link' to='/app/requests'>
-        <NavItem active={isActive('/app/requests')}>
-          {`Requests (${friendRequests.length}) `}
-        </NavItem>
-      </Link>}
+      <NavItem
+        className='nav-link'
+        active={isActive('/app')}
+        onClick={() => authorized ? navigate('/app') : navigate('/')}
+      >
+        App
+      </NavItem>
+      <NavItem
+        className="nav-link"
+        active={isActive('/app/users')}
+        onClick={() => authorized ? navigate('/app/users') : navigate('/')}
+      >
+        Directory
+      </NavItem>
+      <NavItem
+        className='nav-link'
+        active={isActive('/about')}
+        onClick={() => navigate('/about')}
+      >
+        About
+      </NavItem>
+      {friendRequests && friendRequests[0] && <NavItem
+        className='nav-link'
+        active={isActive('/app/requests')}
+        onClick={() => navigate('/app/requests')}
+      >{`Requests (${friendRequests.length}) `}</NavItem>}
     </Nav>
   }
 
@@ -172,16 +180,16 @@ function Navigation(props: any) {
     return <Nav
       className="me-auto align-items-center"
       navbar>
-      <NavItem active={isActive('/login')}>
-        <Link className='nav-link' to="/login">
-          Login
-        </Link>
-      </NavItem>
-      <NavItem active={isActive('/register')}>
-        <Link className='nav-link' to="/register">
-          Register
-        </Link>
-      </NavItem>
+      <NavItem
+        active={isActive('/login')}
+        className='nav-link'
+        onClick={() => navigate('/login')}
+      >Login</NavItem>
+      <NavItem
+        active={isActive('/register')}
+        className='nav-link'
+        onClick={() => navigate('/register')}
+      >Register</NavItem>
     </Nav >
   }
 
@@ -194,30 +202,29 @@ function Navigation(props: any) {
     expand="md"
     light
   >
-    <Link to="/">
-      <NavbarBrand>
+    <NavbarBrand className="nav-link" onClick={() => navigate('/')}>
       <img
-          onError={({ currentTarget }) => {
-            currentTarget.onerror = null; // prevents looping
-            currentTarget.src = "/user.png";
-          }}
-          src={'/logo192.png'}
-          width='32px'
-          height='32px'
-          alt={profile.name}
-        />
-      </NavbarBrand>
-    </Link>
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // prevents looping
+          currentTarget.src = "/user.png";
+        }}
+        src={profile.avatar || '/logo192.png'}
+        width='32px'
+        height='32px'
+        alt={profile.name}
+        className="navatar"
+      />
+    </NavbarBrand>
     <NavbarToggler onClick={toggleNavbar} />
     <Collapse navbar isOpen={!collapsed}>
       {authorized ? onlineNav() : offlineNav()}
       <Nav className="align-items-center">
         {authorized ? <NavItem active={isActive('/app/profile')}>
           {profileMenu()}
-        </NavItem>:""}
+        </NavItem> : ""}
         {authorized ? <NavItem>
           {connectionMenu()}
-        </NavItem>: ""}
+        </NavItem> : ""}
         <UncontrolledDropdown
           inNavbar
         >
