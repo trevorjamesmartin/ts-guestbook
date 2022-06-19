@@ -44,7 +44,7 @@ export function Register() {
       : <Form onSubmit={handleSubmitForm}>
         <FormGroup>
           <Label for="username">Username</Label>
-          <Input name="username" value={state.username} onChange={handleChange}></Input>
+          <Input autoComplete="username" name="username" value={state.username} onChange={handleChange}></Input>
         </FormGroup>
         <FormGroup>
           <Label for="password">Password</Label>

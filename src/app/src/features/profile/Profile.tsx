@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../memory/hooks';
 import { selectors as profileSelectors, getProfileAsync, setProfileAsync, actions as profileActions } from '../profile/profileSlice';
 import { Form, FormGroup, Label, Input, Button, Container } from 'reactstrap';
@@ -8,7 +9,8 @@ const { setField } = profileActions;
 const { selectProfile } = profileSelectors;
 
 function Profile(props: any) {
-  const {socket} = props;
+  const navigate = useNavigate();
+  const { socket } = props;
   const dispatch = useAppDispatch();
   const profile = useAppSelector(selectProfile);
   const [preview, setPreview] = useState();
@@ -63,49 +65,53 @@ function Profile(props: any) {
     reader.onload = onFileLoaded;
     reader.readAsDataURL(file);
   }
-  
-  return (<Container className="profile-page">
-    <Form onSubmit={handleUpdateProfile}>
-      <Label for="preview-image">Avatar</Label>
-      <FormGroup>
-        <img alt="Profile" className='preview-image' src={preview || profile.avatar || '/user.png'}
-          onError={({ currentTarget }) => {
-            currentTarget.onerror = null; // prevents looping
-            currentTarget.src = "/user.png";
-          }}
-          onClick={() => { fileInput.current.click(); }} />
 
-        <input hidden type="file" ref={fileInput} onChange={handleFileSelect} />
+  return (
+    <Container>
+      <Button onClick={() => navigate(-1)}><i className="fa-solid fa-chevron-left"></i> Back</Button>
+      <div className="profile-page">
+        <Form onSubmit={handleUpdateProfile}>
+          <Label for="preview-image">Avatar</Label>
+          <FormGroup>
+            <img alt="Profile" className='preview-image' src={preview || profile.avatar || '/user.png'}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null; // prevents looping
+                currentTarget.src = "/user.png";
+              }}
+              onClick={() => { fileInput.current.click(); }} />
 
-        <output id="list"></output>
-      </FormGroup>
-      <div className='profile-form-row'>
-        <FormGroup>
-          <Label for="name">Name</Label>
-          <Input name='name' type='text' placeholder='name' value={profile.name || ""} onChange={handleChange} />
-        </FormGroup>
+            <input hidden type="file" ref={fileInput} onChange={handleFileSelect} />
+
+            <output id="list"></output>
+          </FormGroup>
+          <div className='profile-form-row'>
+            <FormGroup>
+              <Label for="name">Name</Label>
+              <Input name='name' type='text' placeholder='name' value={profile.name || ""} onChange={handleChange} />
+            </FormGroup>
+          </div>
+          <div className='profile-form-row'>
+            <FormGroup>
+              <Label for="email">Email</Label>
+              <Input name='email' type='text' placeholder='email' value={profile.email || ""} onChange={handleChange} />
+            </FormGroup>
+          </div>
+          <div className='profile-form-row'>
+            <FormGroup>
+              <Label for="dob">Date of Birth</Label>
+              <DatePicker
+                className={"dob"}
+                name="dob"
+                onChange={(date: Date | null) => {
+                  date && dispatch(setField({ dob: String(date) })) || dispatch(setField({ dob: undefined }));
+                }}
+                value={profile.dob ? new Date(profile.dob) : undefined} />
+            </FormGroup>
+          </div>
+          <Button>update</Button>
+        </Form>
       </div>
-      <div className='profile-form-row'>
-        <FormGroup>
-          <Label for="email">Email</Label>
-          <Input name='email' type='text' placeholder='email' value={profile.email || ""} onChange={handleChange} />
-        </FormGroup>
-      </div>
-      <div className='profile-form-row'>
-        <FormGroup>
-          <Label for="dob">Date of Birth</Label>
-          <DatePicker
-            className={"dob"}
-            name="dob"
-            onChange={(date: Date) => {
-              dispatch(setField({ dob: String(date) }));
-            }}
-            value={new Date(profile.dob)} />
-        </FormGroup>
-      </div>
-      <Button>update</Button>
-    </Form>
-  </Container>)
+    </Container>)
 }
 
 export default Profile;

@@ -103,7 +103,7 @@ function Thread(props: any) {
         :
         // show replies
         <ul className="threadList">{[...replies.map((value, idx) => {
-          return <ReplyCard key={idx} {...value} />
+          return <ReplyCard key={idx} {...value} profile={profile} />
         })]}</ul>
     }
     <Form onSubmit={handleSubmitReply} >

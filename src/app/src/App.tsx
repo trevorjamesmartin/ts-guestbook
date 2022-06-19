@@ -72,6 +72,7 @@ function App() {
         <Route path="/app/users" element={<UserView socket={localSocket} />} />
         <Route path="/app/users/:username" element={<PublicProfile socket={localSocket} />} />
         <Route path="/app/profile" element={<Profile socket={localSocket} />} />
+        <Route path="/app/settings" element={<Pages.SettingsPage />} />
         <Route path="/app/logout" element={<Logout socket={localSocket} />} />
         <Route path="/app/requests" element={<ConnectRequests socket={localSocket} />} />
         <Route path="/app/thread/:thread_id" element={<Thread socket={localSocket} />} />

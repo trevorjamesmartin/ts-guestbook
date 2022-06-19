@@ -108,7 +108,7 @@ export const profileSlice = createSlice({
     initialState,
     reducers: {
         updateProfile: (state, action:PayloadAction<any>) => {
-            for (let fieldName of Object.keys(action.payload)) {
+            for (let fieldName of Object?.keys(action.payload) || []) {
                 let value = action.payload[fieldName];
                 switch (fieldName) {
                     case 'name':

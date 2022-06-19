@@ -30,6 +30,7 @@ export default function UserView(params: any) {
 
   return <>
     <UncontrolledDropdown
+    hidden
       inNavbar
     >
       <DropdownToggle caret>
